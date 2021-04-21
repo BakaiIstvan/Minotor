@@ -1,0 +1,262 @@
+grammar hu.bme.mit.dipterv.text.MinotorDsl with org.eclipse.xtext.common.Terminals
+
+generate minotorDsl "http://www.bme.hu/mit/dipterv/text/MinotorDsl"
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+Domain:
+	(specification='specification')? (name=ID)? ('{')?
+	includes+=Include*
+	contextmodels+=ContextModel*
+	contextfragments+=ContextFragment*
+	objects+=Object*
+	parameters+=Parameter*
+	clocks+=Clock*
+	constraints+=Constraint*
+	scenarios+=Scenario* ('}')?
+;
+
+Include:
+	'import' context=[ContextModel] 'from' importURI=STRING
+;
+
+ContextModel:
+	'contextmodel' name=ID '{'
+		entities+=Entity*
+		relations+=Relation*
+	'}'
+;
+
+ContextFragment:
+	'contextfragment' name=ID '{'
+		entities+=FEntity*
+		relations+=FRelation*
+	'}'
+;
+
+Attribute:
+	'attribute' (int?='int')? (float?='float')? (string?='string')? (boolean?='boolean')? name=ID ('=')? (value=AttributeValue)? ';'
+;
+
+AttributeValue:
+	value=STRING | value=REAL | value=NUMBER | value='true' | value='false'
+;
+
+FragmentAttribute:
+	'attributeconstraint' (int?='int')? (float?='float')? (string?='string')? (boolean?='boolean')? name=ID (greater?='>')? (smaller?='<')? (greaterequals?='>=')? (smallerequals?='<=')? (equals?='==')? (notequals?='!=')? value=AttributeValue ';'
+;
+
+Entity:
+	'entity' name=ID '{'
+		attributes+= Attribute*
+	'}'
+;
+
+FEntity:
+	'entityconstraint' name=ID '{'
+		attributes+= FragmentAttribute*
+	'}'
+;
+
+Relation:
+	'relation' name=ID '(' sender=[Entity] ',' receiver=[Entity] ')' '{'
+		attributes+=Attribute*
+	'}'
+;
+
+FRelation:
+	'relationconstraint' name=ID '(' sender=[FEntity] ',' receiver=[FEntity] ')' '{'
+		attributes+=FragmentAttribute*
+	'}'
+;
+
+Scenario:
+	'scenario' name=ID '{'
+	scenariocontents+=ScenarioContent*
+	'}'
+;
+
+ScenarioContent:
+	alt+=Alt | message+=Message | par+=Par | loop+=Loop | contextmessage+=ContextMessage | paramConstraint+=ParameterConstraint
+	| assertentity+=AssertionEntity | assertrelation+=AssertionRelation
+
+;
+
+Message:
+	 'message' name=ID '(' (params+=Params | constantparams+=ConstantParams) ')' (required?='required')? (fail?='fail')? (strict?='strict')?
+	 sender=[Object] '->' receiver=[Object]
+	 (past?='pastConstraint')? (future?='futureConstraint')?
+	 ('{' (c=[Constraint])? (',')? (constraintexp=ClockConstraintExpression)? (',')? (resetinconstraint=ResetClock)? '}')? 
+	 (clockconstraint?='clockConstraint')? 
+	 ('{')? (cConstraint=ClockConstraintExpression)? ('}')? 
+	 (resetclock=ResetClock)?';'
+;
+
+ResetClock:
+	'reset' clock=[Clock]
+;
+
+ClockConstraint:
+	clock=[Clock] op=Operator constant=NUMBER
+;
+
+ClockConstraintExpression:
+	  (not?='not')? ('(')? lclockconstraint=ClockConstraint (')')?
+	| lclockconstraint=ClockConstraint 'and' rclockconstraint=ClockConstraint
+;
+
+ContextMessage:
+	content+=ContextMessageContent
+	(required?='required')? (fail?='fail')? (strict?='strict')?
+	';'
+;
+
+ContextMessageContent:
+	match+=MatchMessage | change+=ChangeMessage
+;
+
+MatchMessage:
+	'match' '(' (context=[ContextModel])? (',')? (content=[ContextFragment])? ')'
+;
+
+ChangeMessage:
+	disappear+=DisappearMessage | appear+=AppearMessage | changeto+=ChangeToMessage | changetor+=ChangeToRelation
+;
+
+AppearMessage:
+	'appear' '(' (context=[ContextModel] '.' entity=[Entity])? ')'
+;
+
+DisappearMessage:
+	'disappear' '(' (context=[ContextModel] '.' entity=[Entity])? ')'
+;
+
+ChangeToMessage:
+	'changeTo' '(' (context=[ContextModel] '.' entity=[Entity] '.' attribute=[Attribute])? (',')? (changevalue=AttributeValue)? ')'
+;
+
+ChangeToRelation:
+	'relationChangeTo' '(' (context=[ContextModel] '.' relation=[Relation] '.' attribute=[Attribute])? (',')? (changevalue=AttributeValue)? ')'
+;
+
+AssertionEntity:
+	'assertEntityAttribute' '[' context=[ContextModel] '.' entity=[Entity] '.' attribute=[Attribute] operator+=Operator value+=AttributeValue ']' ';'
+;
+
+AssertionRelation:
+	'assertRelationAttribute' '[' context=[ContextModel] '.' relation=[Relation] '.' attribute=[Attribute] operator+=Operator value+=AttributeValue ']' ';'
+;
+
+Params:
+	 (params+=[Parameter])? (',' params+=[Parameter])* 
+;
+
+ConstantParams:
+	(values+=AttributeValue)? (',' values+=AttributeValue)* 
+;
+
+Parameter:
+	type=Type name=ID ('=')? (value=AttributeValue)? ';'
+;
+
+ParameterConstraint:
+	'assertParameter' '[' param=[Parameter] operator+=Operator value+=AttributeValue ']' 'in' object=[Object] ';'
+;
+
+Operator:
+	greater?='>' | smaller?='<' | greaterequals?='>=' | smallerequals?='<=' | equals?='==' | notequals?='!='
+;
+
+Clock:
+	'clock' name=ID ';'
+;
+
+enum Type:
+	integer | float | bool | string
+;
+
+terminal NUMBER:
+	('0'..'9')*
+;
+
+terminal REAL:
+	('0'..'9')* '.' ('0'..'9')*
+;
+
+ObjectType:
+	'object' name=ID
+;
+
+Object:
+	object+=ObjectType name=ID ';'
+;
+
+Constraint:
+	'constraint' name=ID '{'
+		messages+=Message* 
+	'}'
+;
+
+Alt:
+	'alt' expressions+=Expression*
+;
+
+Expression:
+	'(' altCondition=LogicalExpression ')' '{'
+		messages+=Message*
+	'}'
+;
+
+LogicalExpression:
+	UnaryLogicalExpression | BinaryLogicalExpression
+;
+
+BinaryLogicalExpression:
+	EqualsExpression | EqualsBooleanExpression | GreaterThanExpression | LesserThanExpression |
+	AndExpression | OrExpression
+;
+
+AndExpression:
+	'and' '(' lhs=LogicalExpression ',' rhs=LogicalExpression ')'
+;
+
+OrExpression:
+	'or' '(' lhs=LogicalExpression ',' rhs=LogicalExpression ')'
+;
+
+EqualsExpression:
+	'equals' '(' lhs=[Parameter] ',' rhs=NUMBER ')'
+;
+
+EqualsBooleanExpression:
+	'equals' '(' lhs=[Parameter] ',' rhs='true' ')' | 'equals' '(' lhs=[Parameter] ',' rhs='false' ')'
+;
+
+GreaterThanExpression:
+	'greater' '(' lhs=[Parameter] ',' rhs=NUMBER ')'
+;
+
+LesserThanExpression:
+	'lesser' '(' lhs=[Parameter] ',' rhs=NUMBER ')'
+;
+
+UnaryLogicalExpression:
+	NotLogicalExpression
+;
+
+NotLogicalExpression:
+	'not' '(' operand=LogicalExpression ')'
+;
+
+Par:
+	'par' '{' parexpression+=ParExpression* '}'
+;
+
+ParExpression:
+	'case' name=ID '{' messages+=Message* '}'
+;
+
+Loop:
+	'loop' '(' min=NUMBER ',' max=NUMBER ')' '{' 
+		messages+=Message*
+	'}'
+;

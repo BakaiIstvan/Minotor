@@ -1,0 +1,9 @@
+grammar hu.bme.mit.dipterv.text.MinotorDsl with org.eclipse.xtext.common.Terminals
+
+generate minotorDsl "http://www.bme.hu/mit/dipterv/text/MinotorDsl"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID '!';
