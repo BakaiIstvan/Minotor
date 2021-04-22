@@ -467,29 +467,29 @@
       </instructions>
     </touchpointData>
   </unit>
-  <unit id='202104220825.main' version='1.0.0.2--cD5w9l773753A773I7C'>
+  <unit id='202104220901.main' version='1.0.0.2--cD5w9l773753A773K35'>
     <properties size='2'>
       <property name='org.eclipse.equinox.p2.name' value='MinotorDsl'/>
       <property name='org.eclipse.equinox.p2.type.category' value='true'/>
     </properties>
     <provides size='1'>
-      <provided namespace='org.eclipse.equinox.p2.iu' name='202104220825.main' version='1.0.0.2--cD5w9l773753A773I7C'/>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='202104220901.main' version='1.0.0.2--cD5w9l773753A773K35'/>
     </provides>
     <requires size='1'>
-      <required namespace='org.eclipse.equinox.p2.iu' name='hu.bme.mit.dipterv.text.feature.feature.group' range='[1.0.0.202104220825,1.0.0.202104220825]'/>
+      <required namespace='org.eclipse.equinox.p2.iu' name='hu.bme.mit.dipterv.text.feature.feature.group' range='[1.0.0.202104220901,1.0.0.202104220901]'/>
     </requires>
     <touchpoint id='null' version='0.0.0'/>
   </unit>
-  <unit id='202104220825.main.source' version='1.0.0.2--cD5wJk773753A773I7C'>
+  <unit id='202104220901.main.source' version='1.0.0.2--cD5wJk773753A773K35'>
     <properties size='2'>
       <property name='org.eclipse.equinox.p2.name' value='MinotorDsl (Sources)'/>
       <property name='org.eclipse.equinox.p2.type.category' value='true'/>
     </properties>
     <provides size='1'>
-      <provided namespace='org.eclipse.equinox.p2.iu' name='202104220825.main.source' version='1.0.0.2--cD5wJk773753A773I7C'/>
+      <provided namespace='org.eclipse.equinox.p2.iu' name='202104220901.main.source' version='1.0.0.2--cD5wJk773753A773K35'/>
     </provides>
     <requires size='1'>
-      <required namespace='org.eclipse.equinox.p2.iu' name='hu.bme.mit.dipterv.text.feature.source.feature.group' range='[1.0.0.202104220825,1.0.0.202104220825]'/>
+      <required namespace='org.eclipse.equinox.p2.iu' name='hu.bme.mit.dipterv.text.feature.source.feature.group' range='[1.0.0.202104220901,1.0.0.202104220901]'/>
     </requires>
     <touchpoint id='null' version='0.0.0'/>
   </unit>

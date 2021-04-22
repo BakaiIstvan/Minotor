@@ -1,17 +1,17 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?artifactRepository version='1.1.0'?>
 <artifacts size='2'>
-  <artifact classifier='org.eclipse.update.feature' id='hu.bme.mit.dipterv.text.feature' version='1.0.0.202104220825'>
+  <artifact classifier='org.eclipse.update.feature' id='hu.bme.mit.dipterv.text.feature' version='1.0.0.202104220901'>
     <properties size='6'>
-      <property name='artifact.size' value='626'/>
-      <property name='download.size' value='626'/>
+      <property name='artifact.size' value='692'/>
+      <property name='download.size' value='692'/>
       <property name='maven-groupId' value='hu.bme.mit.dipterv.text'/>
       <property name='maven-artifactId' value='hu.bme.mit.dipterv.text.feature'/>
       <property name='maven-version' value='1.0.0-SNAPSHOT'/>
       <property name='download.contentType' value='application/zip'/>
     </properties>
   </artifact>
-  <artifact classifier='org.eclipse.update.feature' id='hu.bme.mit.dipterv.text.feature.source' version='1.0.0.202104220825'>
+  <artifact classifier='org.eclipse.update.feature' id='hu.bme.mit.dipterv.text.feature.source' version='1.0.0.202104220901'>
     <properties size='7'>
       <property name='artifact.size' value='2064'/>
       <property name='download.size' value='2064'/>

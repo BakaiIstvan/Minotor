@@ -1,19 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <?artifactRepository version='1.1.0'?>
 <artifacts size='2'>
-  <artifact classifier='osgi.bundle' id='hu.bme.mit.dipterv.text.ui.tests' version='1.0.0.202104220825'>
+  <artifact classifier='osgi.bundle' id='hu.bme.mit.dipterv.text.ui.tests' version='1.0.0.202104220901'>
     <properties size='5'>
-      <property name='artifact.size' value='3408'/>
-      <property name='download.size' value='3408'/>
+      <property name='artifact.size' value='3409'/>
+      <property name='download.size' value='3409'/>
       <property name='maven-groupId' value='hu.bme.mit.dipterv.text'/>
       <property name='maven-artifactId' value='hu.bme.mit.dipterv.text.ui.tests'/>
       <property name='maven-version' value='1.0.0-SNAPSHOT'/>
     </properties>
   </artifact>
-  <artifact classifier='osgi.bundle' id='hu.bme.mit.dipterv.text.ui.tests.source' version='1.0.0.202104220825'>
+  <artifact classifier='osgi.bundle' id='hu.bme.mit.dipterv.text.ui.tests.source' version='1.0.0.202104220901'>
     <properties size='6'>
-      <property name='artifact.size' value='2162'/>
-      <property name='download.size' value='2162'/>
+      <property name='artifact.size' value='2159'/>
+      <property name='download.size' value='2159'/>
       <property name='maven-groupId' value='hu.bme.mit.dipterv.text'/>
       <property name='maven-artifactId' value='hu.bme.mit.dipterv.text.ui.tests'/>
       <property name='maven-version' value='1.0.0-SNAPSHOT'/>

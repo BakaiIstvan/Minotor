@@ -3,7 +3,7 @@ Automatic-Module-Name: hu.bme.mit.dipterv.text.ui
 Bundle-ManifestVersion: 2
 Bundle-Name: hu.bme.mit.dipterv.text.ui
 Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.202104220825
+Bundle-Version: 1.0.0.202104220901
 Bundle-SymbolicName: hu.bme.mit.dipterv.text.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: hu.bme.mit.dipterv.text,hu.bme.mit.dipterv.text.ide,org.

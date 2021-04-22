@@ -3,7 +3,7 @@ Automatic-Module-Name: hu.bme.mit.dipterv.text.tests
 Bundle-ManifestVersion: 2
 Bundle-Name: hu.bme.mit.dipterv.text.tests
 Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.202104220825
+Bundle-Version: 1.0.0.202104220901
 Bundle-SymbolicName: hu.bme.mit.dipterv.text.tests; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: hu.bme.mit.dipterv.text,org.junit.jupiter.api;bundle-ver
