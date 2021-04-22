@@ -16,7 +16,7 @@ import org.eclipse.xtext.xbase.testing.CompilationTestHelper
 @ExtendWith(InjectionExtension)
 @InjectWith(MinotorDslInjectorProvider)
 class MinotorDslParsingTest {
-	@Inject
+	/*@Inject
 	ParseHelper<Domain> parseHelper
 	
 	@Test
@@ -54,5 +54,5 @@ class MinotorDslParsingTest {
 	             }
 	         }
 	     ''')
-	}
+	}*/
 }

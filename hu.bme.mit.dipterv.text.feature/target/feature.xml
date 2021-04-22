@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature id="hu.bme.mit.dipterv.text.feature"
+	label="MinotorDsl Feature "
+	version="1.0.0.202104220825">
+	<plugin
+			id="hu.bme.mit.dipterv.text"
+			download-size="847"
+			install-size="2238"
+			version="1.0.0.202104220825"
+			unpack="false"/>
+	<plugin
+			id="hu.bme.mit.dipterv.text.ide"
+			download-size="140"
+			install-size="682"
+			version="1.0.0.202104220825"
+			unpack="false"/>
+	<plugin
+			id="hu.bme.mit.dipterv.text.ui"
+			download-size="19"
+			install-size="70"
+			version="1.0.0.202104220825"
+			unpack="false"/>
+</feature>
+
