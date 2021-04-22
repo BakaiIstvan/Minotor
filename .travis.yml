@@ -1,0 +1,10 @@
+language: java
+install: true
+jdk:
+  - openjdk11
+
+os:
+  - linux
+
+script:
+ - mvn clean install -U
