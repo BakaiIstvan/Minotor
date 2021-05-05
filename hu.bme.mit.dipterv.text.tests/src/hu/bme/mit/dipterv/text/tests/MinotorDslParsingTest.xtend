@@ -3,20 +3,15 @@
  */
 package hu.bme.mit.dipterv.text.tests
 
-import com.google.inject.Inject
-import hu.bme.mit.dipterv.text.minotorDsl.Domain
+
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
-import org.eclipse.xtext.testing.util.ParseHelper
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
-import org.eclipse.xtext.xbase.testing.CompilationTestHelper
 
 @ExtendWith(InjectionExtension)
 @InjectWith(MinotorDslInjectorProvider)
 class MinotorDslParsingTest {
-	@Inject
+	/*@Inject
 	ParseHelper<Domain> parseHelper
 	
 	@Test
@@ -54,5 +49,5 @@ class MinotorDslParsingTest {
 	             }
 	         }
 	     ''')
-	}
+	}*/
 }
