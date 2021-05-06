@@ -1,0 +1,22 @@
+specification Email{
+	
+	object Computer computer;
+	object Server server;
+	
+	clock x;
+	
+	constraint constraints{
+		message logout() computer -> server;
+	}
+	
+	constraint c {
+		message login() server -> computer;
+	}
+	
+	scenario sendEmail{
+		message checkEmail() computer -> computer reset x;
+		message sendUnsentEmail() required computer -> server;
+		message newEmail() computer -> server pastConstraint {constraints};
+		message downloadEmail() computer -> server clockConstraint {x < 10};
+	}
+}
