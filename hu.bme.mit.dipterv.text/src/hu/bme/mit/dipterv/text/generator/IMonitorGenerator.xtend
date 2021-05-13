@@ -9,6 +9,8 @@ class IMonitorGenerator extends AbstractGenerator {
 	override doGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		fsa.generateFile("IMonitor.java",
 			'''
+				package generated;
+			
 				public interface IMonitor {
 					public boolean goodStateReached();
 					public void update(String sender, String receiver, String messageType, String[] parameters);
@@ -19,6 +21,8 @@ class IMonitorGenerator extends AbstractGenerator {
 			
 			fsa.generateFile("Monitor.java",
 				'''
+				package generated;
+				
 				import java.util.ArrayList;
 				import java.util.Arrays;
 				import java.util.List;
@@ -146,12 +150,13 @@ class IMonitorGenerator extends AbstractGenerator {
 						
 						System.out.println("transition triggered: " + transition.getId());
 						System.out.println(actualState.getId());
-								
-						if (goodStateReached()) {
+						
+						//TODO: fix Main class imports		
+						/*if (goodStateReached()) {
 							Main.monitorStatus("System is in good state.");
 						} else {
 							Main.monitorStatus("System is in bad state.");
-						}
+						}*/
 						
 						if (transition.hasReset()) {
 							clock.resetClock(transition.getReset());

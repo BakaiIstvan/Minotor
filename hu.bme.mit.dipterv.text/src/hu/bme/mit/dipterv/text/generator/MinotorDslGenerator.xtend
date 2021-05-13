@@ -77,6 +77,8 @@ class MinotorDslGenerator extends AbstractGenerator {
 	}
 	
 	def compile(Domain s) '''
+		package generated;
+	
 		import java.io.FileNotFoundException;
 		import java.io.PrintWriter;
 		import java.io.UnsupportedEncodingException;

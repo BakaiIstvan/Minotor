@@ -4,50 +4,1131 @@
 package hu.bme.mit.dipterv.text.tests
 
 
+import com.google.inject.Inject
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
+import org.eclipse.xtext.xbase.testing.CompilationTestHelper
 
 @ExtendWith(InjectionExtension)
 @InjectWith(MinotorDslInjectorProvider)
 class MinotorDslParsingTest {
-	/*@Inject
-	ParseHelper<Domain> parseHelper
-	
-	@Test
-	def void loadModel() {
-		val result = parseHelper.parse('''
-			Hello Xtext!
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
-	}
-	
 	@Inject extension CompilationTestHelper
  
-	@Test def test() {
-	     '''
-	         datatype String
+	@Test def testSimpleMessage() {
 
-	         package my.company.blog {
-	             entity Blog {
-	                 title: String
-	             }
+	     '''
+	         specification spec1{
+
+	         	object Computer computer;
+
+	         	scenario email {
+	         		message checkEmail() computer -> computer;
+	         	}
 	         }
 	     '''.assertCompilesTo('''
-	         package my.company.blog;
-
-	         public class Blog {
-	             private String title;
-
-	             public String getTitle() {
-	                 return title;
+	     MULTIPLE FILES WERE GENERATED
+	     
+	     File 1 : /myProject/./src-gen/Automaton.java
+	     
+	     package generated;
+	     			
+	     import java.util.ArrayList;
+	     import java.util.Map;
+	     
+	     public class Automaton {
+	         private String id;
+	         private ArrayList<State> states;
+	         private ArrayList<Transition> transitions;
+	         private State initial;
+	         private State finale;
+	     
+	         public Automaton(String id) {
+	             this.id = id;
+	             this.states = new ArrayList<>();
+	             this.transitions = new ArrayList<>();
+	         }
+	         
+	         public void setFinale(State state){
+	             this.finale = state;
+	         }
+	         
+	         public State getFinale(){
+	             return this.finale;
+	         }
+	         
+	         public void setInitial(State state){
+	         	this.initial = state;
+	         }
+	         
+	         public State getInitial(){
+	         	return this.initial;
+	         }	
+	         
+	         public ArrayList<State> getStates(){
+	         	return states;
+	         }
+	         
+	         public ArrayList<Transition> getTransitions(){
+	         	return transitions;
+	         }
+	     
+	         public String getId() {
+	             return id;
+	         }
+	     
+	         public void setId(String id) {
+	             this.id = id;
+	         }
+	     
+	         public void addState(State newState){
+	             states.add(newState);
+	         }
+	         
+	         public void rename(){
+	            int counter = 0;
+	            int _counter = 0;
+	            for(State s : this.states) {
+	            	if(s.getId().equals("qinit") || s.getId().equals("qfinal") || s.getId().equals("qaccepting")){
+	            		s.setId(s.getId() + _counter);
+	            		_counter++;
+	            	}else{
+	              	s.setId("q" + counter);
+	              	counter++;
+	              }
+	            }  
+	         }
+	         
+	         public ArrayList<Transition> findSender(State state){
+	         	ArrayList<Transition> senderTransitions = new ArrayList<Transition>();
+	         	for(Transition t : this.transitions){
+	         		if(t.getSender().getId().equals(state.getId()))
+	         			senderTransitions.add(t);
+	         	}	
+	         	return senderTransitions;
+	         }
+	         
+	         public ArrayList<Transition> findReceiver(State state){
+	            ArrayList<Transition> receiverTransitions = new ArrayList<Transition>();
+	            for(Transition t : this.transitions){
+	            	 if(t.getReceiver().getId().equals(state.getId()))
+	                 receiverTransitions.add(t);
+	              }
+	            return receiverTransitions;
+	          }
+	          			
+	         public void addTransition(Transition newTransition){
+	        		if(transitions.isEmpty()){
+	        			transitions.add(newTransition);
+	        		    return;
+	        		}
+	        		        
+	        		for(Transition t : transitions){
+	        			if(t.getId().equals(newTransition.getId()) 
+	        		    	&& t.getSender().equals(newTransition.getSender()) 
+	        		        && t.getReceiver().equals(newTransition.getReceiver()))
+	        		        	return;
+	        		}
+	        		        
+	        		transitions.add(newTransition);
+	        }
+	        
+	        public void collapse(Automaton automaton){
+	                if(this.states.isEmpty() && this.transitions.isEmpty()){
+	                    for (State s : automaton.states)
+	                        this.addState(s);
+	                    
+	        
+	                    for (Transition t : automaton.transitions)
+	                        this.addTransition(t);
+	                        
+	                    this.initial = automaton.initial;
+	                    this.finale = automaton.finale;
+	                    
+	                }else {
+	                    ArrayList<Transition> receive = findReceiver(this.finale);
+	                    ArrayList<Transition> send = findSender(this.finale);
+	        
+	                    for (State s : automaton.states) 
+	                        this.addState(s);
+	                    
+	        
+	                    for (Transition t : automaton.transitions) 
+	                        this.addTransition(t);
+	                    
+	        
+	                    for (Transition t : receive) 
+	                        t.setReceiver(automaton.initial);
+	                    
+	        
+	                    for (Transition t : send) 
+	                        t.setSender(automaton.initial);
+	                    
+	        
+	                    this.states.remove(finale);
+	                    this.finale = automaton.finale;
+	                }
+	        }
+	        public void merge(Map<String, Automaton> automatas){
+	           
+	     		              State qinit = new State("qinit", StateType.NORMAL);
+	     		              State qfinal = new State("qfinal", StateType.FINAL);
+	     		              
+	     		              if(this.states.isEmpty() && this.transitions.isEmpty()){
+	     		                  this.initial = qinit;
+	     		              }else{
+	     		                  this.addTransition(new Transition("epsilon", this.finale, qinit));
+	     		              }
+	     		      
+	     		              this.addState(qinit);
+	     		              this.addState(qfinal);
+	     		              this.finale = qfinal;
+	     		      
+	     		              for (Map.Entry<String, Automaton> a : automatas.entrySet()) {
+	     		                  for (Transition t : a.getValue().transitions)
+	     		                      this.addTransition(t);
+	     		   
+	     		                  for (State s : a.getValue().states) {
+	     		                      this.addState(s);
+	     		                      if (s.getType().equals(StateType.FINAL))
+	     		                          this.addTransition(new Transition("epsilon", s, qfinal));
+	     		                  }
+	     		                  this.addTransition(new Transition("epsilon; " + a.getKey(), qinit, a.getValue().initial));
+	     		              }   
+	     		       		}
+	     }
+	     
+	     File 2 : /myProject/./src-gen/Clock.java
+	     
+	     package generated;
+	     
+	     import java.util.HashMap;
+	     import java.util.Map;
+	     
+	     import org.apache.commons.lang3.time.StopWatch;
+	     
+	     public class Clock implements IClock {
+	     	private Map<String, StopWatch> stopwatches;
+	     
+	     	public Clock() {
+	     		stopwatches = new HashMap<>();
+	     	}
+	     	
+	     	@Override
+	     	public long getClock(String clock) {
+	     		if (stopwatches.containsKey(clock)) {
+	     			return stopwatches.get(clock).getTime();
+	     		}
+	     		
+	     		return -1;
+	     	}
+	     
+	     	@Override
+	     	public void resetClock(String clock) {
+	     		if (stopwatches.containsKey(clock)) {
+	     			stopwatches.get(clock).reset();
+	     		} else {
+	     			StopWatch watch = new StopWatch();
+	     			watch.start();
+	     			stopwatches.put(clock, watch);
+	     		}
+	     	}
+	     
+	     }
+	     
+	     File 3 : /myProject/./src-gen/EventCreator.java
+	     
+	     	package generated;
+	     
+	     	public class EventCreator {
+	     		private Monitor monitorInterface;
+	     		
+	     		public EventCreator(
+	     			Monitor monitorInterface
+	     		) {
+	     			this.monitorInterface = monitorInterface;
+	     		}
+	     		
+	     		
+	     		public void appear(String name) {
+	     		}
+	     		
+	     		public void disappear(String name) {
+	     		}
+	     		
+	     		public void changeTo(String event) {
+	     		}
+	     	}
+	     
+	     File 4 : /myProject/./src-gen/IClock.java
+	     
+	     package generated;
+	     			
+	     public interface IClock {
+	     	public long getClock(String clock);
+	     	public void resetClock(String clock);
+	     }
+	     
+	     File 5 : /myProject/./src-gen/IMonitor.java
+	     
+	     package generated;
+	     			
+	     public interface IMonitor {
+	     	public boolean goodStateReached();
+	     	public void update(String sender, String receiver, String messageType, String[] parameters);
+	     	public boolean requirementSatisfied();
+	     	public void errorDetected(String sender, String receiver, String messageType, String[] parameters);
+	     }
+	     
+	     File 6 : /myProject/./src-gen/Monitor.java
+	     
+	     package generated;
+	     
+	     import java.util.ArrayList;
+	     import java.util.Arrays;
+	     import java.util.List;
+	     import java.util.ListIterator;
+	     
+	     public class Monitor implements IMonitor {
+	     	private Automaton automaton;
+	     	private State actualState;
+	     	private List<State> goodStates;
+	     	private boolean requirementFullfilled;
+	     	private IClock clock;
+	     	
+	     	public Monitor(Automaton automaton
+	     				 , IClock clock) {
+	     		this.automaton = automaton;
+	     		this.actualState = automaton.getInitial();
+	     		this.goodStates = new ArrayList<State>();
+	     		this.goodStates.add(automaton.getFinale());
+	     		this.requirementFullfilled = true;
+	     		this.clock = clock;
+	     	}
+	     	
+	     	@Override
+	     	public boolean goodStateReached() {
+	     		return this.goodStates.contains(actualState) && this.requirementFullfilled;
+	     	}
+	     
+	     	@Override
+	     	public void update(String sender, String receiver, String messageType, String[] parameters) {
+	     		List<Transition> transitions = automaton.findSender(this.actualState);
+	     		String receivedMessage = getReceivedMessage(sender, receiver, messageType, parameters);
+	     		System.out.println("Received Message: " + receivedMessage);
+	     		boolean edgeTriggered = false;
+	     		
+	     		ListIterator<Transition> iterator = transitions.listIterator();
+	     		while (iterator.hasNext()) {
+	     			Transition transition = iterator.next();
+	     			System.out.println("Transition: " + transition.getId());
+	     			if (transition.getId().contains("epsilon")) {
+	     				List<Transition> newTransitions = new ArrayList<Transition>(automaton.findSender(transition.getReceiver()));
+	     
+	     				for (Transition t : newTransitions) {
+	     					iterator.add(t);
+	     					iterator.previous();
+	     				}
+	     				Transition prevTransition = iterator.previous();
+	     				System.out.println("PrevTransition: " + prevTransition.getId());
+	     				
+	     				if (transitions.size() == 1) {
+	     					this.actualState = transition.getReceiver();
+	     					updateMonitorStatus(transition);
+	     				}
+	     				
+	     				iterator.remove();
+	     				if (!transitions.stream().anyMatch(t -> t.getId().contains("epsilon"))) {
+	     					iterator = transitions.listIterator();
+	     				}
+	     			} else if (transitions.stream().anyMatch(t -> t.getId().contains("epsilon"))) {
+	     				// do nothing
+	     			} else if (transition.hasClock()) {
+	     				if (transition.clockConditionSatisfied(clock.getClock(transition.getClock()))) {
+	     					edgeTriggered = updateState(transition, messageType, sender, receiver, parameters, receivedMessage);
+	     				}
+	     			} else {
+	     				edgeTriggered = updateState(transition, messageType, sender, receiver, parameters, receivedMessage);
+	     			}
+	     			
+	     			if (edgeTriggered) {
+	     				break;
+	     			}
+	     		}
+	     		
+	     		if (!edgeTriggered) {
+	     			this.requirementFullfilled = false;
+	     			System.out.println("Failure: receivedMessage didn't match any transitions.");
+	     		}
+	     	}
+	     	
+	     	private boolean updateState(Transition transition
+	     						   , String messageType
+	     						   , String sender
+	     						   , String receiver
+	     						   , String[] parameters
+	     						   , String receivedMessage) {
+	     
+	     		if (!transition.getId().contains("&")) {
+	     			if (!transition.getId().contains("!")
+	     		     && transition.getMessageType().equals(messageType)
+	     		     && transition.getSenderName().equals(sender)
+	     		     && transition.getReceiverName().equals(receiver)
+	     		     && Arrays.equals(transition.getParameters(), parameters)) {
+	     
+	     				this.actualState = transition.getReceiver();
+	     				updateMonitorStatus(transition);
+	     				return true;
+	     			} else if (transition.getId().contains("!")
+	     					&& (!transition.getMessageType().equals(messageType)
+	     					|| !transition.getSenderName().equals(sender)
+	     					|| !transition.getReceiverName().equals(receiver)
+	     					|| !Arrays.equals(transition.getParameters(), parameters))) {
+	     
+	     				this.actualState = transition.getReceiver();
+	     				updateMonitorStatus(transition);
+	     				return true;
+	     			}
+	     		} else if (!transition.getId().contains(receivedMessage)) {
+	     			this.actualState = transition.getReceiver();
+	     			updateMonitorStatus(transition);
+	     			return true;
+	     		}
+	     		
+	     		return false;
+	     	}
+	     	
+	     	private void updateMonitorStatus(Transition transition) {
+	     		if (actualState.getType().equals(StateType.FINAL)) {
+	     			List<Transition> transitions = automaton.findSender(this.actualState);
+	     			if (transitions.size() == 1 
+	     			 && transitions.stream().anyMatch(t -> t.getId().equals("epsilon"))
+	     			 && transitions.get(0).getReceiver().getType().equals(StateType.FINAL)) {
+	     				transition = transitions.get(0);
+	     				this.actualState = transition.getReceiver();
+	     			}
+	     		}
+	     		
+	     		System.out.println("transition triggered: " + transition.getId());
+	     		System.out.println(actualState.getId());
+	     		
+	     		//TODO: fix Main class imports		
+	     		/*if (goodStateReached()) {
+	     			Main.monitorStatus("System is in good state.");
+	     		} else {
+	     			Main.monitorStatus("System is in bad state.");
+	     		}*/
+	     		
+	     		if (transition.hasReset()) {
+	     			clock.resetClock(transition.getReset());
+	     		}
+	     	}
+	     	
+	     	private String getReceivedMessage(String sender, String receiver, String messageType, String[] parameters) {
+	     		String receivedMessage = sender + "." + messageType + "(";
+	     		for (String param : parameters) {
+	     			receivedMessage += param;
+	     			if (!(parameters[parameters.length - 1]).equals(param)) {
+	     				receivedMessage += ", ";
+	     			}
+	     		}
+	     		receivedMessage += ")." + receiver;
+	     		
+	     		return receivedMessage;
+	     	}
+	     
+	     	@Override
+	     	public boolean requirementSatisfied() {
+	     		return this.actualState == this.automaton.getFinale();
+	     	}
+	     
+	     	@Override
+	     	public void errorDetected(String sender, String receiver, String messageType, String[] parameters) {
+	     		// TODO Auto-generated method stub
+	     		
+	     	}
+	     }
+	     
+	     File 7 : /myProject/./src-gen/Specification.java
+	     
+	     	package generated;
+	     
+	     	import java.io.FileNotFoundException;
+	     	import java.io.PrintWriter;
+	     	import java.io.UnsupportedEncodingException;
+	     	import java.util.ArrayList;
+	     	import java.util.HashMap;
+	     	import java.util.Collections;
+	     	import java.util.Comparator;
+	     	import java.util.Arrays;
+	     	import java.util.List;
+	     	import java.util.Map;
+	     	import java.util.Set;
+	     	import java.util.TreeSet;
+	     	
+	     	public class Specification{
+	     		private String id = "spec1";
+	     		private ArrayList<Automaton> automatas;
+	     		
+	     		public Specification(){
+	     			automatas = new ArrayList<Automaton>();
+	     			String str;
+	     			String str1;
+	     			String pre;
+	     			String succ;
+	     			State actualState;
+	     			State acceptState;
+	     			State finalState;
+	     			State newState;
+	     			State acceptState_new;
+	     			Automaton a = new Automaton("email");
+	     			Automaton b;
+	     			Map<String, Automaton> altauto;
+	     			ArrayList<Automaton> parauto;
+	     			Automaton loopauto;
+	     			Automaton expression;
+	     			int counter = 0;
+	     			
+	     			b = new Automaton("auto7");
+	     			actualState = new State("q" + counter, StateType.NORMAL);
+	     			counter++;
+	     			b.addState(actualState);
+	     			b.setInitial(actualState);
+	     												
+	     			b.addTransition(new Transition("!(" + "computer" + "." +	
+	     				"checkEmail" + "("
+	     				+ ")"
+	     				
+	     				+ "." + "computer)", actualState, actualState));
+	     			
+	     			newState = new State("q" + counter, StateType.FINAL);
+	     			counter++;
+	     			b.addTransition(new Transition("computer" + "." +
+	     			
+	     			"checkEmail" + "("
+	     			+ ")"
+	     			
+	     			+ "." + "computer" , actualState, newState));
+	     			b.addState(newState);
+	     			b.setFinale(newState);
+	     			a.collapse(b);
+	     			
+	     			a.rename();
+	     			automatas.add(a);
+	     		}
+	     		
+	     		public void listAutomatas(){
+	     			for(Automaton a : this.automatas){
+	     				for(State s : a.getStates()){
+	     					s.writeState();	
+	     				}
+	     				
+	     				for(Transition t : a.getTransitions()){
+	     					t.writeTransition();
+	     				}
+	     			}
+	     		}
+	     		
+	     		public List<Automaton> getAutomata() {
+	     			return automatas;
+	     		}
+	     		
+	     		public ArrayList<Automaton> par(ArrayList<Automaton> automatas) {
+	     		        ArrayList<ArrayList<Automaton>> automataList = new ArrayList<>();
+	     		        permute(automataList, new ArrayList<>(), automatas);
+	     		        return listConverter((automataList));
+	     		}
+	     	
+	     	    private void permute(ArrayList<ArrayList<Automaton>> list, ArrayList<Automaton> resultList, ArrayList<Automaton> automatas) {
+	     	        if (resultList.size() == automatas.size()) {
+	     	            list.add(new ArrayList<>(resultList));
+	     	        } else {
+	     	            for (int i = 0; i < automatas.size(); i++) {
+	     	                if (resultList.contains((automatas.get(i)))) {
+	     	                    continue;
+	     	                }
+	     	
+	     	                resultList.add(automatas.get(i));
+	     	                permute(list, resultList, automatas);
+	     	                resultList.remove(resultList.size() - 1);
+	     	            }
+	     	        }
+	     	    }
+	     	
+	     	    private ArrayList<Automaton> listConverter(ArrayList<ArrayList<Automaton>> list) {
+	     	        ArrayList<Automaton> result = new ArrayList<>();
+	     	        for (ArrayList<Automaton> alist : list) {
+	     	            Automaton newauto = new Automaton("listConverter");
+	     	            for (Automaton auto : alist) {
+	     	                newauto.collapse(copyAutomaton(auto));
+	     	            }
+	     	            result.add(newauto);
+	     	        }
+	     	        return result;
+	     	    }
+	     	    
+	     	    public Map<String, Automaton> loopSetup(Automaton loopauto, int min, int max) {
+	             	Map<String, Automaton> result = new HashMap<>();
+	         	    
+	                 for (int i = min; i <= max; i++) {
+	                     Automaton newauto = new Automaton("loopauto" + i);
+	                     for (int j = 0; j < i; j++) {
+	                         newauto.collapse(copyAutomaton(loopauto));
+	                     }
+	                     result.put("loop" + i, newauto);
+	                 }
+	                 return result;
 	             }
-		             public void setTitle(String title) {
-	                 this.title = title;
+	     	    
+	     	    public Automaton copyAutomaton(Automaton referenceAuto) {
+	     	            Automaton result = new Automaton("copy automaton");
+	     	            int count = 0;
+	     	            State previousSender = new State();
+	     	            State referencePreviousSender = new State();
+	     	    
+	     	            for (Transition t : referenceAuto.getTransitions()) {
+	     	                State sender = new State();
+	     	                State receiver = new State();
+	     	                Transition transition = new Transition();
+	     	                Automaton temp = new Automaton("temp");
+	     	    
+	     	                transition.setId(t.getId());
+	     	    
+	     	                if (t.getSender() == referencePreviousSender) {
+	     	                    receiver.setId("c" + count);
+	     	                    count++;
+	     	                    receiver.setType(t.getReceiver().getType());
+	     	    
+	     	                    transition.setSender(previousSender);
+	     	                    transition.setReceiver(receiver);
+	     	                    temp.addState(previousSender);
+	     	                    temp.addState(receiver);
+	     	                    temp.setInitial(previousSender);
+	     	                    temp.setFinale(receiver);
+	     	                } else {
+	     	                    if (t.getSender() == t.getReceiver()) {
+	     	                        sender.setId("c" + count);
+	     	                        count++;
+	     	                        sender.setType(t.getSender().getType());
+	     	    
+	     	                        transition.setSender(sender);
+	     	                        transition.setReceiver(sender);
+	     	    
+	     	                        temp.addState(sender);
+	     	                        temp.setInitial(sender);
+	     	                        temp.setFinale(sender);
+	     	                    } else {
+	     	                        sender.setId("c" + count);
+	     	                        count++;
+	     	                        sender.setType(t.getSender().getType());
+	     	    
+	     	                        receiver.setId("c" + count);
+	     	                        count++;
+	     	                        receiver.setType(t.getReceiver().getType());
+	     	    
+	     	                        transition.setSender(sender);
+	     	                        transition.setReceiver(receiver);
+	     	    
+	     	                        temp.addState(sender);
+	     	                        temp.addState(receiver);
+	     	                        temp.setInitial(sender);
+	     	                        temp.setFinale(receiver);
+	     	                    }
+	     	                    previousSender = sender;
+	     	                    referencePreviousSender = t.getSender();
+	     	                }
+	     	    
+	     	                temp.addTransition(transition);
+	     	                result.collapse(temp);
+	     	            }
+	     	    
+	     	            return result;
+	     	        }
+	     		
+	     		public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException{
+	     			Specification specification = new Specification();
+	     			specification.listAutomatas();
+	     			boolean acceptState = false;
+	     			
+	     			PrintWriter writer = new PrintWriter("spec1" + ".txt", "UTF-8");
+	     			for(Automaton a : specification.automatas){
+	     				writer.println("");
+	     				writer.println("never{ /*" + a.getId()+ "Monitor" + "*/");
+	     				for(State s : a.getStates()){
+	     					if(s == a.getInitial()){
+	     						writer.println("T0_init:");
+	     						writer.println(" if");
+	     						for(Transition t : a.findSender(s)){
+	     							if(t.getReceiver() == a.getInitial()){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_init");
+	     							}else if(t.getReceiver().getType().equals(StateType.NORMAL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
+	     							}else if(t.getReceiver().getType().equals(StateType.ACCEPT_ALL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_all" );
+	     							}else if(t.getReceiver().getType().equals(StateType.FINAL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
+	     							}else if(t.getReceiver().getType().equals(StateType.ACCEPT)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_" + t.getReceiver().getId());
+	     							}
+	     						}
+	     						writer.println(" fi;");
+	     					}else if(s.getType().equals(StateType.NORMAL)){
+	     						writer.println("T0_" + s.getId() + ":");
+	     						writer.println(" if");
+	     						for(Transition t : a.findSender(s)){
+	     							if(t.getReceiver() == a.getInitial()){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_init");
+	     							}else if(t.getReceiver().getType().equals(StateType.NORMAL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
+	     							}else if(t.getReceiver().getType().equals(StateType.ACCEPT_ALL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_all" );
+	     							}else if(t.getReceiver().getType().equals(StateType.FINAL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
+	     							}else if(t.getReceiver().getType().equals(StateType.ACCEPT)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_" + t.getReceiver().getId());
+	     							}
+	     						}
+	     						writer.println(" fi;");
+	     					}else if(s.getType().equals(StateType.ACCEPT_ALL) && !acceptState){
+	     						writer.println("accept_all:");
+	     						writer.println("skip");
+	     						acceptState = true;
+	     					}else if(s.getType().equals(StateType.FINAL)){
+	     						writer.println("T0_" + s.getId() + ":");
+	     						writer.println(" if");
+	     						for(Transition t : a.findSender(s)){
+	     							if(t.getReceiver() == a.getInitial()){
+	     								writer.println(" :: (" + t.getId() + ")" + "->" + " goto T0_init");
+	     							}else if(t.getReceiver().getType().equals(StateType.NORMAL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
+	     							}else if(t.getReceiver().getType().equals(StateType.ACCEPT_ALL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_all" );
+	     							}else if(t.getReceiver().getType().equals(StateType.FINAL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
+	     							}else if(t.getReceiver().getType().equals(StateType.ACCEPT)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_" + t.getReceiver().getId());
+	     							}
+	     						}
+	     						writer.println(" fi;");
+	     					}else if(s.getType().equals(StateType.ACCEPT)){
+	     						writer.println("accept_" + s.getId() + ":");
+	     						writer.println(" if");
+	     						for(Transition t : a.findSender(s)){
+	     							if(t.getReceiver() == a.getInitial()){
+	     								writer.println(" :: (" + t.getId() + ")" + "->" + " goto T0_init");
+	     							}else if(t.getReceiver().getType().equals(StateType.NORMAL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
+	     							}else if(t.getReceiver().getType().equals(StateType.ACCEPT_ALL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_all" );
+	     							}else if(t.getReceiver().getType().equals(StateType.FINAL)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
+	     							}else if(t.getReceiver().getType().equals(StateType.ACCEPT)){
+	     								writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_" + t.getReceiver().getId());
+	     							}
+	     						}
+	     						writer.println(" fi;");
+	     					}
+	     					
+	     				}
+	     				writer.println("}");
+	     			}
+	     			writer.close();
+	     			
+	     			PrintWriter xmlWriter = new PrintWriter("spec1" + ".xml", "UTF-8");
+	     			xmlWriter.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+	     			xmlWriter.println("<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'>");
+	     			xmlWriter.println("<nta>");
+	     			for (Automaton a : specification.automatas) {
+	     				xmlWriter.println("\t<declaration>");
+	     				String previous = "";
+	     				List<String> existingChannels = new ArrayList<String>();
+	     				for (Transition t : a.getTransitions()) {
+	     					List<String> items = Arrays.asList(t.getId().split("\\s*;\\s*"));
+	     					if (Collections.frequency(existingChannels, items.get(0)) == 0) {
+	     						if (t.getId().startsWith("[") || t.getId().startsWith("![")) {
+	     						} else if (!previous.equals(items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", ""))){
+	     							xmlWriter.println("chan " + items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", "") + ";");
+	     							previous = items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", "");
+	     							existingChannels.add(items.get(0));
+	     						}
+	     					}
+	     				}
+	     				
+	     				
+	     				
+	     				xmlWriter.println("\t</declaration>");
+	     				xmlWriter.println("\t<template>");
+	     				xmlWriter.println("\t\t<name>" + a.getId() + "</name>");
+	     				xmlWriter.println("\t\t<declaration>");
+	     				xmlWriter.println("\t\t</declaration>");
+	     				
+	     				int statecounter = 0;
+	     				
+	     				for (State s : a.getStates()) {
+	     					xmlWriter.println("\t\t<location id=\"" + s.getId() + "\" x=\"" + statecounter + "\" y=\"" + statecounter + "\">");
+	     						if (s.getType().equals(StateType.NORMAL)) {
+	     							xmlWriter.println("\t\t\t<name x=\"" + statecounter + "\" y=\"" + (statecounter + 0.5) + "\">" + s.getId() + "</name>");
+	     						} else if (s.getType().equals(StateType.ACCEPT)) {
+	     							xmlWriter.println("\t\t\t<name x=\"" + statecounter + "\" y=\"" + (statecounter + 0.5) + "\">ACCEPT_" + s.getId() + "</name>");
+	     						} else if (s.getType().equals(StateType.FINAL)) {
+	     							xmlWriter.println("\t\t\t<name x=\"" + statecounter + "\" y=\"" + (statecounter + 0.5) + "\">FINAL_" + s.getId() + "</name>");
+	     						}
+	     					xmlWriter.println("\t\t</location>");
+	     					statecounter++;
+	     				}
+	     				
+	     				xmlWriter.println("\t\t<init ref=\"q0\"/>");
+	     				
+	     				for (Transition t : a.getTransitions()) {
+	     					boolean doubletransition = false;
+	     					xmlWriter.println("\t\t<transition>");
+	     					xmlWriter.println("\t\t\t<source ref=\"" + t.getSender().getId() + "\"/>");
+	     					xmlWriter.println("\t\t\t<target ref=\"" + t.getReceiver().getId() + "\"/>");
+	     					if (t.getId().startsWith("[") || t.getId().startsWith("![")) {
+	     						xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + t.getId().substring(0, t.getId().indexOf("]")).replaceAll("<", "&lt;").replaceAll(">", "&gt;").replace("[", "") + "</label>");
+	     					} else {
+	     						List<String> items = Arrays.asList(t.getId().split("\\s*;\\s*"));
+	     
+	     						if (items.size() >= 1) {
+	     							xmlWriter.println("\t\t\t<label kind=\"synchronisation\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", "") + "?</label>");
+	     						}
+	     
+	     						if (items.size() >= 2) {
+	     							if(items.get(1).contains("1,")) {
+	     								List<String> stringList = Arrays.asList(items.get(1).split("\\s*\\|\\|\\s*"));
+	     								doubletransition = true;
+	     								if (!stringList.get(0).startsWith("(")) {
+	     									xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + stringList.get(0).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\(", "").replaceAll("\\)", "").replaceAll(",", " and") + "</label>");
+	     								} else {
+	     									xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + stringList.get(0).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll(",", " and") + "</label>");
+	     								}
+	     							} else {
+	     								if (!items.get(1).startsWith("(")) {
+	     									xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\(", "").replaceAll("\\)", "").replaceAll(",", " and") + "</label>");
+	     								} else {
+	     									xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll(",", " and") + "</label>");
+	     								}
+	     							}
+	     						}
+	     
+	     						if (items.size() >= 3) {
+	     							xmlWriter.println("\t\t\t<label kind=\"assignment\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(2).replaceAll("&", "&amp;") + "</label>");
+	     						}
+	     					}
+	     					xmlWriter.println("\t\t</transition>");
+	     					if (doubletransition) {
+	     						xmlWriter.println("\t\t<transition>");
+	     						xmlWriter.println("\t\t\t<source ref=\"" + t.getSender().getId() + "\"/>");
+	     						xmlWriter.println("\t\t\t<target ref=\"" + t.getReceiver().getId() + "\"/>");
+	     						if (t.getId().startsWith("[") || t.getId().startsWith("![")) {
+	     							xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + t.getId().substring(0, t.getId().indexOf("]")).replaceAll("<", "&lt;").replaceAll(">", "&gt;").replace("[", "") + "</label>");
+	     						} else {
+	     							List<String> items = Arrays.asList(t.getId().split("\\s*;\\s*"));
+	     	
+	     							if (items.size() >= 1) {
+	     								xmlWriter.println("\t\t\t<label kind=\"synchronisation\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", "") + "?</label>");
+	     							}
+	     	
+	     							if (items.size() >= 2) {
+	     								if(items.get(1).contains("1,")) {
+	     									List<String> stringList = Arrays.asList(items.get(1).split("\\s*\\|\\|\\s*"));
+	     									doubletransition = true;
+	     									if (!stringList.get(1).startsWith("(")) {
+	     										xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + stringList.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\(", "").replaceAll("\\)", "").replaceAll(",", " and") + "</label>");
+	     									} else {
+	     										xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + stringList.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll(",", " and") + "</label>");
+	     									}
+	     								} else {
+	     									if (!items.get(1).startsWith("(")) {
+	     										xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\(", "").replaceAll("\\)", "").replaceAll(",", " and") + "</label>");
+	     									} else {
+	     										xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll(",", " and") + "</label>");
+	     									}
+	     								}
+	     							}
+	     	
+	     							if (items.size() >= 3) {
+	     								xmlWriter.println("\t\t\t<label kind=\"assignment\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(2).replaceAll("&", "&amp;") + "</label>");
+	     							}
+	     						}
+	     						xmlWriter.println("\t\t</transition>");
+	     					}
+	     				}
+	     				
+	     				xmlWriter.println("\t</template>");
+	     				xmlWriter.println("\t<template>");
+	     				xmlWriter.println("\t\t<name>" + a.getId() + "_environment</name>");
+	     				xmlWriter.println("\t\t<declaration>");
+	     				xmlWriter.println("\t\t</declaration>");
+	     				xmlWriter.println("\t\t<location id=\"q0\" x=\"0\" y=\"0\">");
+	     				xmlWriter.println("\t\t\t<name x=\"1\" y=\"1\">q0</name>");
+	     				xmlWriter.println("\t\t</location>");
+	     				xmlWriter.println("\t\t<init ref=\"q0\"/>");
+	     				
+	     				Set<Transition> unique_transitions = new TreeSet<Transition>(new Comparator<Transition>() {
+	     			        @Override
+	     			        public int compare(Transition t1, Transition t2) {
+	     			        	List<String> items1 = Arrays.asList(t1.getId().split("\\s*;\\s*"));
+	     			        	List<String> items2 = Arrays.asList(t2.getId().split("\\s*;\\s*"));
+	     	
+	     			            return !(items1.get(0).equals(items2.get(0))) ? 1 : 0;
+	     			        }
+	     			    });
+	     				
+	     				unique_transitions.addAll(a.getTransitions());
+	     				
+	     				for (Transition t : unique_transitions) {
+	     					xmlWriter.println("\t\t<transition>");
+	     					xmlWriter.println("\t\t\t<source ref=\"q0\"/>");
+	     					xmlWriter.println("\t\t\t<target ref=\"q0\"/>");
+	     					if (t.getId().startsWith("[") || t.getId().startsWith("![")) {
+	     						xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + t.getId().substring(0, t.getId().indexOf("]")).replaceAll("<", "&lt;").replaceAll(">", "&gt;").replace("[", "") + "</label>");
+	     					} else {
+	     						List<String> items = Arrays.asList(t.getId().split("\\s*;\\s*"));
+	     		
+	     						if (items.size() >= 1) {
+	     							xmlWriter.println("\t\t\t<label kind=\"synchronisation\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", "") + "!</label>");
+	     						}
+	     						
+	     					}
+	     					xmlWriter.println("\t\t</transition>");
+	     				}
+	     				
+	     				xmlWriter.println("\t</template>");
+	     			}
+	     			
+	     			xmlWriter.println("\t<system>");
+	     			xmlWriter.println("receiver = " + specification.automatas.get(0).getId() + "();");
+	     			xmlWriter.println("sender = " + specification.automatas.get(0).getId() + "_environment();");
+	     			xmlWriter.println("system receiver, sender;");
+	     			xmlWriter.println("\t</system>");
+	     			
+	     			xmlWriter.println("</nta>");
+	     			xmlWriter.close();
+	     		}
+	     	}
+	     
+	     File 8 : /myProject/./src-gen/State.java
+	     
+	     package generated;
+	     			
+	     public class State {
+	         private String id;
+	         private StateType type;
+	     
+	         public State() {
+	             this.id = "q0";
+	             this.type = StateType.NORMAL;
+	         }
+	     
+	         public State(String id, StateType stateType) {
+	             this.id = id;
+	             this.type = stateType;
+	         }
+	     
+	         public String getId() {
+	             return id;
+	         }
+	     
+	         public StateType getType() {
+	             return type;
+	         }
+	     
+	         public void setType(StateType type) {
+	             this.type = type;
+	         }
+	     
+	         public void setId(String id) {
+	             this.id = id;
+	         }
+	         
+	         public void writeState(){
+	         	System.out.println(this.id + " " + this.type);
+	         }
+	     }
+	     
+	     File 9 : /myProject/./src-gen/StateType.java
+	     
+	     package generated;
+	     			
+	     public enum StateType {
+	         NORMAL, ACCEPT, FINAL, ACCEPT_ALL
+	     }
+	     
+	     
+	     File 10 : /myProject/./src-gen/Transition.java
+	     
+	     package generated;
+	     
+	     import java.util.ArrayList;
+	     import java.util.Arrays;
+	     import java.util.List;
+	     
+	     public class Transition {
+	         private String id;
+	         private State sender;
+	         private State receiver;
+	         
+	         private String reset;
+	         private String clock;
+	         private int value;
+	         private boolean smaller;
+	         
+	         public Transition() {
+	                 this.id = "t0";
+	                 this.sender = new State();
+	                 this.receiver = new State();
+	                 this.smaller = false;
+	         }
+	     
+	         public Transition(String id, State sender, State receiver) {
+	         	if (id.equals("1")) {
+	         		this.id = "true";
+	         	} else {
+	             	this.id = id;
+	             }
+	         	
+	         	if (id.contains(";")) {
+	         		List<String> list = new ArrayList<String>(Arrays.asList(id.split(";")));
+	         		this.id = list.get(0);
+	         		if (list.get(1) != null) {
+	         			if (list.get(1).contains(" = 0")) {
+	         				this.reset = list.get(1).substring(1, 2);
+	         			} else if (list.get(1).contains("<")) {
+	         				this.value = Integer.parseInt(list.get(1).substring(list.get(1).length() - 2, list.get(1).length())) * 1000000000;
+	         				this.clock = list.get(1).substring(1, 2);
+	         				this.smaller = true;
+	         			}
+	         		}
+	         	}
+	         	
+	         	/*if (countChar(this.id, '!') % 2 == 0 && this.id.contains("!")) {
+	         		formatID();
+	         	}*/
+	         	
+	             this.sender = sender;
+	             this.receiver = receiver;
+	         }
+	         
+	         private int countChar(String someString, char someChar) {
+	     		int count = 0;
+	     		 
+	     		for (int i = 0; i < someString.length(); i++) {
+	     		    if (someString.charAt(i) == someChar) {
+	     		        count++;
+	     		    }
+	     		}
+	     		
+	     		return count;
+	     	}
+	         
+	         public boolean hasReset() {
+	         	return reset != null && !reset.isEmpty();
+	         }
+	         
+	         public String getReset() {
+	         	return reset;
+	         }
+	         
+	         public boolean hasClock() {
+	         	return clock != null && !clock.isEmpty();
+	         }
+	         
+	         public String getClock() {
+	         	return clock;
+	         }
+	         
+	         public boolean clockConditionSatisfied(long time) {
+	         	if (this.smaller) {
+	         		return time < value;
+	         	}
+	         	
+	         	return false;
+	         }
+	         
+	         void formatID() {
+	     		this.id = this.id.substring(5, this.id.length() - 1);
+	     	}
+	         
+	         public String getMessageType() {
+	         	String messageType = this.id.substring(2, this.id.length() - 1);
+	      
+	         	messageType = messageType.substring(messageType.indexOf(".") + 1);
+	         	messageType = messageType.substring(0, messageType.indexOf("("));
+	     
+	         	return messageType;
+	         }
+	         
+	         public String[] getParameters() {
+	         	String messageType = this.id.substring(2, this.id.length() - 1);
+	         	 
+	         	messageType = messageType.substring(messageType.indexOf("(") + 1);
+	         	messageType = messageType.substring(0, messageType.indexOf(")"));
+	     
+	         	if (messageType.equals("")) {
+	         		return new String[0];
+	         	}
+	         	
+	         	return messageType.split(",");
+	         }
+	         
+	         public String getSenderName() {
+	         	String sender = this.id;
+	         	if (this.id.contains("!")) {
+	         		sender = this.id.substring(2, this.id.length() - 1);
+	         	}
+	         	
+	         	sender = sender.substring(0, sender.indexOf("."));
+	         	
+	         	return sender;
+	         }
+	         
+	         public String getReceiverName() {
+	         	String receiver = this.id;
+	         	if (this.id.contains("!")) {
+	         		receiver = this.id.substring(2, this.id.length() - 1);
+	         	}
+	         	
+	         	receiver = receiver.substring(receiver.indexOf(")") + 2);
+	         	
+	         	return receiver;
+	         }
+	     
+	     
+	         public String getId() {
+	             return id;
+	         }
+	     
+	         public State getSender() {
+	             return sender;
+	         }
+	     
+	         public State getReceiver() {
+	             return receiver;
+	         }
+	     
+	         public void setReceiver(State receiver) {
+	             this.receiver = receiver;
+	         }
+	     
+	         public void setSender(State sender) {
+	             this.sender = sender;
+	         }
+	     
+	         public void setId(String id) {
+	             if(id.equals("1")){
+	             	this.id = "true";
+	             }else{
+	             	this.id = id;
 	             }
 	         }
-	     ''')
-	}*/
+	         
+	         public void writeTransition(){
+	         	System.out.println(this.id + " " + this.sender.getId() + "->" + this.receiver.getId());
+	         }
+	     }
+	     
+''')
+	}
 }

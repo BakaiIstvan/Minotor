@@ -8,3 +8,5 @@ os:
 
 script:
  - mvn clean install -U
+ - cd hu.bme.mit.dipterv.text.example
+ - mvn clean install -U
