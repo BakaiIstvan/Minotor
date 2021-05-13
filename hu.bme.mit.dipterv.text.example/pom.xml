@@ -49,7 +49,7 @@
 						<setup>hu.bme.mit.dipterv.text.MinotorDslStandaloneSetup</setup>
 						<outputConfigurations>
 							<outputConfiguration>
-								<outputDirectory>${project.basedir}/model-gen/</outputDirectory>
+								<outputDirectory>${project.basedir}/src/main/java/generated/</outputDirectory>
 								<createOutputDirectory>true</createOutputDirectory>
 					      <overrideExistingResources>true</overrideExistingResources>
 					      <cleanUpDerivedResources>true</cleanUpDerivedResources>

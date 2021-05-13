@@ -16,6 +16,8 @@ class EventCreatorGenerator extends AbstractGenerator {
 	}
 	
 	def compile_eventcreator(Domain d)'''
+		package generated;
+	
 		public class EventCreator {
 			«FOR i: d.includes»
 				private «i.context.name.toFirstUpper» «i.context.name.toFirstLower»;

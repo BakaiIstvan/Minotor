@@ -3,6 +3,12 @@ package hu.bme.mit.dipterv.text.example;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
+import generated.Specification;
+import generated.IClock;
+import generated.IMonitor;
+import generated.Monitor;
+import generated.Clock;
+
 public class MonitorPassingTest {
 
 	@Test

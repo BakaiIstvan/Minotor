@@ -9,6 +9,8 @@ class AutomatonGenerator extends AbstractGenerator {
 	override doGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		fsa.generateFile("Automaton.java", 
 			'''
+				package generated;
+			
 				import java.util.ArrayList;
 				import java.util.Map;
 				

@@ -10,6 +10,8 @@ class StateGenerator extends AbstractGenerator {
 	override doGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		fsa.generateFile("State.java", 
 			'''
+				package generated;
+			
 				public class State {
 				    private String id;
 				    private StateType type;
@@ -48,6 +50,8 @@ class StateGenerator extends AbstractGenerator {
 			
 			fsa.generateFile("StateType.java",
 			'''
+				package generated;
+			
 				public enum StateType {
 				    NORMAL, ACCEPT, FINAL, ACCEPT_ALL
 				}

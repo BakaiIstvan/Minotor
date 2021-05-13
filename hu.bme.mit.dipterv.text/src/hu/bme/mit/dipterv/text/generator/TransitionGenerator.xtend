@@ -10,6 +10,8 @@ class TransitionGenerator extends AbstractGenerator {
 	override doGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		fsa.generateFile("Transition.java",
 			'''
+			package generated;
+			
 			import java.util.ArrayList;
 			import java.util.Arrays;
 			import java.util.List;

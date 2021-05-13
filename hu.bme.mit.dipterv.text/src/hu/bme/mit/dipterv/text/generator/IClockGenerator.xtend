@@ -9,6 +9,8 @@ class IClockGenerator extends AbstractGenerator {
 	override doGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		fsa.generateFile("IClock.java",
 			'''
+				package generated;
+			
 				public interface IClock {
 					public long getClock(String clock);
 					public void resetClock(String clock);
@@ -17,6 +19,8 @@ class IClockGenerator extends AbstractGenerator {
 			
 			fsa.generateFile("Clock.java",
 				'''
+				package generated;
+				
 				import java.util.HashMap;
 				import java.util.Map;
 				
