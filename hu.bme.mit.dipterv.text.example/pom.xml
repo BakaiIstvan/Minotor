@@ -19,6 +19,10 @@
 	  <artifactId>commons-lang3</artifactId>
 	  <version>3.12.0</version>
 	</dependency>
+    <dependency>
+	    <groupId>org.junit.jupiter</groupId>
+	    <artifactId>junit-jupiter-api</artifactId>
+	</dependency>
 </dependencies>
 
 <build>
@@ -26,7 +30,6 @@
 	
 	
 	<plugins>
-
 		<plugin>
 			<groupId>org.eclipse.xtext</groupId>
 			<artifactId>xtext-maven-plugin</artifactId>
