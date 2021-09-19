@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
 import generated.Specification;
-import generated.IClock;
-import generated.IMonitor;
-import generated.Monitor;
-import generated.Clock;
+import util.IClock;
+import util.IMonitor;
+import util.Monitor;
+import util.Clock;
 
 public class MonitorPassingTest {
 

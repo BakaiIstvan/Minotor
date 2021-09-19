@@ -41,35 +41,11 @@ class MinotorDslGenerator extends AbstractGenerator {
 	@Inject
 	RelationGenerator relationGenerator
 	
-	@Inject 
-	EventCreatorGenerator eventCreatorGenerator
-	
-	@Inject
-	StateGenerator stateGenerator
-	
-	@Inject
-	TransitionGenerator transitionGenerator
-	
-	@Inject
-	AutomatonGenerator automatonGenerator
-	
-	@Inject
-	IMonitorGenerator iMonitorGenerator
-	
-	@Inject
-	IClockGenerator iClockGenerator
-
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		contextModelGenerator.doGenerate(resource, fsa, context);
 		contextFragmentGenerator.doGenerate(resource, fsa, context);
 		entityGenerator.doGenerate(resource, fsa, context);
 		relationGenerator.doGenerate(resource, fsa, context);
-		eventCreatorGenerator.doGenerate(resource, fsa, context);
-		stateGenerator.doGenerate(resource, fsa, context);
-		transitionGenerator.doGenerate(resource,fsa, context);
-		automatonGenerator.doGenerate(resource, fsa, context);
-		iMonitorGenerator.doGenerate(resource, fsa, context);
-		iClockGenerator.doGenerate(resource, fsa, context);
 				
 		for(s : resource.allContents.toIterable.filter(Domain)){
 			fsa.generateFile("Specification.java", s.compile)
@@ -91,6 +67,11 @@ class MinotorDslGenerator extends AbstractGenerator {
 		import java.util.Map;
 		import java.util.Set;
 		import java.util.TreeSet;
+		
+		import util.Automaton;
+		import util.State;
+		import util.StateType;
+		import util.Transition;
 		
 		public class Specification{
 			private String id = "«s.name»";
