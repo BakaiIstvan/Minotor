@@ -27,6 +27,8 @@
 </dependencies>
 
 <build>	
+	<sourceDirectory>src</sourceDirectory>
+
 	<plugins>
 		<plugin>
 			<groupId>org.eclipse.xtext</groupId>
