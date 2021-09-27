@@ -1,10 +1,10 @@
 package hu.bme.mit.dipterv.text.example;
 
-import generated.IMonitor;
-import generated.Monitor;
+import util.IMonitor;
+import util.Monitor;
 import generated.Specification;
-import generated.IClock;
-import generated.Clock;
+import util.IClock;
+import util.Clock;
 
 public class Main {
 	public static void monitorStatus(String status) {

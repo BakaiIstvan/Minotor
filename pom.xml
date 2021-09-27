@@ -28,6 +28,7 @@
 		<module>hu.bme.mit.dipterv.text.feature</module>
 		<module>hu.bme.mit.dipterv.text.repository</module>
 		<module>hu.bme.mit.dipterv.text.tests</module>
+		<module>hu.bme.mit.dipterv.text.util</module>
 	</modules>
 	<dependencyManagement>
 		<dependencies>

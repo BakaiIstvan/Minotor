@@ -29,48 +29,7 @@ import hu.bme.mit.dipterv.text.minotorDsl.GreaterThanExpression
 class MinotorDslGenerator extends AbstractGenerator {
 	@Inject extension IQualifiedNameProvider
 	
-	@Inject
-	ContextModelGenerator contextModelGenerator
-	
-	@Inject
-	ContextFragmentGenerator contextFragmentGenerator
-	
-	@Inject
-	EntityGenerator entityGenerator
-	
-	@Inject
-	RelationGenerator relationGenerator
-	
-	@Inject 
-	EventCreatorGenerator eventCreatorGenerator
-	
-	@Inject
-	StateGenerator stateGenerator
-	
-	@Inject
-	TransitionGenerator transitionGenerator
-	
-	@Inject
-	AutomatonGenerator automatonGenerator
-	
-	@Inject
-	IMonitorGenerator iMonitorGenerator
-	
-	@Inject
-	IClockGenerator iClockGenerator
-
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		contextModelGenerator.doGenerate(resource, fsa, context);
-		contextFragmentGenerator.doGenerate(resource, fsa, context);
-		entityGenerator.doGenerate(resource, fsa, context);
-		relationGenerator.doGenerate(resource, fsa, context);
-		eventCreatorGenerator.doGenerate(resource, fsa, context);
-		stateGenerator.doGenerate(resource, fsa, context);
-		transitionGenerator.doGenerate(resource,fsa, context);
-		automatonGenerator.doGenerate(resource, fsa, context);
-		iMonitorGenerator.doGenerate(resource, fsa, context);
-		iClockGenerator.doGenerate(resource, fsa, context);
-				
 		for(s : resource.allContents.toIterable.filter(Domain)){
 			fsa.generateFile("Specification.java", s.compile)
 		}
@@ -92,6 +51,13 @@ class MinotorDslGenerator extends AbstractGenerator {
 		import java.util.Set;
 		import java.util.TreeSet;
 		
+		import util.Automaton;
+		import util.State;
+		import util.StateType;
+		import util.Transition;
+		import util.NeverClaimWriter;
+		import util.OperatorFunctions;
+		
 		public class Specification{
 			private String id = "«s.name»";
 			private ArrayList<Automaton> automatas;
@@ -107,6 +73,7 @@ class MinotorDslGenerator extends AbstractGenerator {
 				State finalState;
 				State newState;
 				State acceptState_new;
+				OperatorFunctions opFunctions = new OperatorFunctions();
 				«FOR scenario:s.scenarios»
 					Automaton a = new Automaton("«scenario.name»");
 					Automaton b;
@@ -117,181 +84,6 @@ class MinotorDslGenerator extends AbstractGenerator {
 					int counter = 0;
 					
 					«FOR sc : scenario.scenariocontents»
-						«FOR pc :sc.assertentity»
-							«new AssertionEntities().compile_assertion_entity(pc)»
-							a.collapse(b);
-						«ENDFOR»
-						«FOR pc :sc.assertrelation»
-							«new AssertionRelations().compile_assertion_relation(pc)»
-							a.collapse(b);
-						«ENDFOR»
-						«FOR pc :sc.paramConstraint»
-							«new ParameterConstraints().compile_param_constraint(pc)»
-							a.collapse(b);
-						«ENDFOR»
-						«FOR cm :sc.contextmessage»
-							«IF cm.strict»
-								«IF cm.required»
-									«FOR co : cm.content»
-										«FOR ma : co.match»
-											«new MatchMessages().compile_match_strict_required(ma)»
-											a.collapse(b);
-										«ENDFOR»
-										«FOR ca : co.change»
-											«FOR a : ca.appear»
-												«new AppearMessages().compile_appear_strict_required(a)»
-												a.collapse(b);																											
-											«ENDFOR»
-											«FOR d : ca.disappear»
-												«new DisappearMessages().compile_disappear_strict_required(d)»
-												a.collapse(b);																																						
-											«ENDFOR»
-											«FOR t : ca.changeto»
-												«new ChangeToMessages().compile_changeto_strict_required(t)»
-												a.collapse(b);																																				
-											«ENDFOR»
-											«FOR t : ca.changetor»
-												«new ChangeToMessages().compile_changetor_strict_required(t)»
-												a.collapse(b);																																				
-											«ENDFOR»																	
-										«ENDFOR»					
-									«ENDFOR»
-								«ENDIF»
-								«IF cm.fail»
-									«FOR co : cm.content»
-										«FOR ma : co.match»
-											«new MatchMessages().compile_match_strict_fail(ma)»
-											a.collapse(b);										
-										«ENDFOR»
-										«FOR ca : co.change»
-											«FOR a : ca.appear»
-												«new AppearMessages().compile_appear_strict_fail(a)»
-												a.collapse(b);																						
-											«ENDFOR»
-											«FOR d : ca.disappear»
-												«new DisappearMessages().compile_disappear_strict_fail(d)»
-												a.collapse(b);																						
-											«ENDFOR»
-											«FOR t : ca.changeto»
-												«new ChangeToMessages().compile_changeto_strict_fail(t)»
-												a.collapse(b);																																				
-											«ENDFOR»
-											«FOR t : ca.changetor»
-												«new ChangeToMessages().compile_changetor_strict_fail(t)»
-												a.collapse(b);																																				
-											«ENDFOR»																	
-										«ENDFOR»					
-									«ENDFOR»
-								«ENDIF»
-								«IF !cm.required && !cm.fail»
-									«FOR co : cm.content»
-										«FOR ma : co.match»
-											«new MatchMessages().compile_match_strict(ma)»
-											a.collapse(b);
-										«ENDFOR»
-										«FOR ca : co.change»
-											«FOR a : ca.appear»
-												«new AppearMessages().compile_appear_strict(a)»
-												a.collapse(b);																											
-											«ENDFOR»
-											«FOR d : ca.disappear»
-												«new DisappearMessages().compile_disappear_strict(d)»
-												a.collapse(b);																																						
-											«ENDFOR»
-											«FOR t : ca.changeto»
-												«new ChangeToMessages().compile_changeto_strict(t)»
-												a.collapse(b);																																				
-											«ENDFOR»
-											«FOR t : ca.changetor»
-												«new ChangeToMessages().compile_changetor_strict(t)»
-												a.collapse(b);																																				
-											«ENDFOR»																	
-										«ENDFOR»					
-									«ENDFOR»
-								«ENDIF»
-							«ENDIF»
-							
-							«IF !cm.strict»
-								«IF cm.required»
-									«FOR co : cm.content»
-										«FOR ma : co.match»
-											«new MatchMessages().compile_match_required(ma)»
-											a.collapse(b);
-										«ENDFOR»
-										«FOR ca : co.change»
-											«FOR a : ca.appear»
-												«new AppearMessages().compile_appear_required(a)»
-												a.collapse(b);
-											«ENDFOR»
-											«FOR d : ca.disappear»
-												«new DisappearMessages().compile_disappear_required(d)»
-												a.collapse(b);
-											«ENDFOR»
-											«FOR t : ca.changeto»
-												«new ChangeToMessages().compile_changeto_required(t)»
-												a.collapse(b);
-											«ENDFOR»
-											«FOR t : ca.changetor»
-												«new ChangeToMessages().compile_changetor_required(t)»
-												a.collapse(b);
-											«ENDFOR»																	
-										«ENDFOR»					
-									«ENDFOR»
-								«ENDIF»
-								«IF cm.fail»
-									«FOR co : cm.content»
-										«FOR ma : co.match»
-											«new MatchMessages().compile_match_fail(ma)»
-											a.collapse(b);									
-										«ENDFOR»
-										«FOR ca : co.change»
-											«FOR a : ca.appear»
-												«new AppearMessages().compile_appear_fail(a)»
-												a.collapse(b);																											
-											«ENDFOR»
-											«FOR d : ca.disappear»
-												«new DisappearMessages().compile_disappear_fail(d)»
-												a.collapse(b);																																						
-											«ENDFOR»
-											«FOR t : ca.changeto»
-												«new ChangeToMessages().compile_changeto_fail(t)»
-												a.collapse(b);																																				
-											«ENDFOR»
-											«FOR t : ca.changetor»
-												«new ChangeToMessages().compile_changetor_fail(t)»
-												a.collapse(b);																																				
-											«ENDFOR»																	
-										«ENDFOR»					
-									«ENDFOR»
-								«ENDIF»
-								«IF !cm.required && !cm.fail»
-									«FOR co : cm.content»
-										«FOR ma : co.match»
-											«new MatchMessages().compile_match_msg(ma)»
-											a.collapse(b);							
-										«ENDFOR»
-										«FOR ca : co.change»
-											«FOR a : ca.appear»
-												«new AppearMessages().compile_appear_msg(a)»
-												a.collapse(b);																								
-											«ENDFOR»
-											«FOR d : ca.disappear»
-												«new DisappearMessages().compile_disappear_msg(d)»
-												a.collapse(b);																							
-											«ENDFOR»
-											«FOR t : ca.changeto»
-												«new ChangeToMessages().compile_changeto_msg(t)»
-												a.collapse(b);																																	
-											«ENDFOR»
-											«FOR t : ca.changetor»
-												«new ChangeToMessages().compile_changetor_msg(t)»
-												a.collapse(b);																																	
-											«ENDFOR»																	
-										«ENDFOR»					
-									«ENDFOR»
-								«ENDIF»
-							«ENDIF»
-						«ENDFOR»
 						«FOR l :sc.loop»
 							loopauto = new Automaton("loopauto" + counter);
 							«FOR m : l.messages»
@@ -408,7 +200,7 @@ class MinotorDslGenerator extends AbstractGenerator {
 									«ENDIF»
 								«ENDIF»
 							«ENDFOR»
-							a.merge(loopSetup(loopauto, «l.min», «l.max»));
+							a.merge(opFunctions.loopSetup(loopauto, «l.min», «l.max»));
 						«ENDFOR»
 						«FOR p : sc.par»
 							parauto = new ArrayList<Automaton>();
@@ -530,7 +322,7 @@ class MinotorDslGenerator extends AbstractGenerator {
 								«ENDFOR»
 								parauto.add(expression);			
 							«ENDFOR»
-							a.merge(par(parauto));
+							a.merge(opFunctions.par(parauto));
 						«ENDFOR»
 						«FOR a : sc.alt»
 						altauto = new HashMap<String, Automaton>();
@@ -788,412 +580,19 @@ class MinotorDslGenerator extends AbstractGenerator {
 					}
 				}
 			}
-			
+
 			public List<Automaton> getAutomata() {
 				return automatas;
 			}
-			
-			public ArrayList<Automaton> par(ArrayList<Automaton> automatas) {
-			        ArrayList<ArrayList<Automaton>> automataList = new ArrayList<>();
-			        permute(automataList, new ArrayList<>(), automatas);
-			        return listConverter((automataList));
-			}
-		
-		    private void permute(ArrayList<ArrayList<Automaton>> list, ArrayList<Automaton> resultList, ArrayList<Automaton> automatas) {
-		        if (resultList.size() == automatas.size()) {
-		            list.add(new ArrayList<>(resultList));
-		        } else {
-		            for (int i = 0; i < automatas.size(); i++) {
-		                if (resultList.contains((automatas.get(i)))) {
-		                    continue;
-		                }
-		
-		                resultList.add(automatas.get(i));
-		                permute(list, resultList, automatas);
-		                resultList.remove(resultList.size() - 1);
-		            }
-		        }
-		    }
-		
-		    private ArrayList<Automaton> listConverter(ArrayList<ArrayList<Automaton>> list) {
-		        ArrayList<Automaton> result = new ArrayList<>();
-		        for (ArrayList<Automaton> alist : list) {
-		            Automaton newauto = new Automaton("listConverter");
-		            for (Automaton auto : alist) {
-		                newauto.collapse(copyAutomaton(auto));
-		            }
-		            result.add(newauto);
-		        }
-		        return result;
-		    }
-		    
-		    public Map<String, Automaton> loopSetup(Automaton loopauto, int min, int max) {
-	        	Map<String, Automaton> result = new HashMap<>();
-	    	    
-	            for (int i = min; i <= max; i++) {
-	                Automaton newauto = new Automaton("loopauto" + i);
-	                for (int j = 0; j < i; j++) {
-	                    newauto.collapse(copyAutomaton(loopauto));
-	                }
-	                result.put("loop" + i, newauto);
-	            }
-	            return result;
-	        }
-		    
-		    public Automaton copyAutomaton(Automaton referenceAuto) {
-		            Automaton result = new Automaton("copy automaton");
-		            int count = 0;
-		            State previousSender = new State();
-		            State referencePreviousSender = new State();
-		    
-		            for (Transition t : referenceAuto.getTransitions()) {
-		                State sender = new State();
-		                State receiver = new State();
-		                Transition transition = new Transition();
-		                Automaton temp = new Automaton("temp");
-		    
-		                transition.setId(t.getId());
-		    
-		                if (t.getSender() == referencePreviousSender) {
-		                    receiver.setId("c" + count);
-		                    count++;
-		                    receiver.setType(t.getReceiver().getType());
-		    
-		                    transition.setSender(previousSender);
-		                    transition.setReceiver(receiver);
-		                    temp.addState(previousSender);
-		                    temp.addState(receiver);
-		                    temp.setInitial(previousSender);
-		                    temp.setFinale(receiver);
-		                } else {
-		                    if (t.getSender() == t.getReceiver()) {
-		                        sender.setId("c" + count);
-		                        count++;
-		                        sender.setType(t.getSender().getType());
-		    
-		                        transition.setSender(sender);
-		                        transition.setReceiver(sender);
-		    
-		                        temp.addState(sender);
-		                        temp.setInitial(sender);
-		                        temp.setFinale(sender);
-		                    } else {
-		                        sender.setId("c" + count);
-		                        count++;
-		                        sender.setType(t.getSender().getType());
-		    
-		                        receiver.setId("c" + count);
-		                        count++;
-		                        receiver.setType(t.getReceiver().getType());
-		    
-		                        transition.setSender(sender);
-		                        transition.setReceiver(receiver);
-		    
-		                        temp.addState(sender);
-		                        temp.addState(receiver);
-		                        temp.setInitial(sender);
-		                        temp.setFinale(receiver);
-		                    }
-		                    previousSender = sender;
-		                    referencePreviousSender = t.getSender();
-		                }
-		    
-		                temp.addTransition(transition);
-		                result.collapse(temp);
-		            }
-		    
-		            return result;
-		        }
-			
-			public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException{
+
+			public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
 				Specification specification = new Specification();
 				specification.listAutomatas();
-				boolean acceptState = false;
 				
-				PrintWriter writer = new PrintWriter("«s.name»" + ".txt", "UTF-8");
-				for(Automaton a : specification.automatas){
-					«FOR param : s.parameters»
-						«IF param.value !== null»
-							writer.println("«param.type.toString().substring(1, param.type.toString().length - 1)» «param.name» = «param.value.value»;");
-						«ELSE»
-							writer.println("«param.type.toString().substring(1, param.type.toString().length - 1)» «param.name»;");
-						«ENDIF»
-					«ENDFOR»
-					writer.println("");
-					writer.println("never{ /*" + a.getId()+ "Monitor" + "*/");
-					for(State s : a.getStates()){
-						if(s == a.getInitial()){
-							writer.println("T0_init:");
-							writer.println(" if");
-							for(Transition t : a.findSender(s)){
-								if(t.getReceiver() == a.getInitial()){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_init");
-								}else if(t.getReceiver().getType().equals(StateType.NORMAL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
-								}else if(t.getReceiver().getType().equals(StateType.ACCEPT_ALL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_all" );
-								}else if(t.getReceiver().getType().equals(StateType.FINAL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
-								}else if(t.getReceiver().getType().equals(StateType.ACCEPT)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_" + t.getReceiver().getId());
-								}
-							}
-							writer.println(" fi;");
-						}else if(s.getType().equals(StateType.NORMAL)){
-							writer.println("T0_" + s.getId() + ":");
-							writer.println(" if");
-							for(Transition t : a.findSender(s)){
-								if(t.getReceiver() == a.getInitial()){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_init");
-								}else if(t.getReceiver().getType().equals(StateType.NORMAL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
-								}else if(t.getReceiver().getType().equals(StateType.ACCEPT_ALL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_all" );
-								}else if(t.getReceiver().getType().equals(StateType.FINAL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
-								}else if(t.getReceiver().getType().equals(StateType.ACCEPT)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_" + t.getReceiver().getId());
-								}
-							}
-							writer.println(" fi;");
-						}else if(s.getType().equals(StateType.ACCEPT_ALL) && !acceptState){
-							writer.println("accept_all:");
-							writer.println("skip");
-							acceptState = true;
-						}else if(s.getType().equals(StateType.FINAL)){
-							writer.println("T0_" + s.getId() + ":");
-							writer.println(" if");
-							for(Transition t : a.findSender(s)){
-								if(t.getReceiver() == a.getInitial()){
-									writer.println(" :: (" + t.getId() + ")" + "->" + " goto T0_init");
-								}else if(t.getReceiver().getType().equals(StateType.NORMAL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
-								}else if(t.getReceiver().getType().equals(StateType.ACCEPT_ALL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_all" );
-								}else if(t.getReceiver().getType().equals(StateType.FINAL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
-								}else if(t.getReceiver().getType().equals(StateType.ACCEPT)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_" + t.getReceiver().getId());
-								}
-							}
-							writer.println(" fi;");
-						}else if(s.getType().equals(StateType.ACCEPT)){
-							writer.println("accept_" + s.getId() + ":");
-							writer.println(" if");
-							for(Transition t : a.findSender(s)){
-								if(t.getReceiver() == a.getInitial()){
-									writer.println(" :: (" + t.getId() + ")" + "->" + " goto T0_init");
-								}else if(t.getReceiver().getType().equals(StateType.NORMAL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
-								}else if(t.getReceiver().getType().equals(StateType.ACCEPT_ALL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_all" );
-								}else if(t.getReceiver().getType().equals(StateType.FINAL)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
-								}else if(t.getReceiver().getType().equals(StateType.ACCEPT)){
-									writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_" + t.getReceiver().getId());
-								}
-							}
-							writer.println(" fi;");
-						}
-						
-					}
-					writer.println("}");
-				}
-				writer.close();
+				NeverClaimWriter ncWriter = new NeverClaimWriter();
+				ncWriter.writeNeverClaim("«s.name»", specification.automatas);
 				
-				PrintWriter xmlWriter = new PrintWriter("«s.name»" + ".xml", "UTF-8");
-				xmlWriter.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-				xmlWriter.println("<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'>");
-				xmlWriter.println("<nta>");
-				for (Automaton a : specification.automatas) {
-					xmlWriter.println("\t<declaration>");
-					String previous = "";
-					List<String> existingChannels = new ArrayList<String>();
-					for (Transition t : a.getTransitions()) {
-						List<String> items = Arrays.asList(t.getId().split("\\s*;\\s*"));
-						if (Collections.frequency(existingChannels, items.get(0)) == 0) {
-							if (t.getId().startsWith("[") || t.getId().startsWith("![")) {
-							} else if (!previous.equals(items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", ""))){
-								xmlWriter.println("chan " + items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", "") + ";");
-								previous = items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", "");
-								existingChannels.add(items.get(0));
-							}
-						}
-					}
-					
-					«FOR param : s.parameters»
-						«IF param.value !== null»
-							«IF param.type.toString().substring(1, param.type.toString().length - 1) == "integer"»
-								xmlWriter.println("int «param.name» = «param.value.value»;");
-							«ELSE»
-								xmlWriter.println("«param.type.toString()» «param.name» = «param.value.value»;");
-							«ENDIF»
-						«ELSE»
-							xmlWriter.println("«param.type.toString()» «param.name»;");
-						«ENDIF»
-					«ENDFOR»
-					
-					«FOR clock : s.clocks»
-						xmlWriter.println("clock «clock.name»;");
-					«ENDFOR»
-					
-					xmlWriter.println("\t</declaration>");
-					xmlWriter.println("\t<template>");
-					xmlWriter.println("\t\t<name>" + a.getId() + "</name>");
-					xmlWriter.println("\t\t<declaration>");
-					xmlWriter.println("\t\t</declaration>");
-					
-					int statecounter = 0;
-					
-					for (State s : a.getStates()) {
-						xmlWriter.println("\t\t<location id=\"" + s.getId() + "\" x=\"" + statecounter + "\" y=\"" + statecounter + "\">");
-							if (s.getType().equals(StateType.NORMAL)) {
-								xmlWriter.println("\t\t\t<name x=\"" + statecounter + "\" y=\"" + (statecounter + 0.5) + "\">" + s.getId() + "</name>");
-							} else if (s.getType().equals(StateType.ACCEPT)) {
-								xmlWriter.println("\t\t\t<name x=\"" + statecounter + "\" y=\"" + (statecounter + 0.5) + "\">ACCEPT_" + s.getId() + "</name>");
-							} else if (s.getType().equals(StateType.FINAL)) {
-								xmlWriter.println("\t\t\t<name x=\"" + statecounter + "\" y=\"" + (statecounter + 0.5) + "\">FINAL_" + s.getId() + "</name>");
-							}
-						xmlWriter.println("\t\t</location>");
-						statecounter++;
-					}
-					
-					xmlWriter.println("\t\t<init ref=\"q0\"/>");
-					
-					for (Transition t : a.getTransitions()) {
-						boolean doubletransition = false;
-						xmlWriter.println("\t\t<transition>");
-						xmlWriter.println("\t\t\t<source ref=\"" + t.getSender().getId() + "\"/>");
-						xmlWriter.println("\t\t\t<target ref=\"" + t.getReceiver().getId() + "\"/>");
-						if (t.getId().startsWith("[") || t.getId().startsWith("![")) {
-							xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + t.getId().substring(0, t.getId().indexOf("]")).replaceAll("<", "&lt;").replaceAll(">", "&gt;").replace("[", "") + "</label>");
-						} else {
-							List<String> items = Arrays.asList(t.getId().split("\\s*;\\s*"));
-
-							if (items.size() >= 1) {
-								xmlWriter.println("\t\t\t<label kind=\"synchronisation\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", "") + "?</label>");
-							}
-
-							if (items.size() >= 2) {
-								if(items.get(1).contains("1,")) {
-									List<String> stringList = Arrays.asList(items.get(1).split("\\s*\\|\\|\\s*"));
-									doubletransition = true;
-									if (!stringList.get(0).startsWith("(")) {
-										xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + stringList.get(0).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\(", "").replaceAll("\\)", "").replaceAll(",", " and") + "</label>");
-									} else {
-										xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + stringList.get(0).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll(",", " and") + "</label>");
-									}
-								} else {
-									if (!items.get(1).startsWith("(")) {
-										xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\(", "").replaceAll("\\)", "").replaceAll(",", " and") + "</label>");
-									} else {
-										xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll(",", " and") + "</label>");
-									}
-								}
-							}
-
-							if (items.size() >= 3) {
-								xmlWriter.println("\t\t\t<label kind=\"assignment\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(2).replaceAll("&", "&amp;") + "</label>");
-							}
-						}
-						xmlWriter.println("\t\t</transition>");
-						if (doubletransition) {
-							xmlWriter.println("\t\t<transition>");
-							xmlWriter.println("\t\t\t<source ref=\"" + t.getSender().getId() + "\"/>");
-							xmlWriter.println("\t\t\t<target ref=\"" + t.getReceiver().getId() + "\"/>");
-							if (t.getId().startsWith("[") || t.getId().startsWith("![")) {
-								xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + t.getId().substring(0, t.getId().indexOf("]")).replaceAll("<", "&lt;").replaceAll(">", "&gt;").replace("[", "") + "</label>");
-							} else {
-								List<String> items = Arrays.asList(t.getId().split("\\s*;\\s*"));
-		
-								if (items.size() >= 1) {
-									xmlWriter.println("\t\t\t<label kind=\"synchronisation\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", "") + "?</label>");
-								}
-		
-								if (items.size() >= 2) {
-									if(items.get(1).contains("1,")) {
-										List<String> stringList = Arrays.asList(items.get(1).split("\\s*\\|\\|\\s*"));
-										doubletransition = true;
-										if (!stringList.get(1).startsWith("(")) {
-											xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + stringList.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\(", "").replaceAll("\\)", "").replaceAll(",", " and") + "</label>");
-										} else {
-											xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + stringList.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll(",", " and") + "</label>");
-										}
-									} else {
-										if (!items.get(1).startsWith("(")) {
-											xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\\(", "").replaceAll("\\)", "").replaceAll(",", " and") + "</label>");
-										} else {
-											xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(1).replaceAll("&", "&amp;&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll(",", " and") + "</label>");
-										}
-									}
-								}
-		
-								if (items.size() >= 3) {
-									xmlWriter.println("\t\t\t<label kind=\"assignment\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(2).replaceAll("&", "&amp;") + "</label>");
-								}
-							}
-							xmlWriter.println("\t\t</transition>");
-						}
-					}
-					
-					xmlWriter.println("\t</template>");
-					xmlWriter.println("\t<template>");
-					xmlWriter.println("\t\t<name>" + a.getId() + "_environment</name>");
-					xmlWriter.println("\t\t<declaration>");
-					xmlWriter.println("\t\t</declaration>");
-					xmlWriter.println("\t\t<location id=\"q0\" x=\"0\" y=\"0\">");
-					xmlWriter.println("\t\t\t<name x=\"1\" y=\"1\">q0</name>");
-					xmlWriter.println("\t\t</location>");
-					xmlWriter.println("\t\t<init ref=\"q0\"/>");
-					
-					Set<Transition> unique_transitions = new TreeSet<Transition>(new Comparator<Transition>() {
-				        @Override
-				        public int compare(Transition t1, Transition t2) {
-				        	List<String> items1 = Arrays.asList(t1.getId().split("\\s*;\\s*"));
-				        	List<String> items2 = Arrays.asList(t2.getId().split("\\s*;\\s*"));
-		
-				            return !(items1.get(0).equals(items2.get(0))) ? 1 : 0;
-				        }
-				    });
-					
-					unique_transitions.addAll(a.getTransitions());
-					
-					for (Transition t : unique_transitions) {
-						xmlWriter.println("\t\t<transition>");
-						xmlWriter.println("\t\t\t<source ref=\"q0\"/>");
-						xmlWriter.println("\t\t\t<target ref=\"q0\"/>");
-						if (t.getId().startsWith("[") || t.getId().startsWith("![")) {
-							xmlWriter.println("\t\t\t<label kind=\"guard\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + t.getId().substring(0, t.getId().indexOf("]")).replaceAll("<", "&lt;").replaceAll(">", "&gt;").replace("[", "") + "</label>");
-						} else {
-							List<String> items = Arrays.asList(t.getId().split("\\s*;\\s*"));
-			
-							if (items.size() >= 1) {
-								xmlWriter.println("\t\t\t<label kind=\"synchronisation\" x=\"" + t.getSender().getId().substring(1) + ".5\" y=\"" + t.getSender().getId().substring(1) + ".5\">" + items.get(0).replaceAll("\\(", "_").replaceAll("\\)", "_").replaceAll("\\.", "__").replaceAll("!", "not").replaceAll("&", "_and_").replaceAll("\\s", "") + "!</label>");
-							}
-							
-							«FOR param : s.parameters»
-								«IF param.type == Type.BOOL»
-									if (t.getId().contains("(" + "«param.name»" + ")") && !t.getId().contains("!")) {
-										xmlWriter.println("\t\t\t<label kind=\"select\" x=\"" + t.getSender().getId().substring(1) + ".10\" y=\"" + t.getSender().getId().substring(1) + ".10\">b : int[0, 1]</label>");
-										xmlWriter.println("\t\t\t<label kind=\"assignment\" x=\"" + t.getSender().getId().substring(1) + ".15\" y=\"" + t.getSender().getId().substring(1) + ".10\">«param.name» = b</label>");
-									}
-								«ENDIF»
-							«ENDFOR»
-						}
-						xmlWriter.println("\t\t</transition>");
-					}
-					
-					xmlWriter.println("\t</template>");
-				}
-				
-				xmlWriter.println("\t<system>");
-				xmlWriter.println("receiver = " + specification.automatas.get(0).getId() + "();");
-				xmlWriter.println("sender = " + specification.automatas.get(0).getId() + "_environment();");
-				xmlWriter.println("system receiver, sender;");
-				xmlWriter.println("\t</system>");
-				
-				xmlWriter.println("</nta>");
-				xmlWriter.close();
+				«new UppaalWriter().compile_uppaal_writer(s)»
 			}
 		}
 	'''

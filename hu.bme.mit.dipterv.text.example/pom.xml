@@ -15,9 +15,10 @@
 
 <dependencies>
 	<dependency>
-	  <groupId>org.apache.commons</groupId>
-	  <artifactId>commons-lang3</artifactId>
-	  <version>3.12.0</version>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>hu.bme.mit.dipterv.text.util</artifactId>
+		<version>${project.version}</version>
+		<scope>compile</scope>
 	</dependency>
     <dependency>
 	    <groupId>org.junit.jupiter</groupId>
@@ -25,10 +26,9 @@
 	</dependency>
 </dependencies>
 
-<build>
+<build>	
 	<sourceDirectory>src</sourceDirectory>
-	
-	
+
 	<plugins>
 		<plugin>
 			<groupId>org.eclipse.xtext</groupId>

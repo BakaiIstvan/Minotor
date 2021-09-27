@@ -1,6 +1,6 @@
 package hu.bme.mit.dipterv.text.example;
 
-import generated.IMonitor;
+import util.IMonitor;
 
 public class Server {
 	public IMonitor monitor;
