@@ -10,8 +10,8 @@ public class Server {
 	}
 	
 	public void newEmail() {}
-	
 	public void sendUnsentEmail() {}
-	
 	public void downloadEmail() {}
+	public void logout() {}
+	
 }

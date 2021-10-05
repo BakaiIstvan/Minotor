@@ -10,19 +10,32 @@ import util.ISystem;
 import util.Monitor;
 import util.Clock;
 
-public class MonitorPassingTest implements ISystem {
+public class NetworkMonitorTest implements ISystem {
 
 	@Test
-	public void testMonitorPassing() {
+	public void testNetworkRequirementSatisfied() {
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
 		Server server = new Server(monitor);
-		Computer computer = new Computer(server, monitor);
+		Computer computer = new Computer(server, monitor, true);
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
+	}
+	
+	@Test
+	public void testNetworkNoErrors() {
+		Specification specification = new Specification();
+		specification.listAutomatas();
+		IClock clock = new Clock();
+		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
+		
+		Server server = new Server(monitor);
+		Computer computer = new Computer(server, monitor, false);
+		Assertions.assertTrue(monitor.goodStateReached());
+		Assertions.assertFalse(monitor.requirementSatisfied());
 	}
 
 	@Override
