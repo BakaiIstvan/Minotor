@@ -1,6 +1,9 @@
 package util;
 
-public class Transition {
+import java.util.List;
+import java.util.Map;
+
+public abstract class Transition {
     protected State sender;
     protected State receiver;
     
@@ -42,4 +45,6 @@ public class Transition {
     public void setSender(State sender) {
         this.sender = sender;
     }
+    
+    public abstract boolean canTrigger(Map<String, Integer> clockValues, String receivedMessage, List<String> previousMessages);
 }

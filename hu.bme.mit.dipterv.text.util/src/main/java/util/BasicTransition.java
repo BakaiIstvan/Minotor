@@ -52,10 +52,18 @@ public class BasicTransition extends Transition {
 		this.clockConstraint = clockConstraint;
 	}
 	
+	@Override
 	public boolean canTrigger(Map<String, Integer> clockValues, String receivedMessage, List<String> previousMessages) {
 		
-		return (receivedMessage.equals(label) || label.contains("!"))
+		return (label != null ? (receivedMessage.equals(label) || label.contains("!")) : true)
 			&& (constraint != null ? constraint.getSatisfied(clockValues, previousMessages) : true)
 			&& (clockConstraint != null ? clockConstraint.isSatisfied(clockValues.get(clockConstraint.getClockName())) : true);
+	}
+	
+	@Override
+	public String toString() {
+		return label 
+			 + ", " + (constraint != null ? constraint.getConstraints().toString() : "")
+			 + ", " + (clockConstraint != null? clockConstraint.getClockConstraintExpression().toString() : "");
 	}
 }

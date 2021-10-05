@@ -32,21 +32,21 @@ class RequiredMessage {
 										  , null
 										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
 										  , null
-										  , null);
+										  , null));
 										  	
 		b.addTransition(new BasicTransition(actualState
 										  , finalState
 										  , null
 										  , «new LabelGenerator().compile_messageLabel(m)»
 										  , null
-										  , null);
+										  , null));
 										    
 		b.addTransition(new BasicTransition(actualState
 										  , acceptState
 										  , null
 										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
 										  , null
-										  , null);
+										  , null));
 										  	
 		b.addTransition(new BasicTransition(finalState
 										  , finalState
@@ -68,7 +68,7 @@ class RequiredMessage {
   										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
   										  	}}, null
   										  	  , null)
-										  , null);
+										  , null));
 		
 	'''
 	
@@ -88,7 +88,7 @@ class RequiredMessage {
   										  	«FOR cm : m.pastMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
   										  	}}, null
   										  	  , null)
-										  , null);
+										  , null));
 		
 		acceptState = new State("q" + counter, StateType.ACCEPT);
 		counter++;
@@ -99,7 +99,7 @@ class RequiredMessage {
 										  , null
 										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
 										  , null
-										  , null);
+										  , null));
 										  
 		b.addTransition(new BasicTransition(actualState
 										  , acceptState
@@ -110,7 +110,7 @@ class RequiredMessage {
   										  	«FOR cm : m.pastMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
   										  	}}, null
   										  	  , null)
-										  , null);
+										  , null));
 		
 		newState = new State("q" + counter, StateType.FINAL);
 		counter++;
@@ -119,7 +119,7 @@ class RequiredMessage {
 										  , null
 										  , «new LabelGenerator().compile_messageLabel(m)»
 										  , null
-										  , null);
+										  , null));
 										
 		b.addState(newState);
 		b.setFinale(newState);
@@ -137,7 +137,7 @@ class RequiredMessage {
 										  , null
 										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
 										  , null
-										  , null);
+										  , null));
 		
 		acceptState = new State("q" + counter, StateType.ACCEPT);
 		counter++;
@@ -148,7 +148,7 @@ class RequiredMessage {
 										  , null
 										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
 										  , null
-										  , null);
+										  , null));
 		
 		newState = new State("q" + counter, StateType.FINAL);
 		counter++;
@@ -157,7 +157,7 @@ class RequiredMessage {
 										  , null
 										  , «new LabelGenerator().compile_messageLabel(m)»
 										  , null
-										  , null);
+										  , null));
 										
 		b.addState(newState);
 		b.setFinale(newState);
@@ -188,14 +188,14 @@ class RequiredMessage {
 										  , null
 										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
 										  , null
-										  , null);
+										  , null));
 										  	
 		b.addTransition(new BasicTransition(actualState
 										  , finalState
 										  , null
 										  , «new LabelGenerator().compile_messageLabel(m)»
 										  , null
-										  , null);
+										  , null));
 										  	
 		b.addTransition(new BasicTransition(finalState
 										  , finalState
@@ -217,7 +217,7 @@ class RequiredMessage {
   										  	«FOR cm : m.strictFutureMessage.get(0).futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
   										  	}}, null
   										  	  , null)
-										  , null);
+										  , null));
 	'''
 	
 	def compile_strict_required(RequiredStrictMessage m)'''
@@ -236,7 +236,7 @@ class RequiredMessage {
 										  , null
 										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
 										  , null
-										  , null);
+										  , null));
 		
 		newState = new State("q" + counter, StateType.FINAL);
 		counter++;
@@ -245,7 +245,7 @@ class RequiredMessage {
 										  , null
 										  , «new LabelGenerator().compile_messageLabel(m)»
 										  , null
-										  , null);
+										  , null));
 										
 		b.addState(newState);
 		b.setFinale(newState);

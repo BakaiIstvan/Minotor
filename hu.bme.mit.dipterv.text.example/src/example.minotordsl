@@ -5,18 +5,14 @@ specification Email{
 	
 	clock x;
 	
-	constraint constraints{
+	constraint constraints {
 		message logout() computer -> server;
-	}
-	
-	constraint c {
-		message login() server -> computer;
 	}
 	
 	scenario sendEmail{
 		message checkEmail() computer -> computer reset x;
 		required message sendUnsentEmail() computer -> server;
 		pastConstraint {constraints} message newEmail() computer -> server;
-		message downloadEmail() computer -> server clockConstraint {x < 10};
+		message downloadEmail() computer -> server clockConstraint {<(x,10)};
 	}
 }

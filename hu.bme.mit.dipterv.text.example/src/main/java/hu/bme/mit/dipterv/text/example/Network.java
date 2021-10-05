@@ -1,19 +1,14 @@
 package hu.bme.mit.dipterv.text.example;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
-
-import generated.Specification;
+import util.Clock;
 import util.IClock;
 import util.IMonitor;
-import util.ISystem;
+import generated.Specification;
 import util.Monitor;
-import util.Clock;
+import util.ISystem;
 
-public class MonitorPassingTest implements ISystem {
-
-	@Test
-	public void testMonitorPassing() {
+public class Network implements ISystem {
+	public Network() {
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
@@ -21,11 +16,10 @@ public class MonitorPassingTest implements ISystem {
 		
 		Server server = new Server(monitor);
 		Computer computer = new Computer(server, monitor);
-		Assertions.assertTrue(monitor.goodStateReached());
 	}
 
 	@Override
 	public void receiveMonitorStatus(String message) {
-		System.out.println("[NetworkMonitorTest]Received status from monitor: " + message);
+		System.out.println("[Network]Received status from monitor: " + message);
 	}
 }

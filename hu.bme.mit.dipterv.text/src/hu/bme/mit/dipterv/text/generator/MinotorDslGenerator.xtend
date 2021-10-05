@@ -147,11 +147,10 @@ class MinotorDslGenerator extends AbstractGenerator {
 					for(State s : a.getStates()){
 						s.writeState();	
 					}
-					//TODO: print out transitions
-					/*
+
 					for(Transition t : a.getTransitions()){
-						t.writeTransition();
-					}*/
+						System.out.println(t.toString());
+					}
 				}
 			}
 
@@ -163,11 +162,8 @@ class MinotorDslGenerator extends AbstractGenerator {
 				Specification specification = new Specification();
 				specification.listAutomatas();
 				
-				//TODO: refactor never claim and uppaal printers
-				/*NeverClaimWriter ncWriter = new NeverClaimWriter();
+				NeverClaimWriter ncWriter = new NeverClaimWriter();
 				ncWriter.writeNeverClaim("«s.name»", specification.automatas);
-				
-				«new UppaalWriter().compile_uppaal_writer(s)»*/
 			}
 		}
 	'''

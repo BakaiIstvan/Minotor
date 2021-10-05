@@ -2,25 +2,35 @@ package util;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Monitor implements IMonitor {
 	private Automaton automaton;
 	private State actualState;
 	private List<State> goodStates;
+	private List<String> previousMessages;
 	private boolean requirementFullfilled;
 	private IClock clock;
+	private ISystem system;
 	
 	public Monitor(Automaton automaton
-				 , IClock clock) {
+				 , IClock clock
+				 , ISystem system) {
 		this.automaton = automaton;
 		this.actualState = automaton.getInitial();
-		this.goodStates = new ArrayList<State>();
-		this.goodStates.add(automaton.getFinale());
+		this.previousMessages = new ArrayList<String>();
+
+		this.goodStates = automaton.getStates().stream()
+	           .filter(state -> state.getType().equals(StateType.NORMAL) || state.getType().equals(StateType.FINAL))
+	           .collect(Collectors.toList());
+
 		this.requirementFullfilled = true;
 		this.clock = clock;
+		this.system = system;
 	}
 	
 	@Override
@@ -32,14 +42,15 @@ public class Monitor implements IMonitor {
 	public void update(String sender, String receiver, String messageType, String[] parameters) {
 		List<Transition> transitions = automaton.findSender(this.actualState);
 		String receivedMessage = getReceivedMessage(sender, receiver, messageType, parameters);
+		previousMessages.add(receivedMessage);
 		System.out.println("Received Message: " + receivedMessage);
 		boolean edgeTriggered = false;
 		
 		ListIterator<Transition> iterator = transitions.listIterator();
 		while (iterator.hasNext()) {
 			Transition transition = iterator.next();
-			System.out.println("Transition: " + transition.getId());
-			if (transition.getId().contains("epsilon")) {
+			System.out.println("Transition: " + transition.toString());
+			if (transition instanceof EpsilonTransition) {
 				List<Transition> newTransitions = new ArrayList<Transition>(automaton.findSender(transition.getReceiver()));
 
 				for (Transition t : newTransitions) {
@@ -47,7 +58,7 @@ public class Monitor implements IMonitor {
 					iterator.previous();
 				}
 				Transition prevTransition = iterator.previous();
-				System.out.println("PrevTransition: " + prevTransition.getId());
+				System.out.println("PrevTransition: " + prevTransition.toString());
 				
 				if (transitions.size() == 1) {
 					this.actualState = transition.getReceiver();
@@ -55,17 +66,33 @@ public class Monitor implements IMonitor {
 				}
 				
 				iterator.remove();
-				if (!transitions.stream().anyMatch(t -> t.getId().contains("epsilon"))) {
+				if (!transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)) {
 					iterator = transitions.listIterator();
 				}
-			} else if (transitions.stream().anyMatch(t -> t.getId().contains("epsilon"))) {
+			} else if (transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)) {
 				// do nothing
-			} else if (transition.hasClock()) {
-				if (transition.clockConditionSatisfied(clock.getClock(transition.getClock()))) {
-					edgeTriggered = updateState(transition, messageType, sender, receiver, parameters, receivedMessage);
-				}
 			} else {
-				edgeTriggered = updateState(transition, messageType, sender, receiver, parameters, receivedMessage);
+				BasicTransition btransition = (BasicTransition)transition;
+				Map<String, Integer> clockValues = null;
+				if (btransition.getConstraint() != null || btransition.getClockConstraint() != null) {
+					clockValues = new HashMap<String, Integer>();
+					
+					if (btransition.getClockConstraint() != null) {
+						clockValues.put(btransition.getClockConstraint().getClockName()
+								      , (int)clock.getClock(btransition.getClockConstraint().getClockName()));
+					}
+					
+					if (btransition.getConstraint() != null) {
+						clockValues.put(btransition.getConstraint().getClockConstraint().getClockName()
+								      , (int)clock.getClock(btransition.getConstraint().getClockConstraint().getClockName()));
+					}
+				}
+				
+				if (transition.canTrigger(clockValues, receivedMessage, previousMessages)) {
+					this.actualState = transition.getReceiver();
+					updateMonitorStatus(transition);
+					edgeTriggered = true;
+				}
 			}
 			
 			if (edgeTriggered) {
@@ -76,68 +103,43 @@ public class Monitor implements IMonitor {
 		if (!edgeTriggered) {
 			this.requirementFullfilled = false;
 			System.out.println("Failure: receivedMessage didn't match any transitions.");
+			errorDetected(sender, receiver, messageType, parameters);
 		}
-	}
-	
-	private boolean updateState(Transition transition
-						   , String messageType
-						   , String sender
-						   , String receiver
-						   , String[] parameters
-						   , String receivedMessage) {
-
-		if (!transition.getId().contains("&")) {
-			if (!transition.getId().contains("!")
-		     && transition.getMessageType().equals(messageType)
-		     && transition.getSenderName().equals(sender)
-		     && transition.getReceiverName().equals(receiver)
-		     && Arrays.equals(transition.getParameters(), parameters)) {
-
-				this.actualState = transition.getReceiver();
-				updateMonitorStatus(transition);
-				return true;
-			} else if (transition.getId().contains("!")
-					&& (!transition.getMessageType().equals(messageType)
-					|| !transition.getSenderName().equals(sender)
-					|| !transition.getReceiverName().equals(receiver)
-					|| !Arrays.equals(transition.getParameters(), parameters))) {
-
-				this.actualState = transition.getReceiver();
-				updateMonitorStatus(transition);
-				return true;
-			}
-		} else if (!transition.getId().contains(receivedMessage)) {
-			this.actualState = transition.getReceiver();
-			updateMonitorStatus(transition);
-			return true;
-		}
-		
-		return false;
 	}
 	
 	private void updateMonitorStatus(Transition transition) {
 		if (actualState.getType().equals(StateType.FINAL)) {
 			List<Transition> transitions = automaton.findSender(this.actualState);
 			if (transitions.size() == 1 
-			 && transitions.stream().anyMatch(t -> t.getId().equals("epsilon"))
+			 && transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)
 			 && transitions.get(0).getReceiver().getType().equals(StateType.FINAL)) {
 				transition = transitions.get(0);
 				this.actualState = transition.getReceiver();
 			}
 		}
 		
-		System.out.println("transition triggered: " + transition.getId());
+		System.out.println("transition triggered: " + transition.toString());
 		System.out.println(actualState.getId());
-		
-		//TODO: fix Main class imports		
-		/*if (goodStateReached()) {
-			Main.monitorStatus("System is in good state.");
+				
+		if (goodStateReached()) {
+			system.receiveMonitorStatus("System is in good state.");
 		} else {
-			Main.monitorStatus("System is in bad state.");
-		}*/
+			system.receiveMonitorStatus("System is in bad state.");
+		}
+		
+		if (requirementSatisfied()) {
+			system.receiveMonitorStatus("Requirement satisfied");
+		}
 		
 		if (transition.hasReset()) {
 			clock.resetClock(transition.getReset());
+		}
+		
+		BasicTransition btransition = (BasicTransition) transition;
+		if (btransition.getConstraint() != null) {
+			if (btransition.getConstraint().getReset() != null && !btransition.getConstraint().getReset().isEmpty()) {
+				clock.resetClock(btransition.getConstraint().getReset());
+			}
 		}
 	}
 	
@@ -161,7 +163,7 @@ public class Monitor implements IMonitor {
 
 	@Override
 	public void errorDetected(String sender, String receiver, String messageType, String[] parameters) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("Error detected when receiving message: " + getReceivedMessage(sender, receiver, messageType, parameters));
+		//TODO: implement error tolerance here
 	}
 }
