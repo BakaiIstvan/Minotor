@@ -20,11 +20,11 @@ public class NeverClaimWriter {
 					writer.println(" if");
 					for(Transition t : a.findSender(s)){
 						if(t.getReceiver() == a.getInitial()){
-							writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_init");
+							writer.println(" :: (" + t.getLabel() + ") " + "->" + " goto T0_init");
 						}else if(t.getReceiver().getType().equals(StateType.NORMAL)){
-							writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
+							writer.println(" :: (" + t.getLabel() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
 						}else if(t.getReceiver().getType().equals(StateType.ACCEPT_ALL)){
-							writer.println(" :: (" + t.getId() + ") " + "->" + " goto accept_all" );
+							writer.println(" :: (" + t.getLabel() + ") " + "->" + " goto accept_all" );
 						}else if(t.getReceiver().getType().equals(StateType.FINAL)){
 							writer.println(" :: (" + t.getId() + ") " + "->" + " goto T0_" + t.getReceiver().getId());
 						}else if(t.getReceiver().getType().equals(StateType.ACCEPT)){

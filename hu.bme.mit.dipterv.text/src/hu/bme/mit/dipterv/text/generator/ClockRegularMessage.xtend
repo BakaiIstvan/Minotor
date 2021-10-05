@@ -1,324 +1,43 @@
 package hu.bme.mit.dipterv.text.generator
 
-import hu.bme.mit.dipterv.text.minotorDsl.Message
+import hu.bme.mit.dipterv.text.minotorDsl.LooseMessage
+import hu.bme.mit.dipterv.text.minotorDsl.StrictMessage
+import hu.bme.mit.dipterv.text.minotorDsl.PastMessage
+import hu.bme.mit.dipterv.text.minotorDsl.FutureMessage
+import hu.bme.mit.dipterv.text.minotorDsl.StrictFutureMessage
 
 class ClockRegularMessage {
-	def compile_constraint_msg(Message m)'''
-		str1 = "" 
-		«FOR msg : m.c.messages»
-			+ "!(" + "«msg.sender.name»" + "." +
-			"«msg.name»" + "("
-			«FOR p: msg.params»
-				«FOR param: 0..<p.params.size»
-					+
-					«IF p.params.get(param).value.value.startsWith("\"")»
-						«p.params.get(param).value.value»
-					«ELSE»
-					"«p.params.get(param).value.value»"
-					«ENDIF»
-					«IF param != p.params.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			«FOR p: msg.constantparams»
-				«FOR param: 0..<p.values.size»
-					+
-					«IF p.values.get(param).value.startsWith("\"")»
-						«p.values.get(param).value»
-					«ELSE»
-					"«p.values.get(param).value»"
-					«ENDIF»
-					«IF param != p.values.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			+ ")"
-			+ "." + "«msg.receiver.name»)" + " & "
-		«ENDFOR»;
-		str1= str1.substring(0, str1.length() - 3);
-		
-		«IF m.constraintexp !== null»
-			str1+= "; " +
-			«IF m.constraintexp.rclockconstraint === null»
-				«IF m.constraintexp.not»
-					"!" + 
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.greater»
-					"«m.constraintexp.lclockconstraint.clock.name» > «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.smaller»
-				 	 "«m.constraintexp.lclockconstraint.clock.name» < «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.greaterequals»
-					 "«m.constraintexp.lclockconstraint.clock.name» >= «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.smallerequals»
-					"«m.constraintexp.lclockconstraint.clock.name» <= «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.equals»
-					"«m.constraintexp.lclockconstraint.clock.name» == «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.notequals»
-					"«m.constraintexp.lclockconstraint.clock.name» != «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-			«ELSE»
-				«IF m.constraintexp.lclockconstraint.op.greater»
-					"«m.constraintexp.lclockconstraint.clock.name» > «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.smaller»
-				 	 "«m.constraintexp.lclockconstraint.clock.name» < «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.greaterequals»
-					 "«m.constraintexp.lclockconstraint.clock.name» >= «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.smallerequals»
-					"«m.constraintexp.lclockconstraint.clock.name» <= «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.equals»
-					"«m.constraintexp.lclockconstraint.clock.name» == «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.notequals»
-					"«m.constraintexp.lclockconstraint.clock.name» != «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				
-				+ " & " + 
-				
-				«IF m.constraintexp.rclockconstraint.op.greater»
-					"«m.constraintexp.rclockconstraint.clock.name» > «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.rclockconstraint.op.smaller»
-				 	 "«m.constraintexp.rclockconstraint.clock.name» < «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.rclockconstraint.op.greaterequals»
-					 "«m.constraintexp.rclockconstraint.clock.name» >= «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.rclockconstraint.op.smallerequals»
-					"«m.constraintexp.rclockconstraint.clock.name» <= «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.rclockconstraint.op.equals»
-					"«m.constraintexp.rclockconstraint.clock.name» == «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.rclockconstraint.op.notequals»
-					"«m.constraintexp.rclockconstraint.clock.name» != «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-			«ENDIF»
-			;
-		«ENDIF»
-	'''
-	def compile_msg_clock(Message m)'''
+	def compile_msg_clock(LooseMessage m)'''
 		b = new Automaton("auto30");
 		actualState = new State("q" + counter, StateType.NORMAL);
 		counter++;
 		b.addState(actualState);
 		b.setInitial(actualState);
-											
-		b.addTransition(new Transition("!(" + "«m.sender.name»" + "." +	
-			"«m.name»" + "("
-			«FOR p: m.params»
-				«FOR param: 0..<p.params.size»
-					+ "«p.params.get(param).name»"
-					«IF param != p.params.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			«FOR p: m.constantparams»
-				«FOR param: 0..<p.values.size»
-					+
-					«IF p.values.get(param).value.startsWith("\"")»
-						«p.values.get(param).value»
-					«ELSE»
-					"«p.values.get(param).value»"
-					«ENDIF»
-					«IF param != p.values.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			+ ")"
-			
-			+ "." + "«m.receiver.name»); "
-			
-			«IF m.CConstraint !== null»
-			+
-				«IF m.CConstraint.rclockconstraint === null»
-					«IF m.CConstraint.not»
-						"!" + 
-					«ENDIF»
-					«IF m.CConstraint.lclockconstraint.op.greater»
-						"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.lclockconstraint.op.smaller»
-					 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.lclockconstraint.op.greaterequals»
-						 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.lclockconstraint.op.smallerequals»
-						"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.lclockconstraint.op.equals»
-						"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.lclockconstraint.op.notequals»
-						"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-				«ELSE»
-					«IF m.CConstraint.lclockconstraint.op.greater»
-						"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.lclockconstraint.op.smaller»
-					 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.lclockconstraint.op.greaterequals»
-						 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.lclockconstraint.op.smallerequals»
-						"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.lclockconstraint.op.equals»
-						"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.lclockconstraint.op.notequals»
-						"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-					«ENDIF»
-					
-					+ " & " + 
-					
-					«IF m.CConstraint.rclockconstraint.op.greater»
-						"«m.CConstraint.rclockconstraint.clock.name» > «m.CConstraint.rclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.rclockconstraint.op.smaller»
-					 	 "«m.CConstraint.rclockconstraint.clock.name» < «m.CConstraint.rclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.rclockconstraint.op.greaterequals»
-						 "«m.CConstraint.rclockconstraint.clock.name» >= «m.CConstraint.rclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.rclockconstraint.op.smallerequals»
-						"«m.CConstraint.rclockconstraint.clock.name» <= «m.CConstraint.rclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.rclockconstraint.op.equals»
-						"«m.CConstraint.rclockconstraint.clock.name» == «m.CConstraint.rclockconstraint.constant»"
-					«ENDIF»
-					«IF m.CConstraint.rclockconstraint.op.notequals»
-						"«m.CConstraint.rclockconstraint.clock.name» != «m.CConstraint.rclockconstraint.constant»"
-					«ENDIF»
-				«ENDIF»
-				+ ";"
-			«ENDIF»
-			
-			, actualState, actualState));
+		
+		b.addTransition(new BasicTransition(actualState
+										  , actualState
+										  , null
+										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
+										  , null
+										  , «IF m.CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.CConstraint)»"
+										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.CConstraint)»)
+										  	«ELSE»null«ENDIF»));
 		
 		newState = new State("q" + counter, StateType.FINAL);
 		counter++;
-		b.addTransition(new Transition("«m.sender.name»" + "." +
-		
-		"«m.name»" + "("
-		«FOR p: m.params»
-			«FOR param: 0..<p.params.size»
-				+ "«p.params.get(param).name»"
-				«IF param != p.params.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		«FOR p: m.constantparams»
-			«FOR param: 0..<p.values.size»
-				+
-				«IF p.values.get(param).value.startsWith("\"")»
-					«p.values.get(param).value»
-				«ELSE»
-				"«p.values.get(param).value»"
-				«ENDIF»
-				«IF param != p.values.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		+ ")"
-		
-		+ "." + "«m.receiver.name»; "
-		
-		«IF m.CConstraint !== null»
-		+
-			«IF m.CConstraint.rclockconstraint === null»
-				«IF m.CConstraint.not»
-					"!" + 
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.greater»
-					"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smaller»
-				 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.greaterequals»
-					 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smallerequals»
-					"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.equals»
-					"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.notequals»
-					"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-			«ELSE»
-				«IF m.CConstraint.lclockconstraint.op.greater»
-					"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smaller»
-				 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.greaterequals»
-					 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smallerequals»
-					"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.equals»
-					"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.notequals»
-					"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				
-				+ " & " + 
-				
-				«IF m.CConstraint.rclockconstraint.op.greater»
-					"«m.CConstraint.rclockconstraint.clock.name» > «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.smaller»
-				 	 "«m.CConstraint.rclockconstraint.clock.name» < «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.greaterequals»
-					 "«m.CConstraint.rclockconstraint.clock.name» >= «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.smallerequals»
-					"«m.CConstraint.rclockconstraint.clock.name» <= «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.equals»
-					"«m.CConstraint.rclockconstraint.clock.name» == «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.notequals»
-					"«m.CConstraint.rclockconstraint.clock.name» != «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-			«ENDIF»
-			+ ";"
-		«ENDIF»
-
-		«IF m.resetclock !== null»
-			+ "«m.resetclock.clock.name» = 0"
-		«ENDIF»
-		
-		 , actualState, newState));
+		b.addTransition(new BasicTransition(actualState
+										  , newState
+										  , «IF m.resetclock !== null»"«m.resetclock.clock.name»"«ELSE»null«ENDIF»
+										  , «new LabelGenerator().compile_messageLabel(m)»
+										  , null
+										  , «IF m.CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.CConstraint)»"
+										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.CConstraint)»)
+										    «ELSE»null«ENDIF»));
 		b.addState(newState);
 		b.setFinale(newState);
 	'''
 	
-	def compile_strict_clock(Message m)'''
+	def compile_strict_clock(StrictMessage m)'''
 		b = new Automaton("auto12");
 		actualState = new State("q" + counter, StateType.NORMAL);
 		counter++;
@@ -327,625 +46,134 @@ class ClockRegularMessage {
 												
 		newState = new State("q" + counter, StateType.FINAL);
 		counter++;
-		b.addTransition(new Transition("«m.sender.name»" + "." +
-		"«m.name»" + "("
-		«FOR p: m.params»
-			«FOR param: 0..<p.params.size»
-				+ "«p.params.get(param).name»"
-				«IF param != p.params.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		«FOR p: m.constantparams»
-			«FOR param: 0..<p.values.size»
-				+
-				«IF p.values.get(param).value.startsWith("\"")»
-					«p.values.get(param).value»
-				«ELSE»
-				"«p.values.get(param).value»"
-				«ENDIF»
-				«IF param != p.values.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		+ ")"
-		+ "." + "«m.receiver.name»;" +
-		
-		«IF m.CConstraint.rclockconstraint === null»
-			«IF m.CConstraint.not»
-				"!" + 
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greater»
-				"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smaller»
-			 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greaterequals»
-				 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smallerequals»
-				"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.equals»
-				"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.notequals»
-				"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-		«ELSE»
-			«IF m.CConstraint.lclockconstraint.op.greater»
-				"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smaller»
-			 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greaterequals»
-				 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smallerequals»
-				"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.equals»
-				"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.notequals»
-				"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			
-			+ " & " + 
-			
-			«IF m.CConstraint.rclockconstraint.op.greater»
-				"«m.CConstraint.rclockconstraint.clock.name» > «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.smaller»
-			 	 "«m.CConstraint.rclockconstraint.clock.name» < «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.greaterequals»
-				 "«m.CConstraint.rclockconstraint.clock.name» >= «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.smallerequals»
-				"«m.CConstraint.rclockconstraint.clock.name» <= «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.equals»
-				"«m.CConstraint.rclockconstraint.clock.name» == «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.notequals»
-				"«m.CConstraint.rclockconstraint.clock.name» != «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-		«ENDIF»
-		
-		«IF m.resetclock !== null»
-			+ "; «m.resetclock.clock.name» = 0"
-		«ENDIF»
-		
-		, actualState, newState));
+		b.addTransition(new BasicTransition(actualState
+										  , newState
+										  , «IF m.message.get(0).resetclock !== null»"«m.message.get(0).resetclock.clock.name»"«ELSE»null«ENDIF»
+										  , «new LabelGenerator().compile_messageLabel(m)»
+										  , null
+										  , «IF m.message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.message.get(0).CConstraint)»"
+										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.message.get(0).CConstraint)»)
+										    «ELSE»null«ENDIF»));
 		b.addState(newState);
 		b.setFinale(newState);
 	'''
 	
-	def compile_past_clock(Message m)'''
+	def compile_past_clock(PastMessage m)'''
 		b = new Automaton("auto7");
 		actualState = new State("q" + counter, StateType.NORMAL);
 		counter++;
 		b.addState(actualState);
 		b.setInitial(actualState);
-												
-		b.addTransition(new Transition(str + " & " + "!(" + "«m.sender.name»" + "." +	
-			"«m.name»" + "("
-			«FOR p: m.params»
-				«FOR param: 0..<p.params.size»
-					+ "«p.params.get(param).name»"
-					«IF param != p.params.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			«FOR p: m.constantparams»
-				«FOR param: 0..<p.values.size»
-					+
-					«IF p.values.get(param).value.startsWith("\"")»
-						«p.values.get(param).value»
-					«ELSE»
-					"«p.values.get(param).value»"
-					«ENDIF»
-					«IF param != p.values.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			+ ")"
-			
-			+ "." + "«m.receiver.name»); " + 
-			
-			«IF m.CConstraint.rclockconstraint === null»
-				«IF m.CConstraint.not»
-					"!" + 
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.greater»
-					"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smaller»
-				 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.greaterequals»
-					 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smallerequals»
-					"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.equals»
-					"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.notequals»
-					"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-			«ELSE»
-				«IF m.CConstraint.lclockconstraint.op.greater»
-					"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smaller»
-				 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.greaterequals»
-					 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smallerequals»
-					"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.equals»
-					"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.notequals»
-					"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				
-				+ " & " + 
-				
-				«IF m.CConstraint.rclockconstraint.op.greater»
-					"«m.CConstraint.rclockconstraint.clock.name» > «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.smaller»
-				 	 "«m.CConstraint.rclockconstraint.clock.name» < «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.greaterequals»
-					 "«m.CConstraint.rclockconstraint.clock.name» >= «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.smallerequals»
-					"«m.CConstraint.rclockconstraint.clock.name» <= «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.equals»
-					"«m.CConstraint.rclockconstraint.clock.name» == «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.notequals»
-					"«m.CConstraint.rclockconstraint.clock.name» != «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-			«ENDIF»
-			
-			, actualState, actualState));
-						
+		
+		b.addTransition(new BasicTransition(actualState
+										  , actualState
+										  , null
+										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
+										  , new UnwantedConstraint(new ArrayList<String>() {
+										  	{
+										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	}}, «IF m.constraintexp !== null» 
+										  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.constraintexp)»"
+										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.constraintexp)»)
+										  		«ELSE»null«ENDIF»
+										  	  , «IF m.resetinconstraint !== null»"«m.resetinconstraint.clock.name»"
+										  	    «ELSE»null«ENDIF»)
+										  , «IF m.message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.message.get(0).CConstraint)»"
+										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.message.get(0).CConstraint)»)
+										  	«ELSE»null«ENDIF»));
+		
 		newState = new State("q" + counter, StateType.FINAL);
 		counter++;
-		b.addTransition(new Transition("«m.sender.name»" + "." +
-		"«m.name»" + "("
-		«FOR p: m.params»
-			«FOR param: 0..<p.params.size»
-				+ "«p.params.get(param).name»"
-			«ENDFOR»
-		«ENDFOR»
-		«FOR p: m.constantparams»
-			«FOR param: 0..<p.values.size»
-				+
-				«IF p.values.get(param).value.startsWith("\"")»
-					«p.values.get(param).value»
-				«ELSE»
-				"«p.values.get(param).value»"
-				«ENDIF»
-				«IF param != p.values.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		+ ")"
-		+ "." + "«m.receiver.name»;" + 
-		
-		«IF m.CConstraint.rclockconstraint === null»
-			«IF m.CConstraint.not»
-				"!" + 
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greater»
-				"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smaller»
-			 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greaterequals»
-				 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smallerequals»
-				"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.equals»
-				"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.notequals»
-				"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-		«ELSE»
-			«IF m.CConstraint.lclockconstraint.op.greater»
-				"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smaller»
-			 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greaterequals»
-				 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smallerequals»
-				"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.equals»
-				"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.notequals»
-				"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			
-			+ " & " + 
-			
-			«IF m.CConstraint.rclockconstraint.op.greater»
-				"«m.CConstraint.rclockconstraint.clock.name» > «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.smaller»
-			 	 "«m.CConstraint.rclockconstraint.clock.name» < «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.greaterequals»
-				 "«m.CConstraint.rclockconstraint.clock.name» >= «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.smallerequals»
-				"«m.CConstraint.rclockconstraint.clock.name» <= «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.equals»
-				"«m.CConstraint.rclockconstraint.clock.name» == «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.notequals»
-				"«m.CConstraint.rclockconstraint.clock.name» != «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-		«ENDIF»
-		
-		«IF m.resetclock !== null»
-			+ "; «m.resetclock.clock.name» = 0"
-		«ENDIF»
-		
-		, actualState, newState));
+		b.addTransition(new BasicTransition(actualState
+										  , newState
+										  , «IF m.message.get(0).resetclock !== null»"«m.message.get(0).resetclock.clock.name»"«ELSE»null«ENDIF»
+										  , «new LabelGenerator().compile_messageLabel(m)»
+										  , null
+										  , «IF m.message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.message.get(0).CConstraint)»"
+										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.message.get(0).CConstraint)»)
+										    «ELSE»null«ENDIF»));
 		b.addState(newState);
 		b.setFinale(newState);
 	'''
-	def compile_future_clock(Message m)'''
-		b = new Automaton("auto30");
+	def compile_future_clock(FutureMessage m)'''
+		b = new Automaton("auto31");
 		actualState = new State("q" + counter, StateType.NORMAL);
 		counter++;
 		b.addState(actualState);
 		b.setInitial(actualState);
 											
-		b.addTransition(new Transition("!(" + "«m.sender.name»" + "." +	
-			"«m.name»" + "("
-			«FOR p: m.params»
-				«FOR param: 0..<p.params.size»
-					+ "«p.params.get(param).name»"
-					«IF param != p.params.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			«FOR p: m.constantparams»
-				«FOR param: 0..<p.values.size»
-					+
-					«IF p.values.get(param).value.startsWith("\"")»
-						«p.values.get(param).value»
-					«ELSE»
-					"«p.values.get(param).value»"
-					«ENDIF»
-					«IF param != p.values.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			+ ")"
-			
-			+ "." + "«m.receiver.name»); " + 
-			
-			«IF m.CConstraint.rclockconstraint === null»
-				«IF m.CConstraint.not»
-					"!" + 
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.greater»
-					"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smaller»
-				 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.greaterequals»
-					 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smallerequals»
-					"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.equals»
-					"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.notequals»
-					"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-			«ELSE»
-				«IF m.CConstraint.lclockconstraint.op.greater»
-					"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smaller»
-				 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.greaterequals»
-					 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.smallerequals»
-					"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.equals»
-					"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.lclockconstraint.op.notequals»
-					"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-				«ENDIF»
-				
-				+ " & " + 
-				
-				«IF m.CConstraint.rclockconstraint.op.greater»
-					"«m.CConstraint.rclockconstraint.clock.name» > «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.smaller»
-				 	 "«m.CConstraint.rclockconstraint.clock.name» < «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.greaterequals»
-					 "«m.CConstraint.rclockconstraint.clock.name» >= «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.smallerequals»
-					"«m.CConstraint.rclockconstraint.clock.name» <= «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.equals»
-					"«m.CConstraint.rclockconstraint.clock.name» == «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.CConstraint.rclockconstraint.op.notequals»
-					"«m.CConstraint.rclockconstraint.clock.name» != «m.CConstraint.rclockconstraint.constant»"
-				«ENDIF»
-			«ENDIF»
-			
-			, actualState, actualState));
+		b.addTransition(new BasicTransition(actualState
+										  , actualState
+										  , null
+										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
+										  , null
+										  , «IF m.message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.message.get(0).CConstraint)»"
+										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.message.get(0).CConstraint)»)
+										  	«ELSE»null«ENDIF»));
 		
 		newState = new State("q" + counter, StateType.NORMAL);
 		counter++;
-		b.addTransition(new Transition(str + " & " + "«m.sender.name»" + "." +
-		"«m.name»" + "("
-		«FOR p: m.params»
-			«FOR param: 0..<p.params.size»
-				+ "«p.params.get(param).name»"
-				«IF param != p.params.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		«FOR p: m.constantparams»
-			«FOR param: 0..<p.values.size»
-				+
-				«IF p.values.get(param).value.startsWith("\"")»
-					«p.values.get(param).value»
-				«ELSE»
-				"«p.values.get(param).value»"
-				«ENDIF»
-				«IF param != p.values.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		+ ")"
-		
-		+ "." + "«m.receiver.name»; " +
-		
-		«IF m.CConstraint.rclockconstraint === null»
-			«IF m.CConstraint.not»
-				"!" + 
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greater»
-				"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smaller»
-			 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greaterequals»
-				 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smallerequals»
-				"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.equals»
-				"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.notequals»
-				"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-		«ELSE»
-			«IF m.CConstraint.lclockconstraint.op.greater»
-				"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smaller»
-			 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greaterequals»
-				 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smallerequals»
-				"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.equals»
-				"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.notequals»
-				"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			
-			+ " & " + 
-			
-			«IF m.CConstraint.rclockconstraint.op.greater»
-				"«m.CConstraint.rclockconstraint.clock.name» > «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.smaller»
-			 	 "«m.CConstraint.rclockconstraint.clock.name» < «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.greaterequals»
-				 "«m.CConstraint.rclockconstraint.clock.name» >= «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.smallerequals»
-				"«m.CConstraint.rclockconstraint.clock.name» <= «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.equals»
-				"«m.CConstraint.rclockconstraint.clock.name» == «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.notequals»
-				"«m.CConstraint.rclockconstraint.clock.name» != «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-		«ENDIF»
-		
-		«IF m.resetclock !== null»
-			+ "; «m.resetclock.clock.name» = 0"
-		«ENDIF»
-		
-		 , actualState, newState));
+		b.addTransition(new BasicTransition(actualState
+										  , newState
+										  , «IF m.message.get(0).resetclock !== null»"«m.message.get(0).resetclock.clock.name»"«ELSE»null«ENDIF»
+										  , «new LabelGenerator().compile_messageLabel(m)»
+										  , null
+										  , «IF m.message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.message.get(0).CConstraint)»"
+										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.message.get(0).CConstraint)»)
+										    «ELSE»null«ENDIF»));
 		b.addState(newState);
+		b.setFinale(newState);
 		
-		«compile_constraint_msg(m)»
-		
-		b.addTransition(new Transition("!" + str1, newState, actualState));
-		
-		finalState = new State("q" + counter, StateType.FINAL);
-		b.addTransition(newTransition(str, newState, finalState));
-		b.addState(finalState);
-		b.setFinale(finalState);
+		b.addTransition(new BasicTransition(newState
+										  , newState
+										  , null
+										  , null
+										  , new UnwantedConstraint(new ArrayList<String>() {
+										  	{
+										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	}}, «IF m.constraintexp !== null» 
+										  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.constraintexp)»"
+										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.constraintexp)» )
+										  		«ELSE»null«ENDIF»
+										  	  , «IF m.resetinconstraint !== null»"«m.resetinconstraint.clock.name»"
+										  	    «ELSE»null«ENDIF»)
+										  , null));
 	'''
 	
-	def compile_future_strict_clock(Message m)'''
-		b = new Automaton("auto12");
-		actualState = new State("q" + counter, StateType.NORMAL);
-		counter++;
-		b.addState(actualState);
-		b.setInitial(actualState);
-												
-		newState = new State("q" + counter, StateType.FINAL);
-		counter++;
-		b.addTransition(new Transition(str + " & " + "«m.sender.name»" + "." +
-		"«m.name»" + "("
-		«FOR p: m.params»
-			«FOR param: 0..<p.params.size»
-				+ "«p.params.get(param).name»"
-				«IF param != p.params.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		«FOR p: m.constantparams»
-			«FOR param: 0..<p.values.size»
-				+
-				«IF p.values.get(param).value.startsWith("\"")»
-					«p.values.get(param).value»
-				«ELSE»
-				"«p.values.get(param).value»"
-				«ENDIF»
-				«IF param != p.values.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		+ ")"
-		+ "." + "«m.receiver.name»;" +
-		
-		«IF m.CConstraint.rclockconstraint === null»
-			«IF m.CConstraint.not»
-				"!" + 
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greater»
-				"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smaller»
-			 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greaterequals»
-				 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smallerequals»
-				"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.equals»
-				"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.notequals»
-				"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-		«ELSE»
-			«IF m.CConstraint.lclockconstraint.op.greater»
-				"«m.CConstraint.lclockconstraint.clock.name» > «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smaller»
-			 	 "«m.CConstraint.lclockconstraint.clock.name» < «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.greaterequals»
-				 "«m.CConstraint.lclockconstraint.clock.name» >= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.smallerequals»
-				"«m.CConstraint.lclockconstraint.clock.name» <= «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.equals»
-				"«m.CConstraint.lclockconstraint.clock.name» == «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.lclockconstraint.op.notequals»
-				"«m.CConstraint.lclockconstraint.clock.name» != «m.CConstraint.lclockconstraint.constant»"
-			«ENDIF»
-			
-			+ " & " + 
-			
-			«IF m.CConstraint.rclockconstraint.op.greater»
-				"«m.CConstraint.rclockconstraint.clock.name» > «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.smaller»
-			 	 "«m.CConstraint.rclockconstraint.clock.name» < «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.greaterequals»
-				 "«m.CConstraint.rclockconstraint.clock.name» >= «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.smallerequals»
-				"«m.CConstraint.rclockconstraint.clock.name» <= «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.equals»
-				"«m.CConstraint.rclockconstraint.clock.name» == «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-			«IF m.CConstraint.rclockconstraint.op.notequals»
-				"«m.CConstraint.rclockconstraint.clock.name» != «m.CConstraint.rclockconstraint.constant»"
-			«ENDIF»
-		«ENDIF»
-		
-		«IF m.resetclock !== null»
-			+ "; «m.resetclock.clock.name» = 0"
-		«ENDIF»
-		
-		, actualState, newState));
-		b.addState(newState);
-		«compile_constraint_msg(m)»
+	def compile_future_strict_clock(StrictFutureMessage m)'''
+		b = new Automaton("auto33");
+				actualState = new State("q" + counter, StateType.NORMAL);
+				counter++;
+				b.addState(actualState);
+				b.setInitial(actualState);
 				
-		b.addTransition(new Transition("!" + str1, newState, actualState));
-		
-		finalState = new State("q" + counter, StateType.FINAL);
-		b.addTransition(newTransition(str, newState, finalState));
-		b.addState(finalState);
-		b.setFinale(finalState);
+				newState = new State("q" + counter, StateType.NORMAL);
+				counter++;
+				b.addTransition(new BasicTransition(actualState
+												  , newState
+												  , «IF m.futureMessage.get(0).message.get(0).resetclock !== null»"«m.futureMessage.get(0).message.get(0).resetclock.clock.name»"«ELSE»null«ENDIF»
+												  , «new LabelGenerator().compile_messageLabel(m)»
+												  , null
+												  , «IF m.futureMessage.get(0).message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.futureMessage.get(0).message.get(0).CConstraint)»"
+												  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.futureMessage.get(0).message.get(0).CConstraint)»)
+												    «ELSE»null«ENDIF»));
+				b.addState(newState);
+				b.setFinale(newState);
+				
+				b.addTransition(new BasicTransition(newState
+												  , newState
+												  , null
+												  , null
+												  , new UnwantedConstraint(new ArrayList<String>() {
+												  	{
+												  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+												  	}}, «IF m.futureMessage.get(0).constraintexp !== null» 
+												  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.futureMessage.get(0).constraintexp)»"
+												  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.futureMessage.get(0).constraintexp)» )
+												  		«ELSE»null«ENDIF»
+												  	  , «IF m.futureMessage.get(0).resetinconstraint !== null»"«m.futureMessage.get(0).resetinconstraint.clock.name»"
+												  	    «ELSE»null«ENDIF»)
+												  , null));
 	'''
 	
 }

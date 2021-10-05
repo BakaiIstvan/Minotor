@@ -10,7 +10,6 @@ import org.eclipse.xtext.generator.IGeneratorContext
 import org.eclipse.xtext.naming.IQualifiedNameProvider
 import com.google.inject.Inject
 import hu.bme.mit.dipterv.text.minotorDsl.Domain
-import hu.bme.mit.dipterv.text.minotorDsl.Type
 import hu.bme.mit.dipterv.text.minotorDsl.Message
 import hu.bme.mit.dipterv.text.minotorDsl.LogicalExpression
 import hu.bme.mit.dipterv.text.minotorDsl.AndExpression
@@ -20,6 +19,19 @@ import hu.bme.mit.dipterv.text.minotorDsl.NotLogicalExpression
 import hu.bme.mit.dipterv.text.minotorDsl.EqualsBooleanExpression
 import hu.bme.mit.dipterv.text.minotorDsl.OrExpression
 import hu.bme.mit.dipterv.text.minotorDsl.GreaterThanExpression
+import hu.bme.mit.dipterv.text.minotorDsl.LooseMessage
+import hu.bme.mit.dipterv.text.minotorDsl.StrictMessage
+import hu.bme.mit.dipterv.text.minotorDsl.PastMessage
+import hu.bme.mit.dipterv.text.minotorDsl.FutureMessage
+import hu.bme.mit.dipterv.text.minotorDsl.StrictFutureMessage
+import hu.bme.mit.dipterv.text.minotorDsl.RequiredLooseMessage
+import hu.bme.mit.dipterv.text.minotorDsl.RequiredStrictMessage
+import hu.bme.mit.dipterv.text.minotorDsl.RequiredPastMessage
+import hu.bme.mit.dipterv.text.minotorDsl.RequiredFutureMessage
+import hu.bme.mit.dipterv.text.minotorDsl.RequiredStrictFutureMessage
+import hu.bme.mit.dipterv.text.minotorDsl.FailMessage
+import hu.bme.mit.dipterv.text.minotorDsl.FailStrictMessage
+import hu.bme.mit.dipterv.text.minotorDsl.FailPastMessage
 
 /**
  * Generates code from your model files on save.
@@ -52,6 +64,10 @@ class MinotorDslGenerator extends AbstractGenerator {
 		import java.util.TreeSet;
 		
 		import util.Automaton;
+		import util.BasicTransition;
+		import util.ClockConstraint;
+		import util.UnwantedConstraint;
+		import util.WantedConstraint;
 		import util.State;
 		import util.StateType;
 		import util.Transition;
@@ -87,118 +103,8 @@ class MinotorDslGenerator extends AbstractGenerator {
 						«FOR l :sc.loop»
 							loopauto = new Automaton("loopauto" + counter);
 							«FOR m : l.messages»
-								«IF m.past || m.future»
-									«compile_constraint_msg(m)»
-								«ENDIF»
-								«IF !m.strict»
-									«IF m.required»
-										«IF m.future»
-											«IF m.clockconstraint || m.resetclock !== null»
-												«new ClockRequiredMessage().compile_required_future_clock(m)»
-											«ELSE»
-												«new RequiredMessage().compile_required_future(m)»
-											«ENDIF»
-											loopauto.collapse(b);
-										«ENDIF»
-										«IF m.past»
-											«IF m.clockconstraint || m.resetclock !== null»
-												«new ClockRequiredMessage().compile_required_past_clock(m)»
-											«ELSE»
-												«new RequiredMessage().compile_required_past(m)»
-											«ENDIF»
-											loopauto.collapse(b);
-										«ENDIF»
-										«IF !m.past && !m.future»
-											«IF m.clockconstraint || m.resetclock !== null»
-												«new ClockRequiredMessage().compile_required_clock(m)»
-											«ELSE»
-												«new RequiredMessage().compile_required(m)»
-											«ENDIF»
-											loopauto.collapse(b);
-										«ENDIF»
-									«ENDIF»
-									«IF m.fail»
-										«IF m.past»
-											«new FailMessage().compile_fail_past(m)»
-											loopauto.collapse(b);
-										«ENDIF»
-										«IF !m.past && !m.future»
-											«new FailMessage().compile_fail(m)»
-											loopauto.collapse(b);
-										«ENDIF»
-									«ENDIF»
-									«IF !m.fail && !m.required»
-										«IF m.future»
-											«IF m.clockconstraint || m.resetclock !== null»
-												«new ClockRegularMessage().compile_future_clock(m)»
-											«ELSE»
-												«new RegularMessage().compile_future(m)»
-											«ENDIF»
-											loopauto.collapse(b);
-										«ENDIF»
-										«IF m.past»
-											«IF m.clockconstraint || m.resetclock !== null»
-												«new ClockRegularMessage().compile_past_clock(m)»
-											«ELSE»
-												«new RegularMessage().compile_past(m)»
-											«ENDIF»
-											loopauto.collapse(b);
-										«ENDIF»
-										«IF !m.past && !m.future»
-											«IF m.clockconstraint || m.resetclock !== null»
-												«new ClockRegularMessage().compile_msg_clock(m)»
-											«ELSE»
-												«new RegularMessage().compile_msg(m)»
-											«ENDIF»
-											loopauto.collapse(b);
-										«ENDIF»
-									«ENDIF»
-								«ENDIF»
-								
-								«IF m.strict»
-									«IF m.required»
-										«IF m.future»
-											«IF m.clockconstraint || m.resetclock !== null»
-												«new ClockRequiredMessage().compile_strict_required_future_clock(m)»
-											«ELSE»
-												«new RequiredMessage().compile_strict_required_future(m)»
-											«ENDIF»
-											loopauto.collapse(b);
-										«ENDIF»
-										«IF !m.past && !m.future»
-											«IF m.clockconstraint || m.resetclock !== null»
-												«new ClockRequiredMessage().compile_strict_required_clock(m)»
-											«ELSE»
-												«new RequiredMessage().compile_strict_required(m)»
-											«ENDIF»
-											loopauto.collapse(b);
-										«ENDIF»
-									«ENDIF»
-									«IF m.fail»
-										«IF !m.past && !m.future»
-											«new FailMessage().compile_strict_fail(m)»
-											loopauto.collapse(b);
-										«ENDIF»
-									«ENDIF»
-									«IF !m.fail && !m.required»
-										«IF m.future»
-											«IF m.clockconstraint || m.resetclock !== null»
-												«new ClockRegularMessage().compile_future_strict_clock(m)»
-											«ELSE»
-												«new RegularMessage().compile_strict_future(m)»
-											«ENDIF»
-											loopauto.collapse(b);
-										«ENDIF»
-										«IF !m.past && !m.future»
-											«IF m.clockconstraint || m.resetclock !== null»
-												«new ClockRegularMessage().compile_strict_clock(m)»
-											«ELSE»
-												«new RegularMessage().compile_strict(m)»
-											«ENDIF»
-											loopauto.collapse(b);
-										«ENDIF» 
-									«ENDIF»
-								«ENDIF»
+								«generateMessage(m)»
+								loopauto.collapse(b);
 							«ENDFOR»
 							a.merge(opFunctions.loopSetup(loopauto, «l.min», «l.max»));
 						«ENDFOR»
@@ -207,118 +113,8 @@ class MinotorDslGenerator extends AbstractGenerator {
 							«FOR pe : p.parexpression»
 								expression = new Automaton("expauto" + counter);
 								«FOR m : pe.messages»
-									«IF m.past || m.future»
-										«compile_constraint_msg(m)»
-									«ENDIF»
-									«IF !m.strict»
-										«IF m.required»
-											«IF m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRequiredMessage().compile_required_future_clock(m)»
-												«ELSE»
-													«new RequiredMessage().compile_required_future(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF m.past»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRequiredMessage().compile_required_past_clock(m)»
-												«ELSE»
-													«new RequiredMessage().compile_required_past(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF !m.past && !m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRequiredMessage().compile_required_clock(m)»
-												«ELSE»
-													«new RequiredMessage().compile_required(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-										«ENDIF»
-										«IF m.fail»
-											«IF m.past»
-												«new FailMessage().compile_fail_past(m)»
-												expression.collapse(b);
-											«ENDIF»
-											«IF !m.past && !m.future»
-												«new FailMessage().compile_fail(m)»
-												expression.collapse(b);
-											«ENDIF»
-										«ENDIF»
-										«IF !m.fail && !m.required»
-											«IF m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRegularMessage().compile_future_clock(m)»
-												«ELSE»
-													«new RegularMessage().compile_future(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF m.past»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRegularMessage().compile_past_clock(m)»
-												«ELSE»
-													«new RegularMessage().compile_past(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF !m.past && !m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRegularMessage().compile_msg_clock(m)»
-												«ELSE»
-													«new RegularMessage().compile_msg(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-										«ENDIF»
-									«ENDIF»
-									
-									«IF m.strict»
-										«IF m.required»
-											«IF m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRequiredMessage().compile_strict_required_future_clock(m)»
-												«ELSE»
-													«new RequiredMessage().compile_strict_required_future(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF !m.past && !m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRequiredMessage().compile_strict_required_clock(m)»
-												«ELSE»
-													«new RequiredMessage().compile_strict_required(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-										«ENDIF»
-										«IF m.fail»
-											«IF !m.past && !m.future»
-												«new FailMessage().compile_strict_fail(m)»
-												expression.collapse(b);
-											«ENDIF»
-										«ENDIF»
-										«IF !m.fail && !m.required»
-											«IF m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRegularMessage().compile_future_strict_clock(m)»
-												«ELSE»
-													«new RegularMessage().compile_strict_future(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF !m.past && !m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRegularMessage().compile_strict_clock(m)»
-												«ELSE»
-													«new RegularMessage().compile_strict(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF» 
-										«ENDIF»
-									«ENDIF»
+									«generateMessage(m)»
+									expression.collapse(b);
 								«ENDFOR»
 								parauto.add(expression);			
 							«ENDFOR»
@@ -329,239 +125,16 @@ class MinotorDslGenerator extends AbstractGenerator {
 							«FOR e : a.expressions»
 								expression = new Automaton("expauto" + counter);
 								«FOR m : e.messages»
-									«IF m.past || m.future»
-										«compile_constraint_msg(m)»
-									«ENDIF»
-									«IF !m.strict»
-										«IF m.required»
-											«IF m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRequiredMessage().compile_required_future_clock(m)»
-												«ELSE»
-													«new RequiredMessage().compile_required_future(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF m.past»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRequiredMessage().compile_required_past_clock(m)»
-												«ELSE»
-													«new RequiredMessage().compile_required_past(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF !m.past && !m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRequiredMessage().compile_required_clock(m)»
-												«ELSE»
-													«new RequiredMessage().compile_required(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-										«ENDIF»
-										«IF m.fail»
-											«IF m.past»
-												«new FailMessage().compile_fail_past(m)»
-												expression.collapse(b);
-											«ENDIF»
-											«IF !m.past && !m.future»
-												«new FailMessage().compile_fail(m)»
-												expression.collapse(b);
-											«ENDIF»
-										«ENDIF»
-										«IF !m.fail && !m.required»
-											«IF m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRegularMessage().compile_future_clock(m)»
-												«ELSE»
-													«new RegularMessage().compile_future(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF m.past»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRegularMessage().compile_past_clock(m)»
-												«ELSE»
-													«new RegularMessage().compile_past(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF !m.past && !m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRegularMessage().compile_msg_clock(m)»
-												«ELSE»
-													«new RegularMessage().compile_msg(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-										«ENDIF»
-									«ENDIF»
-									
-									«IF m.strict»
-										«IF m.required»
-											«IF m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRequiredMessage().compile_strict_required_future_clock(m)»
-												«ELSE»
-													«new RequiredMessage().compile_strict_required_future(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF !m.past && !m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRequiredMessage().compile_strict_required_clock(m)»
-												«ELSE»
-													«new RequiredMessage().compile_strict_required(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-										«ENDIF»
-										«IF m.fail»
-											«IF !m.past && !m.future»
-												«new FailMessage().compile_strict_fail(m)»
-												expression.collapse(b);
-											«ENDIF»
-										«ENDIF»
-										«IF !m.fail && !m.required»
-											«IF m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRegularMessage().compile_future_strict_clock(m)»
-												«ELSE»
-													«new RegularMessage().compile_strict_future(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF»
-											«IF !m.past && !m.future»
-												«IF m.clockconstraint || m.resetclock !== null»
-													«new ClockRegularMessage().compile_strict_clock(m)»
-												«ELSE»
-													«new RegularMessage().compile_strict(m)»
-												«ENDIF»
-												expression.collapse(b);
-											«ENDIF» 
-										«ENDIF»
-									«ENDIF»
+									«generateMessage(m)»
+									expression.collapse(b);
 								«ENDFOR»
 								altauto.put("«compile_alt_condition(e.altCondition)»", expression);
 							«ENDFOR»
 							a.merge(altauto);
 						«ENDFOR»
 						«FOR m : sc.message»
-							«IF m.past || m.future»
-								«compile_constraint_msg(m)»
-							«ENDIF»
-							«IF !m.strict»
-								«IF m.required»
-									«IF m.future»
-										«IF m.clockconstraint || m.resetclock !== null»
-											«new ClockRequiredMessage().compile_required_future_clock(m)»
-										«ELSE»
-											«new RequiredMessage().compile_required_future(m)»
-										«ENDIF»
-										a.collapse(b);
-									«ENDIF»
-									«IF m.past»
-										«IF m.clockconstraint || m.resetclock !== null»
-											«new ClockRequiredMessage().compile_required_past_clock(m)»
-										«ELSE»
-											«new RequiredMessage().compile_required_past(m)»
-										«ENDIF»
-										a.collapse(b);
-									«ENDIF»
-									«IF !m.past && !m.future»
-										«IF m.clockconstraint || m.resetclock !== null»
-											«new ClockRequiredMessage().compile_required_clock(m)»
-										«ELSE»
-											«new RequiredMessage().compile_required(m)»
-										«ENDIF»
-										a.collapse(b);
-									«ENDIF»
-								«ENDIF»
-								«IF m.fail»
-									«IF m.past»
-										«new FailMessage().compile_fail_past(m)»
-										a.collapse(b);
-									«ENDIF»
-									«IF !m.past && !m.future»
-										«new FailMessage().compile_fail(m)»
-										a.collapse(b);
-									«ENDIF»
-								«ENDIF»
-								«IF !m.fail && !m.required»
-									«IF m.future»
-										«IF m.clockconstraint || m.resetclock !== null»
-											«new ClockRegularMessage().compile_future_clock(m)»
-										«ELSE»
-											«new RegularMessage().compile_future(m)»
-										«ENDIF»
-										a.collapse(b);
-									«ENDIF»
-									«IF m.past»
-										«IF m.clockconstraint || m.resetclock !== null»
-											«new ClockRegularMessage().compile_past_clock(m)»
-										«ELSE»
-											«new RegularMessage().compile_past(m)»
-										«ENDIF»
-										a.collapse(b);
-									«ENDIF»
-									«IF !m.past && !m.future»
-										«IF m.resetinconstraint !== null»
-											msg reset clock is set
-										«ENDIF»
-										«IF m.clockconstraint || m.resetclock !== null»
-											«new ClockRegularMessage().compile_msg_clock(m)»
-										«ELSE»
-											«new RegularMessage().compile_msg(m)»
-										«ENDIF»
-										a.collapse(b);
-									«ENDIF»
-								«ENDIF»
-							«ENDIF»
-							
-							«IF m.strict»
-								«IF m.required»
-									«IF m.future»
-										«IF m.clockconstraint || m.resetclock !== null»
-											«new ClockRequiredMessage().compile_strict_required_future_clock(m)»
-										«ELSE»
-											«new RequiredMessage().compile_strict_required_future(m)»
-										«ENDIF»
-										a.collapse(b);
-									«ENDIF»
-									«IF !m.past && !m.future»
-										«IF m.clockconstraint || m.resetclock !== null»
-											«new ClockRequiredMessage().compile_strict_required_clock(m)»
-										«ELSE»
-											«new RequiredMessage().compile_strict_required(m)»
-										«ENDIF»
-										a.collapse(b);
-									«ENDIF»
-								«ENDIF»
-								«IF m.fail»
-									«IF !m.past && !m.future»
-										«new FailMessage().compile_strict_fail(m)»
-										a.collapse(b);
-									«ENDIF»
-								«ENDIF»
-								«IF !m.fail && !m.required»
-									«IF m.future»
-										«IF m.clockconstraint || m.resetclock !== null»
-											«new ClockRegularMessage().compile_future_strict_clock(m)»							
-										«ELSE»
-											«new RegularMessage().compile_strict_future(m)»
-										«ENDIF»
-										a.collapse(b);
-									«ENDIF»
-									«IF !m.past && !m.future»
-										«IF m.clockconstraint || m.resetclock !== null»
-											«new ClockRegularMessage().compile_strict_clock(m)»							
-										«ELSE»
-											«new RegularMessage().compile_strict(m)»
-										«ENDIF»
-										a.collapse(b);
-									«ENDIF» 
-								«ENDIF»
-							«ENDIF»
+							«generateMessage(m)»
+							a.collapse(b);
 						«ENDFOR»
 					«ENDFOR»
 					a.rename();
@@ -574,10 +147,11 @@ class MinotorDslGenerator extends AbstractGenerator {
 					for(State s : a.getStates()){
 						s.writeState();	
 					}
-					
+					//TODO: print out transitions
+					/*
 					for(Transition t : a.getTransitions()){
 						t.writeTransition();
-					}
+					}*/
 				}
 			}
 
@@ -589,125 +163,98 @@ class MinotorDslGenerator extends AbstractGenerator {
 				Specification specification = new Specification();
 				specification.listAutomatas();
 				
-				NeverClaimWriter ncWriter = new NeverClaimWriter();
+				//TODO: refactor never claim and uppaal printers
+				/*NeverClaimWriter ncWriter = new NeverClaimWriter();
 				ncWriter.writeNeverClaim("«s.name»", specification.automatas);
 				
-				«new UppaalWriter().compile_uppaal_writer(s)»
+				«new UppaalWriter().compile_uppaal_writer(s)»*/
 			}
 		}
 	'''
 	
-	def compile_constraint_msg(Message m)'''
-		str = "" 
-		«FOR msg : m.c.messages»
-			+ "!(" + "«msg.sender.name»" + "." +
-			"«msg.name»" + "("
-			«FOR p: msg.params»
-				«FOR param: 0..<p.params.size»
-					+
-					«IF p.params.get(param).value.value.startsWith("\"")»
-						«p.params.get(param).value.value»
-					«ELSE»
-					"«p.params.get(param).value.value»"
-					«ENDIF»
-					«IF param != p.params.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			«FOR p: msg.constantparams»
-				«FOR param: 0..<p.values.size»
-					+
-					«IF p.values.get(param).value.startsWith("\"")»
-						«p.values.get(param).value»
-					«ELSE»
-					"«p.values.get(param).value»"
-					«ENDIF»
-					«IF param != p.values.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			+ ")"
-			+ "." + "«msg.receiver.name»)" + " & "
-		«ENDFOR»;
-		str= str.substring(0, str.length() - 3);
-		
-		«IF m.constraintexp !== null»
-			str+= "; " +
-			«IF m.constraintexp.rclockconstraint === null»
-				«IF m.constraintexp.not»
-					"!" + 
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.greater»
-					"«m.constraintexp.lclockconstraint.clock.name» > «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.smaller»
-				 	 "«m.constraintexp.lclockconstraint.clock.name» < «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.greaterequals»
-					 "«m.constraintexp.lclockconstraint.clock.name» >= «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.smallerequals»
-					"«m.constraintexp.lclockconstraint.clock.name» <= «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.equals»
-					"«m.constraintexp.lclockconstraint.clock.name» == «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.notequals»
-					"«m.constraintexp.lclockconstraint.clock.name» != «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-			«ELSE»
-				«IF m.constraintexp.lclockconstraint.op.greater»
-					"«m.constraintexp.lclockconstraint.clock.name» > «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.smaller»
-				 	 "«m.constraintexp.lclockconstraint.clock.name» < «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.greaterequals»
-					 "«m.constraintexp.lclockconstraint.clock.name» >= «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.smallerequals»
-					"«m.constraintexp.lclockconstraint.clock.name» <= «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.equals»
-					"«m.constraintexp.lclockconstraint.clock.name» == «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.lclockconstraint.op.notequals»
-					"«m.constraintexp.lclockconstraint.clock.name» != «m.constraintexp.lclockconstraint.constant»"
-				«ENDIF»
-				
-				+ " & " + 
-				
-				«IF m.constraintexp.rclockconstraint.op.greater»
-					"«m.constraintexp.rclockconstraint.clock.name» > «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.rclockconstraint.op.smaller»
-				 	 "«m.constraintexp.rclockconstraint.clock.name» < «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.rclockconstraint.op.greaterequals»
-					 "«m.constraintexp.rclockconstraint.clock.name» >= «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.rclockconstraint.op.smallerequals»
-					"«m.constraintexp.rclockconstraint.clock.name» <= «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.rclockconstraint.op.equals»
-					"«m.constraintexp.rclockconstraint.clock.name» == «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-				«IF m.constraintexp.rclockconstraint.op.notequals»
-					"«m.constraintexp.rclockconstraint.clock.name» != «m.constraintexp.rclockconstraint.constant»"
-				«ENDIF»
-			«ENDIF»
-			
-			«IF m.resetinconstraint !== null»
-				+ "; «m.resetinconstraint.clock.name» = 0"
-			«ENDIF»
-			;
-		«ENDIF»
+	def compile_message(Message m)
+	'''«m.generateMessage»'''
+	
+	def dispatch generateMessage(LooseMessage m)
+	'''«new ClockRegularMessage().compile_msg_clock(m)»'''
+	
+	def dispatch generateMessage(StrictMessage m)
+	'''«new ClockRegularMessage().compile_strict_clock(m)»'''
+	
+	def dispatch generateMessage(PastMessage m)
+	'''«new ClockRegularMessage().compile_past_clock(m)»'''
+	
+	def dispatch generateMessage(FutureMessage m)
+	'''«IF m.constraintexp === null 
+		&& m.resetinconstraint === null 
+		&& m.message.get(0).CConstraint === null 
+		&& m.message.get(0).resetclock === null»
+		«new RegularMessage().compile_future(m)»
+	   «ELSE»«new ClockRegularMessage().compile_future_clock(m)»«ENDIF»
 	'''
+	
+	def dispatch generateMessage(StrictFutureMessage m)
+	'''«IF m.futureMessage.get(0).constraintexp === null 
+		&& m.futureMessage.get(0).resetinconstraint === null 
+		&& m.futureMessage.get(0).message.get(0).CConstraint === null 
+		&& m.futureMessage.get(0).message.get(0).resetclock === null»
+		«new RegularMessage().compile_strict_future(m)»
+		«ELSE»«new ClockRegularMessage().compile_future_strict_clock(m)»«ENDIF»
+	'''
+	
+	def dispatch generateMessage(RequiredLooseMessage m)
+	'''«IF m.message.get(0).CConstraint === null 
+		&& m.message.get(0).resetclock === null»
+		«new RequiredMessage().compile_required(m)»
+		«ELSE»«new ClockRequiredMessage().compile_required_clock(m)»«ENDIF»
+	'''
+	
+	def dispatch generateMessage(RequiredStrictMessage m)
+	'''«IF m.strictMessage.get(0).message.get(0).CConstraint === null 
+		&& m.strictMessage.get(0).message.get(0).resetclock === null»
+		«new RequiredMessage().compile_strict_required(m)»
+		«ELSE»«new ClockRequiredMessage().compile_strict_required_clock(m)»«ENDIF»
+	'''
+	
+	def dispatch generateMessage(RequiredPastMessage m)
+	'''«IF m.pastMessage.get(0).constraintexp === null 
+		&& m.pastMessage.get(0).resetinconstraint === null 
+		&& m.pastMessage.get(0).message.get(0).CConstraint === null 
+		&& m.pastMessage.get(0).message.get(0).resetclock === null»
+		«new RequiredMessage().compile_required_past(m)»
+		«ELSE»«new ClockRequiredMessage().compile_required_past_clock(m)»«ENDIF»
+	'''
+	
+	def dispatch generateMessage(RequiredFutureMessage m)
+	'''«IF m.futureMessage.get(0).constraintexp === null 
+		&& m.futureMessage.get(0).resetinconstraint === null 
+		&& m.futureMessage.get(0).message.get(0).CConstraint === null 
+		&& m.futureMessage.get(0).message.get(0).resetclock === null»
+		«new RequiredMessage().compile_required_future(m)»
+		«ELSE»«new ClockRequiredMessage().compile_required_future_clock(m)»«ENDIF»
+	'''
+	
+	def dispatch generateMessage(RequiredStrictFutureMessage m)
+	'''«IF m.strictFutureMessage.get(0).futureMessage.get(0).constraintexp === null 
+		&& m.strictFutureMessage.get(0).futureMessage.get(0).resetinconstraint === null 
+		&& m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).CConstraint === null 
+		&& m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).resetclock === null»
+		«new RequiredMessage().compile_strict_required_future(m)»
+		«ELSE»«new ClockRequiredMessage().compile_strict_required_future_clock(m)»«ENDIF»
+	'''
+	
+	def dispatch generateMessage(FailMessage m)
+	'''«new hu.bme.mit.dipterv.text.generator.FailMessage().compile_fail(m)»'''
+	
+	def dispatch generateMessage(FailStrictMessage m)
+	'''«new hu.bme.mit.dipterv.text.generator.FailMessage().compile_strict_fail(m)»'''
+	
+	def dispatch generateMessage(FailPastMessage m)
+	'''«new hu.bme.mit.dipterv.text.generator.FailMessage().compile_fail_past(m)»'''
 	
 	def compile_alt_condition(LogicalExpression a)
 	'''«a.generateLogicalExpression»'''
+
 	def dispatch generateLogicalExpression(AndExpression expression)
 	'''(«expression.lhs») && («expression.rhs»)'''
 	

@@ -59,12 +59,11 @@ public class OperatorFunctions {
         State referencePreviousSender = new State();
 
         for (Transition t : referenceAuto.getTransitions()) {
+        	BasicTransition basict = (BasicTransition)t;
             State sender = new State();
             State receiver = new State();
-            Transition transition = new Transition();
+            Transition transition = new BasicTransition(basict);
             Automaton temp = new Automaton("temp");
-
-            transition.setId(t.getId());
 
             if (t.getSender() == referencePreviousSender) {
                 receiver.setId("c" + count);

@@ -84,19 +84,7 @@ public class Automaton {
        return receiverTransitions;
      }
      			
-    public void addTransition(Transition newTransition){
-   		if(transitions.isEmpty()){
-   			transitions.add(newTransition);
-   		    return;
-   		}
-   		        
-   		for(Transition t : transitions){
-   			if(t.getId().equals(newTransition.getId()) 
-   		    	&& t.getSender().equals(newTransition.getSender()) 
-   		        && t.getReceiver().equals(newTransition.getReceiver()))
-   		        	return;
-   		}
-   		        
+    public void addTransition(Transition newTransition){        
    		transitions.add(newTransition);
    }
    
@@ -138,29 +126,29 @@ public class Automaton {
    }
    public void merge(Map<String, Automaton> automatas){
       
-		              State qinit = new State("qinit", StateType.NORMAL);
-		              State qfinal = new State("qfinal", StateType.FINAL);
-		              
-		              if(this.states.isEmpty() && this.transitions.isEmpty()){
-		                  this.initial = qinit;
-		              }else{
-		                  this.addTransition(new Transition("epsilon", this.finale, qinit));
-		              }
-		      
-		              this.addState(qinit);
-		              this.addState(qfinal);
-		              this.finale = qfinal;
-		      
-		              for (Map.Entry<String, Automaton> a : automatas.entrySet()) {
-		                  for (Transition t : a.getValue().transitions)
-		                      this.addTransition(t);
-		   
-		                  for (State s : a.getValue().states) {
-		                      this.addState(s);
-		                      if (s.getType().equals(StateType.FINAL))
-		                          this.addTransition(new Transition("epsilon", s, qfinal));
-		                  }
-		                  this.addTransition(new Transition("epsilon; " + a.getKey(), qinit, a.getValue().initial));
-		              }   
-		       		}
+      State qinit = new State("qinit", StateType.NORMAL);
+      State qfinal = new State("qfinal", StateType.FINAL);
+              
+      if (this.states.isEmpty() && this.transitions.isEmpty()) {
+    	  this.initial = qinit;
+		} else {
+			this.addTransition(new EpsilonTransition(this.finale, qinit, null));
+		}
+
+		this.addState(qinit);
+		this.addState(qfinal);
+		this.finale = qfinal;
+
+		for (Map.Entry<String, Automaton> a : automatas.entrySet()) {
+			for (Transition t : a.getValue().transitions)
+				this.addTransition(t);
+
+			for (State s : a.getValue().states) {
+				this.addState(s);
+				if (s.getType().equals(StateType.FINAL))
+					this.addTransition(new EpsilonTransition(s, qfinal, null));
+			}
+			this.addTransition(new EpsilonTransition(qinit, a.getValue().initial, null));
+		}
+   }
 }

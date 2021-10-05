@@ -28,13 +28,78 @@ ScenarioContent:
 ;
 
 Message:
-	 'message' name=ID '(' (params+=Params | constantparams+=ConstantParams) ')' (required?='required')? (fail?='fail')? (strict?='strict')?
-	 sender=[Object] '->' receiver=[Object]
-	 (past?='pastConstraint')? (future?='futureConstraint')?
-	 ('{' (c=[Constraint])? (',')? (constraintexp=ClockConstraintExpression)? (',')? (resetinconstraint=ResetClock)? '}')? 
-	 (clockconstraint?='clockConstraint')? 
-	 ('{')? (cConstraint=ClockConstraintExpression)? ('}')? 
-	 (resetclock=ResetClock)?';'
+	LooseMessage | StrictMessage | PastMessage | FutureMessage | StrictFutureMessage
+	| RequiredLooseMessage | RequiredStrictMessage | RequiredPastMessage | RequiredFutureMessage | RequiredStrictFutureMessage
+	| FailMessage | FailStrictMessage | FailPastMessage
+;
+
+LooseMessage:
+	'message' name=ID '(' (params+=Params | constantparams+=ConstantParams) ')'
+	sender=[Object] '->' receiver=[Object]
+	('clockConstraint' '{' cConstraint=ClockConstraintExpression '}')? 
+	(resetclock=ResetClock)? ';'
+;
+
+StrictMessage:
+	'strict'
+	message+=LooseMessage
+;
+
+PastMessage:
+	'pastConstraint'
+	'{' c=[Constraint] (',' constraintexp=ClockConstraintExpression)? (',' resetinconstraint=ResetClock)? '}'
+	message+=LooseMessage
+;
+
+FutureMessage:
+	'futureConstraint'
+	'{' c=[Constraint] (',' constraintexp=ClockConstraintExpression)? (',' resetinconstraint=ResetClock)? '}'
+	 message+=LooseMessage
+;
+
+StrictFutureMessage:
+	'strict'
+	futureMessage+=FutureMessage
+;
+
+RequiredLooseMessage:
+	'required'
+	message+=LooseMessage
+;
+
+RequiredStrictMessage:
+	'required'
+	strictMessage+=StrictMessage
+;
+
+RequiredPastMessage:
+	'required'
+	pastMessage+=PastMessage
+;
+
+RequiredFutureMessage:
+	'required'
+	futureMessage+=FutureMessage
+;
+
+RequiredStrictFutureMessage:
+	'required'
+	strictFutureMessage+=StrictFutureMessage
+;
+
+FailMessage:
+	'fail'
+	message+=LooseMessage
+;
+
+FailStrictMessage:
+	'fail'
+	strictMessage+=StrictMessage
+;
+
+FailPastMessage:
+	'fail'
+	pastMessage+=PastMessage
 ;
 
 ResetClock:
@@ -42,12 +107,35 @@ ResetClock:
 ;
 
 ClockConstraint:
-	clock=[Clock] op=Operator constant=NUMBER
+	GreaterClockConstraint | SmallerClockConstraint | GreaterEqualClockConstraint | SmallerEqualClockConstraint
+;
+
+GreaterClockConstraint:
+	'>' '(' clock=[Clock] ',' constant=NUMBER ')'
+;
+
+SmallerClockConstraint:
+	'<' '(' clock=[Clock] ',' constant=NUMBER ')'
+;
+
+GreaterEqualClockConstraint:
+	'>=' '(' clock=[Clock] ',' constant=NUMBER ')'
+;
+
+SmallerEqualClockConstraint:
+	'<=' '(' clock=[Clock] ',' constant=NUMBER ')'
 ;
 
 ClockConstraintExpression:
-	  (not?='not')? ('(')? lclockconstraint=ClockConstraint (')')?
-	| lclockconstraint=ClockConstraint 'and' rclockconstraint=ClockConstraint
+	  ClockConstraint | NotClockConstraintExpression | AndClockConstraintExpression
+;
+
+NotClockConstraintExpression:
+	'not' '(' notClockConstraint=ClockConstraint ')'
+;
+
+AndClockConstraintExpression:
+	lclockconstraint=ClockConstraint 'and' rclockconstraint=ClockConstraint
 ;
 
 Params:

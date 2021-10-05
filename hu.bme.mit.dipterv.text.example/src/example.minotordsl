@@ -15,8 +15,8 @@ specification Email{
 	
 	scenario sendEmail{
 		message checkEmail() computer -> computer reset x;
-		message sendUnsentEmail() required computer -> server;
-		message newEmail() computer -> server pastConstraint {constraints};
+		required message sendUnsentEmail() computer -> server;
+		pastConstraint {constraints} message newEmail() computer -> server;
 		message downloadEmail() computer -> server clockConstraint {x < 10};
 	}
 }
