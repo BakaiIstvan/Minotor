@@ -1,288 +1,101 @@
 package hu.bme.mit.dipterv.text.generator
 
-import hu.bme.mit.dipterv.text.minotorDsl.Message
+import hu.bme.mit.dipterv.text.minotorDsl.FutureMessage
+import hu.bme.mit.dipterv.text.minotorDsl.StrictFutureMessage
 
-class RegularMessage {
-	def compile_msg(Message m)'''
-			b = new Automaton("auto7");
-			actualState = new State("q" + counter, StateType.NORMAL);
-			counter++;
-			b.addState(actualState);
-			b.setInitial(actualState);
-												
-			b.addTransition(new Transition("!(" + "«m.sender.name»" + "." +	
-				"«m.name»" + "("
-				«FOR p: m.params»
-					«FOR param: 0..<p.params.size»
-						+ "«p.params.get(param).name»"
-						«IF param != p.params.size - 1»
-							+ ", "
-						«ENDIF»
-					«ENDFOR»
-				«ENDFOR»
-				«FOR p: m.constantparams»
-					«FOR param: 0..<p.values.size»
-						+
-						«IF p.values.get(param).value.startsWith("\"")»
-							«p.values.get(param).value»
-						«ELSE»
-						"«p.values.get(param).value»"
-						«ENDIF»
-						«IF param != p.values.size - 1»
-							+ ", "
-						«ENDIF»
-					«ENDFOR»
-				«ENDFOR»
-				+ ")"
-				
-				+ "." + "«m.receiver.name»)", actualState, actualState));
-			
-			newState = new State("q" + counter, StateType.FINAL);
-			counter++;
-			b.addTransition(new Transition("«m.sender.name»" + "." +
-			
-			"«m.name»" + "("
-			«FOR p: m.params»
-				«FOR param: 0..<p.params.size»
-					+ "«p.params.get(param).name»"
-					«IF param != p.params.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			«FOR p: m.constantparams»
-				«FOR param: 0..<p.values.size»
-					+
-					«IF p.values.get(param).value.startsWith("\"")»
-						«p.values.get(param).value»
-					«ELSE»
-					"«p.values.get(param).value»"
-					«ENDIF»
-					«IF param != p.values.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			+ ")"
-			
-			+ "." + "«m.receiver.name»" , actualState, newState));
-			b.addState(newState);
-			b.setFinale(newState);
-	'''
-	
-	def compile_future(Message m)'''
-			b = new Automaton("auto6");
-			actualState = new State("q" + counter, StateType.NORMAL);
-			counter++;
-			b.addState(actualState);
-			b.setInitial(actualState);
-												
-			b.addTransition(new Transition("!(" + "«m.sender.name»" + "." +	
-				"«m.name»" + "("
-				«FOR p: m.params»
-					«FOR param: 0..<p.params.size»
-						+ "«p.params.get(param).name»"
-						«IF param != p.params.size - 1»
-							+ ", "
-						«ENDIF»
-					«ENDFOR»
-				«ENDFOR»
-				«FOR p: m.constantparams»
-					«FOR param: 0..<p.values.size»
-						+
-						«IF p.values.get(param).value.startsWith("\"")»
-							«p.values.get(param).value»
-						«ELSE»
-						"«p.values.get(param).value»"
-						«ENDIF»
-						«IF param != p.values.size - 1»
-							+ ", "
-						«ENDIF»
-					«ENDFOR»
-				«ENDFOR»
-				+ ")"
-				
-				+ "." + "«m.receiver.name»)", actualState, actualState));
-							
-			newState = new State("q" + counter, StateType.NORMAL);
-			counter++;
-			b.addTransition(new Transition("«m.sender.name»" + "." +
-			
-			"«m.name»" + "("
-			«FOR p: m.params»
-				«FOR param: 0..<p.params.size»
-					+ "«p.params.get(param).name»"
-					«IF param != p.params.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			«FOR p: m.constantparams»
-				«FOR param: 0..<p.values.size»
-					+
-					«IF p.values.get(param).value.startsWith("\"")»
-						«p.values.get(param).value»
-					«ELSE»
-					"«p.values.get(param).value»"
-					«ENDIF»
-					«IF param != p.values.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			+ ")"
-			
-			+ "." + "«m.receiver.name»" , actualState, newState));
-			b.addState(newState);
-			b.addTransition(new Transition("!(" + str + ")", newState, actualState));
-			finalState = new State("q" + counter, StateType.FINAL);
-			counter++;
-			b.addTransition(new Transition(str, newState, finalState));
-			b.addState(finalState);
-			b.setFinale(finalState);
-	'''
-	
-	def compile_past(Message m)'''
-		b = new Automaton("auto7");
+class RegularMessage {	
+	def compile_future(FutureMessage m)'''
+		b = new Automaton("auto6");
 		actualState = new State("q" + counter, StateType.NORMAL);
 		counter++;
 		b.addState(actualState);
 		b.setInitial(actualState);
-												
-		b.addTransition(new Transition(str + " & " + "!(" + "«m.sender.name»" + "." +	
-			"«m.name»" + "("
-			«FOR p: m.params»
-				«FOR param: 0..<p.params.size»
-					+ "«p.params.get(param).name»"
-					«IF param != p.params.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			«FOR p: m.constantparams»
-				«FOR param: 0..<p.values.size»
-					+
-					«IF p.values.get(param).value.startsWith("\"")»
-						«p.values.get(param).value»
-					«ELSE»
-					"«p.values.get(param).value»"
-					«ENDIF»
-					«IF param != p.values.size - 1»
-						+ ", "
-					«ENDIF»
-				«ENDFOR»
-			«ENDFOR»
-			+ ")"
-			
-			+ "." + "«m.receiver.name»)", actualState, actualState));
 						
-		newState = new State("q" + counter, StateType.FINAL);
+		newState = new State("q" + counter, StateType.NORMAL);
 		counter++;
-		b.addTransition(new Transition("«m.sender.name»" + "." +
-		"«m.name»" + "("
-		«FOR p: m.params»
-			«FOR param: 0..<p.params.size»
-				+ "«p.params.get(param).name»"
-			«ENDFOR»
-		«ENDFOR»
-		«FOR p: m.constantparams»
-			«FOR param: 0..<p.values.size»
-				+
-				«IF p.values.get(param).value.startsWith("\"")»
-					«p.values.get(param).value»
-				«ELSE»
-				"«p.values.get(param).value»"
-				«ENDIF»
-				«IF param != p.values.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		+ ")"
-		+ "." + "«m.receiver.name»", actualState, newState));
+		b.addTransition(new BasicTransition(actualState
+										  , newState
+										  , null
+										  , «new LabelGenerator().compile_messageLabel(m)»
+										  , null
+										  , null));
+										  
+		b.addTransition(new BasicTransition(actualState
+										  , actualState
+										  , null
+										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
+										  , null
+										  , null));
 		b.addState(newState);
-		b.setFinale(newState);
+		
+		b.addTransition(new BasicTransition(newState
+										  , actualState
+										  , null
+										  , null
+										  , new WantedConstraint(new ArrayList<String>() {
+										  	{
+										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	}}, null)
+									  	  , null
+										  , null));
+		
+		finalState = new State("q" + counter, StateType.FINAL);
+		counter++;
+		b.addTransition(new BasicTransition(newState
+										  , finalState
+										  , null
+										  , null
+										  , new UnwantedConstraint(new ArrayList<String>() {
+										  	{
+										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	}}, null)
+									  	  , null
+										  , null));
+		b.addState(finalState);
+		b.setFinale(finalState);
 	'''
 	
-	def compile_strict_future(Message m)'''
+	def compile_strict_future(StrictFutureMessage m)'''
 		b = new Automaton("auto11");
 		actualState = new State("q" + counter, StateType.NORMAL);
 		counter++;
 		b.addState(actualState);
 		b.setInitial(actualState);
-											
+						
 		newState = new State("q" + counter, StateType.NORMAL);
 		counter++;
-		b.addTransition(new Transition("«m.sender.name»" + "." +
-		"«m.name»" + "("
-		«FOR p: m.params»
-			«FOR param: 0..<p.params.size»
-				+ "«p.params.get(param).name»"
-				«IF param != p.params.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		«FOR p: m.constantparams»
-			«FOR param: 0..<p.values.size»
-				+
-				«IF p.values.get(param).value.startsWith("\"")»
-					«p.values.get(param).value»
-				«ELSE»
-				"«p.values.get(param).value»"
-				«ENDIF»
-				«IF param != p.values.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		+ ")"
+		b.addTransition(new BasicTransition(actualState
+										  , newState
+										  , null
+										  , «new LabelGenerator().compile_messageLabel(m)»
+										  , null
+										  , null));
+		b.addState(newState);
 		
-		+ "." + "«m.receiver.name»", actualState, newState));
-		b.addState(newState);
-		b.addTransition(new Transition("!(" + str + ")", newState, actualState));
+		b.addTransition(new BasicTransition(newState
+										  , actualState
+										  , null
+										  , null
+										  , new WantedConstraint(new ArrayList<String>() {
+										  	{
+										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	}}, null)
+									  	  , null
+										  , null));
+		
 		finalState = new State("q" + counter, StateType.FINAL);
-		b.addTransition(new Transition(str, newState, finalState));
+		counter++;
+		b.addTransition(new BasicTransition(newState
+										  , finalState
+										  , null
+										  , null
+										  , new UnwantedConstraint(new ArrayList<String>() {
+										  	{
+										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	}}, null)
+									  	  , null
+										  , null));
 		b.addState(finalState);
-		b.setFinale(newState);
+		b.setFinale(finalState);
 	'''
-	
-	def compile_strict(Message m)'''
-		b = new Automaton("auto12");
-		actualState = new State("q" + counter, StateType.NORMAL);
-		counter++;
-		b.addState(actualState);
-		b.setInitial(actualState);
-												
-		newState = new State("q" + counter, StateType.FINAL);
-		counter++;
-		b.addTransition(new Transition("«m.sender.name»" + "." +
-		"«m.name»" + "("
-		«FOR p: m.params»
-			«FOR param: 0..<p.params.size»
-				+ "«p.params.get(param).name»"
-				«IF param != p.params.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		«FOR p: m.constantparams»
-			«FOR param: 0..<p.values.size»
-				+
-				«IF p.values.get(param).value.startsWith("\"")»
-					«p.values.get(param).value»
-				«ELSE»
-				"«p.values.get(param).value»"
-				«ENDIF»
-				«IF param != p.values.size - 1»
-					+ ", "
-				«ENDIF»
-			«ENDFOR»
-		«ENDFOR»
-		+ ")"
-		+ "." + "«m.receiver.name»", actualState, newState));
-		b.addState(newState);
-		b.setFinale(newState);
-	'''
-	
 }
