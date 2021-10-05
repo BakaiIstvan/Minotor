@@ -22,6 +22,7 @@ public class MonitorPassingTest implements ISystem {
 		Server server = new Server(monitor);
 		Computer computer = new Computer(server, monitor);
 		Assertions.assertTrue(monitor.goodStateReached());
+		Assertions.assertTrue(monitor.requirementSatisfied());
 	}
 
 	@Override

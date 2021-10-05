@@ -54,10 +54,14 @@ public class BasicTransition extends Transition {
 	
 	@Override
 	public boolean canTrigger(Map<String, Integer> clockValues, String receivedMessage, List<String> previousMessages) {
-		
-		return (label != null ? (receivedMessage.equals(label) || label.contains("!")) : true)
-			&& (constraint != null ? constraint.getSatisfied(clockValues, previousMessages) : true)
-			&& (clockConstraint != null ? clockConstraint.isSatisfied(clockValues.get(clockConstraint.getClockName())) : true);
+		if (label != null ) {
+			return (!label.contains("!") ? receivedMessage.equals(label) : !receivedMessage.equals(label.substring(2, label.length() - 1)))
+					&& (constraint != null ? constraint.getSatisfied(clockValues, previousMessages) : true)
+					&& (clockConstraint != null ? clockConstraint.isSatisfied(clockValues.get(clockConstraint.getClockName())) : true);
+		} else {
+			return (constraint != null ? constraint.getSatisfied(clockValues, previousMessages) : true)
+				&& (clockConstraint != null ? clockConstraint.isSatisfied(clockValues.get(clockConstraint.getClockName())) : true);
+		}
 	}
 	
 	@Override

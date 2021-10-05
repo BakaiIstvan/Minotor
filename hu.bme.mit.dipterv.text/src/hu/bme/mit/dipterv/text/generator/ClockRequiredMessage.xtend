@@ -14,15 +14,6 @@ class ClockRequiredMessage {
 		b.addState(actualState);
 		b.setInitial(actualState);
 		
-		b.addTransition(new BasicTransition(actualState
-										  , actualState
-										  , null
-										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
-										  , null
-										  , «IF m.message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.message.get(0).CConstraint)»"
-										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.message.get(0).CConstraint)»)
-										  	«ELSE»null«ENDIF»));
-		
 		acceptState = new State("q" + counter, StateType.ACCEPT);
 		counter++;
 		b.addState(acceptState);
@@ -37,6 +28,15 @@ class ClockRequiredMessage {
 										  , «IF m.message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.message.get(0).CConstraint)»"
 										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.message.get(0).CConstraint)»)
 										    «ELSE»null«ENDIF»));
+										    
+		b.addTransition(new BasicTransition(actualState
+										  , actualState
+										  , null
+										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
+										  , null
+										  , «IF m.message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.message.get(0).CConstraint)»"
+										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.message.get(0).CConstraint)»)
+										  	«ELSE»null«ENDIF»));
 										    
 		b.addTransition(new BasicTransition(actualState
 										  , acceptState
@@ -120,6 +120,21 @@ class ClockRequiredMessage {
 		b.addState(actualState);
 		b.setInitial(actualState);
 		
+		acceptState = new State("q" + counter, StateType.ACCEPT);
+		counter++;
+		b.addState(acceptState);
+		
+		newState = new State("q" + counter, StateType.FINAL);
+		counter++;
+		b.addTransition(new BasicTransition(actualState
+										  , newState
+										  , «IF m.pastMessage.get(0).message.get(0).resetclock !== null»"«m.pastMessage.get(0).message.get(0).resetclock.clock.name»"«ELSE»null«ENDIF»
+										  , «new LabelGenerator().compile_messageLabel(m)»
+										  , null
+										  , «IF m.pastMessage.get(0).message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.pastMessage.get(0).message.get(0).CConstraint)»"
+										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.pastMessage.get(0).message.get(0).CConstraint)»)
+										    «ELSE»null«ENDIF»));
+										    
 		b.addTransition(new BasicTransition(actualState
 										  , actualState
 										  , null
@@ -136,21 +151,6 @@ class ClockRequiredMessage {
 										  , «IF m.pastMessage.get(0).message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.pastMessage.get(0).message.get(0).CConstraint)»"
 										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.pastMessage.get(0).message.get(0).CConstraint)»)
 										  	«ELSE»null«ENDIF»));
-		
-		acceptState = new State("q" + counter, StateType.ACCEPT);
-		counter++;
-		b.addState(acceptState);
-		
-		newState = new State("q" + counter, StateType.FINAL);
-		counter++;
-		b.addTransition(new BasicTransition(actualState
-										  , newState
-										  , «IF m.pastMessage.get(0).message.get(0).resetclock !== null»"«m.pastMessage.get(0).message.get(0).resetclock.clock.name»"«ELSE»null«ENDIF»
-										  , «new LabelGenerator().compile_messageLabel(m)»
-										  , null
-										  , «IF m.pastMessage.get(0).message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.pastMessage.get(0).message.get(0).CConstraint)»"
-										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.pastMessage.get(0).message.get(0).CConstraint)»)
-										    «ELSE»null«ENDIF»));
 										    
 		b.addTransition(new BasicTransition(actualState
 										  , acceptState
@@ -207,15 +207,6 @@ class ClockRequiredMessage {
 		b.addState(acceptState_new);
 		b.addState(finalState);
 		b.setFinale(finalState);
-		
-		b.addTransition(new BasicTransition(actualState
-										  , actualState
-										  , null
-										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
-										  , null
-										  , «IF m.futureMessage.get(0).message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.futureMessage.get(0).message.get(0).CConstraint)»"
-										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.futureMessage.get(0).message.get(0).CConstraint)»)
-										  	«ELSE»null«ENDIF»));
 										  	
 		b.addTransition(new BasicTransition(actualState
 										  , finalState
@@ -225,6 +216,15 @@ class ClockRequiredMessage {
 										  , «IF m.futureMessage.get(0).message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.futureMessage.get(0).message.get(0).CConstraint)»"
 										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.futureMessage.get(0).message.get(0).CConstraint)»)
 										    «ELSE»null«ENDIF»));
+										    
+		b.addTransition(new BasicTransition(actualState
+										  , actualState
+										  , null
+										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
+										  , null
+										  , «IF m.futureMessage.get(0).message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.futureMessage.get(0).message.get(0).CConstraint)»"
+										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.futureMessage.get(0).message.get(0).CConstraint)»)
+										  	«ELSE»null«ENDIF»));
 										    
 		b.addTransition(new BasicTransition(actualState
 										  , acceptState
@@ -295,6 +295,15 @@ class ClockRequiredMessage {
 		b.setFinale(finalState);
 		
 		b.addTransition(new BasicTransition(actualState
+										  , finalState
+										  , «IF m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).resetclock !== null»"«m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).resetclock.clock.name»"«ELSE»null«ENDIF»
+										  , «new LabelGenerator().compile_messageLabel(m)»
+										  , null
+										  , «IF m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).CConstraint)»"
+										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).CConstraint)»)
+										    «ELSE»null«ENDIF»));
+		
+		b.addTransition(new BasicTransition(actualState
 										  , acceptState
 										  , null
 										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
@@ -303,14 +312,6 @@ class ClockRequiredMessage {
 										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).CConstraint)»)
 										  	«ELSE»null«ENDIF»));
 										  	
-		b.addTransition(new BasicTransition(actualState
-										  , finalState
-										  , «IF m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).resetclock !== null»"«m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).resetclock.clock.name»"«ELSE»null«ENDIF»
-										  , «new LabelGenerator().compile_messageLabel(m)»
-										  , null
-										  , «IF m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).CConstraint !== null»new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).CConstraint)»"
-										  , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).CConstraint)»)
-										    «ELSE»null«ENDIF»));
 										    
 		b.addTransition(new BasicTransition(actualState
 										  , acceptState

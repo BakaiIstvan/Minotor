@@ -10,13 +10,6 @@ class RegularMessage {
 		counter++;
 		b.addState(actualState);
 		b.setInitial(actualState);
-											
-		b.addTransition(new BasicTransition(actualState
-										  , actualState
-										  , null
-										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
-										  , null
-										  , null));
 						
 		newState = new State("q" + counter, StateType.NORMAL);
 		counter++;
@@ -24,6 +17,13 @@ class RegularMessage {
 										  , newState
 										  , null
 										  , «new LabelGenerator().compile_messageLabel(m)»
+										  , null
+										  , null));
+										  
+		b.addTransition(new BasicTransition(actualState
+										  , actualState
+										  , null
+										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
 										  , null
 										  , null));
 		b.addState(newState);
