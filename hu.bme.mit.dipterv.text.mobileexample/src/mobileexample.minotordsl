@@ -1,0 +1,22 @@
+specification Photo{
+
+	object User user;
+	object Device device;
+	object Database db;
+
+    clock x;
+
+	constraint error {
+		message closeApp() user -> device;
+	}
+
+	scenario playlist_generation{
+		message openApp() user -> device reset x;
+		message accessWebcam() device -> device clockConstraint {<=(x, 5)} reset x;
+		required futureConstraint {error} message getPhoto() device -> user;
+		fail message cameraOffline() user -> device;
+		required strict message retrieveMood() device -> db;
+		required message retrieveMusic() device -> db;
+		strict message generatePlaylist() db -> device clockConstraint {<(x, 15)};
+	}
+}

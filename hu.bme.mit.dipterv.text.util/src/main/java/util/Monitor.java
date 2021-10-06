@@ -41,6 +41,10 @@ public class Monitor implements IMonitor {
 	@Override
 	public void update(String sender, String receiver, String messageType, String[] parameters) {
 		List<Transition> transitions = automaton.findSender(this.actualState);
+		System.out.println("[Monitor] available transition are: ");
+		for (Transition t : transitions) {
+			System.out.println(t.toString());
+		}
 		String receivedMessage = getReceivedMessage(sender, receiver, messageType, parameters);
 		previousMessages.add(receivedMessage);
 		System.out.println("Received Message: " + receivedMessage);

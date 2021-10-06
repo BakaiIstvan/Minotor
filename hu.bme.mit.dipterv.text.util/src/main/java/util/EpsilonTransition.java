@@ -16,7 +16,12 @@ public class EpsilonTransition extends Transition {
 	
 	@Override
 	public String toString() {
-		return "epsilon";
+		return "epsilon, " + sender.getId() + "->" + receiver.getId();
+	}
+
+	@Override
+	public int compareTo(Transition t2) {
+		return 0;
 	}
 
 }
