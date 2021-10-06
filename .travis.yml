@@ -10,3 +10,5 @@ script:
  - mvn clean install -U
  - cd hu.bme.mit.dipterv.text.example
  - mvn clean install -U
+ - cd ../hu.bme.mit.dipterv.text.mobileexample
+ - mvn clean install -U

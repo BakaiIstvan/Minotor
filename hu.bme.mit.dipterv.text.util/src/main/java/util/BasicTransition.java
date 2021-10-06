@@ -66,8 +66,21 @@ public class BasicTransition extends Transition {
 	
 	@Override
 	public String toString() {
-		return label 
+		return label + sender.getId() + "->" + receiver.getId()
 			 + ", " + (constraint != null ? constraint.getConstraints().toString() : "")
 			 + ", " + (clockConstraint != null? clockConstraint.getClockConstraintExpression().toString() : "");
+	}
+
+	@Override
+	public int compareTo(Transition t2) {
+		if (!this.getSender().getId().equals(this.getReceiver().getId())
+		 && t2.getSender().getId().equals(t2.getReceiver().getId())) {
+			return -1;
+		} else if (this.getSender().getId().equals(this.getReceiver().getId())
+				&& !t2.getSender().getId().equals(t2.getReceiver().getId())) {
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 }

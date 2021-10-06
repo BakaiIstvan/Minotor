@@ -34,7 +34,7 @@ class RegularMessage {
 										  , null
 										  , new WantedConstraint(new ArrayList<String>() {
 										  	{
-										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 										  	}}, null)
 									  	  , null
 										  , null));
@@ -47,7 +47,7 @@ class RegularMessage {
 										  , null
 										  , new UnwantedConstraint(new ArrayList<String>() {
 										  	{
-										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 										  	}}, null)
 									  	  , null
 										  , null));
@@ -78,7 +78,7 @@ class RegularMessage {
 										  , null
 										  , new WantedConstraint(new ArrayList<String>() {
 										  	{
-										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 										  	}}, null)
 									  	  , null
 										  , null));
@@ -91,7 +91,7 @@ class RegularMessage {
 										  , null
 										  , new UnwantedConstraint(new ArrayList<String>() {
 										  	{
-										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 										  	}}, null)
 									  	  , null
 										  , null));

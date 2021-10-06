@@ -3,7 +3,7 @@ package util;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Transition {
+public abstract class Transition implements Comparable<Transition> {
     protected State sender;
     protected State receiver;
     

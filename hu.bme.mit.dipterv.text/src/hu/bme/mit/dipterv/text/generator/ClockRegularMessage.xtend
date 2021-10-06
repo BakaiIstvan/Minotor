@@ -82,7 +82,7 @@ class ClockRegularMessage {
 										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
 										  , new UnwantedConstraint(new ArrayList<String>() {
 										  	{
-										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 										  	}}, «IF m.constraintexp !== null» 
 										  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.constraintexp)»"
 										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.constraintexp)»)
@@ -130,7 +130,7 @@ class ClockRegularMessage {
 										  , null
 										  , new UnwantedConstraint(new ArrayList<String>() {
 										  	{
-										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	«FOR cm : m.c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 										  	}}, «IF m.constraintexp !== null» 
 										  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.constraintexp)»"
 										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.constraintexp)» )
@@ -166,7 +166,7 @@ class ClockRegularMessage {
 												  , null
 												  , new UnwantedConstraint(new ArrayList<String>() {
 												  	{
-												  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+												  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 												  	}}, «IF m.futureMessage.get(0).constraintexp !== null» 
 												  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.futureMessage.get(0).constraintexp)»"
 												  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.futureMessage.get(0).constraintexp)» )

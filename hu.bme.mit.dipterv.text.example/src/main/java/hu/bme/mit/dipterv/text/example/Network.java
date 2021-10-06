@@ -15,7 +15,7 @@ public class Network implements ISystem {
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
 		Server server = new Server(monitor);
-		Computer computer = new Computer(server, monitor, true);
+		Computer computer = new Computer(server, monitor, true, false);
 	}
 
 	@Override

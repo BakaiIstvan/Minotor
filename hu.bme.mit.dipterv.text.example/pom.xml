@@ -26,7 +26,7 @@
 	</dependency>
 </dependencies>
 
-<build>	
+<build>
 	<sourceDirectory>src</sourceDirectory>
 
 	<plugins>
@@ -43,7 +43,7 @@
 				</execution>
 			</executions>
 			<configuration>
-			
+
 				<languages>
 					<language>
 						<setup>hu.bme.mit.dipterv.text.MinotorDslStandaloneSetup</setup>
@@ -70,5 +70,5 @@
 		</plugin>
 	</plugins>
 </build>
-  
+
 </project>

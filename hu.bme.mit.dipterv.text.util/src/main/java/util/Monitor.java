@@ -13,7 +13,7 @@ public class Monitor implements IMonitor {
 	private State actualState;
 	private List<State> goodStates;
 	private List<String> previousMessages;
-	private boolean requirementFullfilled;
+	private boolean errorDetected;
 	private IClock clock;
 	private ISystem system;
 	
@@ -28,19 +28,23 @@ public class Monitor implements IMonitor {
 	           .filter(state -> state.getType().equals(StateType.NORMAL) || state.getType().equals(StateType.FINAL))
 	           .collect(Collectors.toList());
 
-		this.requirementFullfilled = true;
+		this.errorDetected = false;
 		this.clock = clock;
 		this.system = system;
 	}
 	
 	@Override
 	public boolean goodStateReached() {
-		return this.goodStates.contains(actualState) && this.requirementFullfilled;
+		return this.goodStates.contains(actualState) && !this.errorDetected;
 	}
 
 	@Override
 	public void update(String sender, String receiver, String messageType, String[] parameters) {
 		List<Transition> transitions = automaton.findSender(this.actualState);
+		System.out.println("[Monitor] available transition are: ");
+		for (Transition t : transitions) {
+			System.out.println(t.toString());
+		}
 		String receivedMessage = getReceivedMessage(sender, receiver, messageType, parameters);
 		previousMessages.add(receivedMessage);
 		System.out.println("Received Message: " + receivedMessage);
@@ -82,7 +86,7 @@ public class Monitor implements IMonitor {
 								      , (int)clock.getClock(btransition.getClockConstraint().getClockName()));
 					}
 					
-					if (btransition.getConstraint() != null) {
+					if (btransition.getConstraint() != null && btransition.getConstraint().getClockConstraint() != null) {
 						clockValues.put(btransition.getConstraint().getClockConstraint().getClockName()
 								      , (int)clock.getClock(btransition.getConstraint().getClockConstraint().getClockName()));
 					}
@@ -101,7 +105,7 @@ public class Monitor implements IMonitor {
 		}
 		
 		if (!edgeTriggered) {
-			this.requirementFullfilled = false;
+			this.errorDetected = true;
 			System.out.println("Failure: receivedMessage didn't match any transitions.");
 			errorDetected(sender, receiver, messageType, parameters);
 		}
