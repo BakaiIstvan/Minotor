@@ -26,7 +26,7 @@ public class Mobile implements ISystem {
 		device.monitor = monitor;
 		db.monitor = monitor;
 		
-		user.init();
+		user.init(false, 0);
 	}
 	
 	@Override

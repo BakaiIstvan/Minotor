@@ -9,9 +9,9 @@ public class Server {
 		this.monitor = monitor;
 	}
 	
-	public void newEmail() {}
+	public void newEmail(String recipient, String subject) {}
 	public void sendUnsentEmail() {}
-	public void downloadEmail() {}
+	public void downloadEmail(int timeout) {}
 	public void logout() {}
 	
 }

@@ -3,6 +3,7 @@ package util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.time.StopWatch;
 
@@ -16,7 +17,8 @@ public class Clock implements IClock {
 	@Override
 	public long getClock(String clock) {
 		if (stopwatches.containsKey(clock)) {
-			return stopwatches.get(clock).getTime();
+			System.out.println("[Clock] clock " + clock + " is: " + stopwatches.get(clock).getTime(TimeUnit.SECONDS));
+			return stopwatches.get(clock).getTime(TimeUnit.SECONDS);
 		}
 		
 		return -1;
