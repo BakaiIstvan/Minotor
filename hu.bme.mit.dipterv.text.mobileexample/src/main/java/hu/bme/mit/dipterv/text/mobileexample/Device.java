@@ -1,5 +1,7 @@
 package hu.bme.mit.dipterv.text.mobileexample;
 
+import java.util.concurrent.TimeUnit;
+
 import util.IMonitor;
 
 public class Device {
@@ -7,19 +9,25 @@ public class Device {
 	public User user;
 	public Database db;
 	
-	void openApp() {
+	void openApp(boolean errorHappened, int timeout) {
 		monitor.update("user", "device", "openApp", new String[] {});
-		accessWebcam();
+		accessWebcam(errorHappened, timeout);
 	}
 
 	void closeApp() {
 		monitor.update("user", "device", "closeApp", new String[] {});
 	}
 	
-	void accessWebcam() {
+	void accessWebcam(boolean errorHappened, int timeout) {
+		try {
+			TimeUnit.SECONDS.sleep(timeout);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		monitor.update("device", "device", "accessWebcam", new String[] {});
 		user.getPhoto();
-		db.retrieveMood();
+		db.retrieveMood(errorHappened);
 		db.retrieveMusic();
 	}
 	

@@ -96,6 +96,12 @@ public class Monitor implements IMonitor {
 					this.actualState = transition.getReceiver();
 					updateMonitorStatus(transition);
 					edgeTriggered = true;
+
+					if (this.actualState.getType().equals(StateType.ACCEPT) || this.actualState.getType().equals(StateType.ACCEPT_ALL)) {
+						this.errorDetected = true;
+						System.out.println("Failure: actual state is accept state -> error.");
+						errorDetected(sender, receiver, messageType, parameters);
+					}
 				}
 			}
 			

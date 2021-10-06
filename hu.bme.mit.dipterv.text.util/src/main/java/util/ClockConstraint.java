@@ -26,6 +26,7 @@ public class ClockConstraint {
 	}
 	
 	public boolean isSatisfied(int clockValue) {
+		System.out.println("[ClockConstraint] clockValue = " + clockValue);
 		return clockConstraintExpression.clockExpression(clockValue);
 	}
 }

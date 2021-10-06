@@ -6,8 +6,8 @@ public class User {
 	public IMonitor monitor;
 	public Device device;
 	
-	void init() {
-		device.openApp();
+	void init(boolean errorHappened, int timeout) {
+		device.openApp(errorHappened, timeout);
 	}
 	
 	void getPhoto() {
