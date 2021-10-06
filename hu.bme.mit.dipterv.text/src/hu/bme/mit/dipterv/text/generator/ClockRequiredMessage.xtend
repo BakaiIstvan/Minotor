@@ -141,7 +141,7 @@ class ClockRequiredMessage {
 										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
 										  , new UnwantedConstraint(new ArrayList<String>() {
 										  	{
-										  	«FOR cm : m.pastMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	«FOR cm : m.pastMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 										  	}}, «IF m.pastMessage.get(0).constraintexp !== null» 
 										  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.pastMessage.get(0).constraintexp)»"
 										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.pastMessage.get(0).constraintexp)»)
@@ -167,7 +167,7 @@ class ClockRequiredMessage {
 										  , null
 										  , new WantedConstraint(new ArrayList<String>() {
   										  	{
-  										  	«FOR cm : m.pastMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+  										  	«FOR cm : m.pastMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
   										  	}}, «IF m.pastMessage.get(0).constraintexp !== null» 
   										  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.pastMessage.get(0).constraintexp)»"
   										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.pastMessage.get(0).constraintexp)»)
@@ -250,7 +250,7 @@ class ClockRequiredMessage {
 										  , null
 										  , new UnwantedConstraint(new ArrayList<String>() {
 										  	{
-										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 										  	}}, «IF m.futureMessage.get(0).constraintexp !== null» 
 										  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.futureMessage.get(0).constraintexp)»"
 										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.futureMessage.get(0).constraintexp)» )
@@ -265,7 +265,7 @@ class ClockRequiredMessage {
 										  , null
 										  , new WantedConstraint(new ArrayList<String>() {
   										  	{
-  										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+  										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
   										  	}}, «IF m.futureMessage.get(0).constraintexp !== null» 
   										  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.futureMessage.get(0).constraintexp)»"
   										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.futureMessage.get(0).constraintexp)»)
@@ -337,7 +337,7 @@ class ClockRequiredMessage {
 										  , null
 										  , new UnwantedConstraint(new ArrayList<String>() {
 										  	{
-										  	«FOR cm : m.strictFutureMessage.get(0).futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	«FOR cm : m.strictFutureMessage.get(0).futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 										  	}}, «IF m.strictFutureMessage.get(0).futureMessage.get(0).constraintexp !== null» 
 										  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.strictFutureMessage.get(0).futureMessage.get(0).constraintexp)»"
 										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.strictFutureMessage.get(0).futureMessage.get(0).constraintexp)» )
@@ -352,7 +352,7 @@ class ClockRequiredMessage {
 										  , null
 										  , new WantedConstraint(new ArrayList<String>() {
   										  	{
-  										  	«FOR cm : m.strictFutureMessage.get(0).futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+  										  	«FOR cm : m.strictFutureMessage.get(0).futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
   										  	}}, «IF m.strictFutureMessage.get(0).futureMessage.get(0).constraintexp !== null» 
   										  		new ClockConstraint("«new ClockConstraintGenerator().compile_clockConstraintName(m.strictFutureMessage.get(0).futureMessage.get(0).constraintexp)»"
   										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.strictFutureMessage.get(0).futureMessage.get(0).constraintexp)»)

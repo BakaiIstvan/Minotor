@@ -54,7 +54,7 @@ class RequiredMessage {
 										  , null
 										  , new UnwantedConstraint(new ArrayList<String>() {
 										  	{
-										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 										  	}}, null
 										  	  , null)
 										  , null));
@@ -65,7 +65,7 @@ class RequiredMessage {
 										  , null
 										  , new WantedConstraint(new ArrayList<String>() {
   										  	{
-  										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+  										  	«FOR cm : m.futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
   										  	}}, null
   										  	  , null)
 										  , null));
@@ -98,7 +98,7 @@ class RequiredMessage {
 										  , "!(" + «new LabelGenerator().compile_messageLabel(m)» + ")"
 										  , new UnwantedConstraint(new ArrayList<String>() {
   										  	{
-  										  	«FOR cm : m.pastMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+  										  	«FOR cm : m.pastMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
   										  	}}, null
   										  	  , null)
 										  , null));
@@ -116,7 +116,7 @@ class RequiredMessage {
 										  , null
 										  , new WantedConstraint(new ArrayList<String>() {
   										  	{
-  										  	«FOR cm : m.pastMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+  										  	«FOR cm : m.pastMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
   										  	}}, null
   										  	  , null)
 										  , null));
@@ -203,7 +203,7 @@ class RequiredMessage {
 										  , null
 										  , new UnwantedConstraint(new ArrayList<String>() {
 										  	{
-										  	«FOR cm : m.strictFutureMessage.get(0).futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+										  	«FOR cm : m.strictFutureMessage.get(0).futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
 										  	}}, null
 										  	  , null)
 										  , null));
@@ -214,7 +214,7 @@ class RequiredMessage {
 										  , null
 										  , new WantedConstraint(new ArrayList<String>() {
   										  	{
-  										  	«FOR cm : m.strictFutureMessage.get(0).futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(m)»);«ENDFOR»
+  										  	«FOR cm : m.strictFutureMessage.get(0).futureMessage.get(0).c.messages»add(«new LabelGenerator().compile_messageLabel(cm)»);«ENDFOR»
   										  	}}, null
   										  	  , null)
 										  , null));
