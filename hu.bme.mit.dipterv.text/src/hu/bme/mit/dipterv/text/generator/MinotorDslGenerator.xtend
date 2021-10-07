@@ -93,7 +93,7 @@ class MinotorDslGenerator extends AbstractGenerator {
 				«FOR scenario:s.scenarios»
 					Automaton a = new Automaton("«scenario.name»");
 					Automaton b;
-					Map<String, Automaton> altauto;
+					Map<Boolean, Automaton> altauto;
 					ArrayList<Automaton> parauto;
 					Automaton loopauto;
 					Automaton expression;
@@ -121,14 +121,14 @@ class MinotorDslGenerator extends AbstractGenerator {
 							a.merge(opFunctions.par(parauto));
 						«ENDFOR»
 						«FOR a : sc.alt»
-						altauto = new HashMap<String, Automaton>();
+						altauto = new HashMap<Boolean, Automaton>();
 							«FOR e : a.expressions»
 								expression = new Automaton("expauto" + counter);
 								«FOR m : e.messages»
 									«generateMessage(m)»
 									expression.collapse(b);
 								«ENDFOR»
-								altauto.put("«compile_alt_condition(e.altCondition)»", expression);
+								altauto.put(«compile_alt_condition(e.altCondition)», expression);
 							«ENDFOR»
 							a.merge(altauto);
 						«ENDFOR»
@@ -258,16 +258,16 @@ class MinotorDslGenerator extends AbstractGenerator {
 	'''(«expression.lhs») || («expression.rhs»)'''
 	
 	def dispatch generateLogicalExpression(EqualsExpression expression) 
-	'''«expression.lhs.name» == «expression.rhs»'''
+	'''«expression.lhs.value.value» == «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(EqualsBooleanExpression expression) 
-	'''«expression.lhs.name» == «expression.rhs»'''
+	'''«expression.lhs.value.value» == «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(GreaterThanExpression expression)
-	'''«expression.lhs.name» > «expression.rhs»'''
+	'''«expression.lhs.value.value» > «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(LesserThanExpression expression)
-	'''«expression.lhs.name» < «expression.rhs»'''
+	'''«expression.lhs.value.value» < «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(NotLogicalExpression expression)
 	'''!(«expression.operand»)'''

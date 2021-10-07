@@ -1,0 +1,24 @@
+specification Bank {
+
+	object UserInterface ui;
+	object ATM atm;
+	object BankDB db;
+
+	bool success = true;
+
+	constraint b {
+		message logout() ui->atm;
+	}
+
+	scenario transaction {
+		message login(success) ui->atm;
+
+		alt (equals(success, true)) {
+			pastConstraint {b} message wReq() ui->atm;
+			message uDB() atm->db;
+		} (equals(success, false)) {
+			message loginUnsuccessful() ui->atm;
+			required message lockMachine() atm->ui;
+		}
+	}
+}

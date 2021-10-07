@@ -66,7 +66,7 @@ public class BasicTransition extends Transition {
 	
 	@Override
 	public String toString() {
-		return label + sender.getId() + "->" + receiver.getId()
+		return label + ", " + sender.getId() + "->" + receiver.getId()
 			 + ", " + (constraint != null ? constraint.getConstraints().toString() : "")
 			 + ", " + (clockConstraint != null? clockConstraint.getClockConstraintExpression().toString() : "");
 	}
