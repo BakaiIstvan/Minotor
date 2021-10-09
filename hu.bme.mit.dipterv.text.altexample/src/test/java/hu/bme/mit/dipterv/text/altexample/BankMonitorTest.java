@@ -14,6 +14,8 @@ public class BankMonitorTest implements ISystem {
 
 	@Test
 	public void testBankMonitorPassing() {
+		System.out.println("[BankMonitorTest] Starting passing test");
+		System.out.println("==/==");
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
@@ -33,10 +35,13 @@ public class BankMonitorTest implements ISystem {
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
+		System.out.println("==/==");
 	}
 	
 	@Test
 	public void testBankMonitorFailing() {
+		System.out.println("[BankMonitorTest] Starting requirement unsatisfied test");
+		System.out.println("==/==");
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
@@ -56,6 +61,7 @@ public class BankMonitorTest implements ISystem {
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
+		System.out.println("==/==");
 	}
 
 	@Override

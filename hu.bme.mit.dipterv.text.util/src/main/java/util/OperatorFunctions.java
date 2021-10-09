@@ -1,11 +1,13 @@
 package util;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class OperatorFunctions {
-	public ArrayList<Automaton> par(ArrayList<Automaton> automatas) {
+	public Map<String, Entry<Boolean, Automaton>> par(ArrayList<Automaton> automatas) {
         ArrayList<ArrayList<Automaton>> automataList = new ArrayList<>();
         permute(automataList, new ArrayList<>(), automatas);
         return listConverter((automataList));
@@ -27,27 +29,30 @@ public class OperatorFunctions {
 	    }
 	}
 
-	private ArrayList<Automaton> listConverter(ArrayList<ArrayList<Automaton>> list) {
-	    ArrayList<Automaton> result = new ArrayList<>();
+	private Map<String, Entry<Boolean, Automaton>> listConverter(ArrayList<ArrayList<Automaton>> list) {
+		Map<String, Entry<Boolean, Automaton>> result = new HashMap<>();
+		int counter = 0;
 	    for (ArrayList<Automaton> alist : list) {
 	        Automaton newauto = new Automaton("listConverter");
 	        for (Automaton auto : alist) {
 	            newauto.collapse(copyAutomaton(auto));
 	        }
-	        result.add(newauto);
+	        
+	        result.put("listConverter" + counter, new AbstractMap.SimpleEntry<Boolean, Automaton>(true, newauto));
+	        counter++;
 	    }
 	    return result;
 	}
 
-	public Map<String, Automaton> loopSetup(Automaton loopauto, int min, int max) {
-		Map<String, Automaton> result = new HashMap<>();
+	public Map<String, Entry<Boolean, Automaton>> loopSetup(Automaton loopauto, int min, int max) {
+		Map<String, Entry<Boolean, Automaton>> result = new HashMap<>();
 	    
 	    for (int i = min; i <= max; i++) {
 	        Automaton newauto = new Automaton("loopauto" + i);
 	        for (int j = 0; j < i; j++) {
 	            newauto.collapse(copyAutomaton(loopauto));
 	        }
-	        result.put("loop" + i, newauto);
+	        result.put("loopauto" + i, new AbstractMap.SimpleEntry<Boolean, Automaton>(true, newauto));
 	    }
 	    return result;
 	}
@@ -76,6 +81,7 @@ public class OperatorFunctions {
                 temp.addState(receiver);
                 temp.setInitial(previousSender);
                 temp.setFinale(receiver);
+                receiver.setType(StateType.FINAL);
             } else {
                 if (t.getSender() == t.getReceiver()) {
                     sender.setId("c" + count);
@@ -88,6 +94,7 @@ public class OperatorFunctions {
                     temp.addState(sender);
                     temp.setInitial(sender);
                     temp.setFinale(sender);
+                    sender.setType(StateType.FINAL);
                 } else {
                     sender.setId("c" + count);
                     count++;
@@ -104,6 +111,7 @@ public class OperatorFunctions {
                     temp.addState(receiver);
                     temp.setInitial(sender);
                     temp.setFinale(receiver);
+                    receiver.setType(StateType.FINAL);
                 }
                 previousSender = sender;
                 referencePreviousSender = t.getSender();

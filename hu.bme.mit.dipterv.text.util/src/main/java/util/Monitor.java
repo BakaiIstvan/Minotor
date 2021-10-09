@@ -56,11 +56,7 @@ public class Monitor implements IMonitor {
 			System.out.println("=----------------------------------=");
 			Transition transition = iterator.next();
 			System.out.println("Transition: " + transition.toString());
-			if (transition instanceof EpsilonTransition) {
-				if (!transition.canTrigger(null, receivedMessage, previousMessages)) {
-					iterator.remove();
-					continue;
-				}
+			if (transition instanceof EpsilonTransition && transition.canTrigger(null, receivedMessage, previousMessages)) {
 				List<Transition> newTransitions = new ArrayList<Transition>(automaton.findSender(transition.getReceiver()));
 
 				for (Transition t : newTransitions) {
@@ -75,6 +71,11 @@ public class Monitor implements IMonitor {
 					updateMonitorStatus(transition);
 				}
 
+				iterator.remove();
+				if (!transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)) {
+					iterator = transitions.listIterator();
+				}
+			} else if (transition instanceof EpsilonTransition && !transition.canTrigger(null, receivedMessage, previousMessages)) {
 				iterator.remove();
 				if (!transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)) {
 					iterator = transitions.listIterator();

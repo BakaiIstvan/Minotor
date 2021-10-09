@@ -54,6 +54,7 @@ class MinotorDslGenerator extends AbstractGenerator {
 		import java.io.PrintWriter;
 		import java.io.UnsupportedEncodingException;
 		import java.util.ArrayList;
+		import java.util.Map.Entry;
 		import java.util.HashMap;
 		import java.util.Collections;
 		import java.util.Comparator;
@@ -62,6 +63,7 @@ class MinotorDslGenerator extends AbstractGenerator {
 		import java.util.Map;
 		import java.util.Set;
 		import java.util.TreeSet;
+		import java.util.AbstractMap;
 		
 		import util.Automaton;
 		import util.BasicTransition;
@@ -93,7 +95,7 @@ class MinotorDslGenerator extends AbstractGenerator {
 				«FOR scenario:s.scenarios»
 					Automaton a = new Automaton("«scenario.name»");
 					Automaton b;
-					Map<Boolean, Automaton> altauto;
+					Map<String, Entry<Boolean, Automaton>> altauto;
 					ArrayList<Automaton> parauto;
 					Automaton loopauto;
 					Automaton expression;
@@ -121,14 +123,14 @@ class MinotorDslGenerator extends AbstractGenerator {
 							a.merge(opFunctions.par(parauto));
 						«ENDFOR»
 						«FOR a : sc.alt»
-						altauto = new HashMap<Boolean, Automaton>();
+						altauto = new HashMap<String, Entry<Boolean, Automaton>>();
 							«FOR e : a.expressions»
 								expression = new Automaton("expauto" + counter);
 								«FOR m : e.messages»
 									«generateMessage(m)»
 									expression.collapse(b);
 								«ENDFOR»
-								altauto.put(«compile_alt_condition(e.altCondition)», expression);
+								altauto.put("«compile_alt_condition_name(e.altCondition)»", new AbstractMap.SimpleEntry<Boolean, Automaton>(«compile_alt_condition(e.altCondition)», expression));
 							«ENDFOR»
 							a.merge(altauto);
 						«ENDFOR»
@@ -271,4 +273,28 @@ class MinotorDslGenerator extends AbstractGenerator {
 	
 	def dispatch generateLogicalExpression(NotLogicalExpression expression)
 	'''!(«expression.operand»)'''
+	
+	def compile_alt_condition_name(LogicalExpression a)
+	'''«a.generateLogicalExpressionName»'''
+	
+	def dispatch generateLogicalExpressionName(AndExpression expression)
+	'''(«expression.lhs») && («expression.rhs»)'''
+	
+	def dispatch generateLogicalExpressionName(OrExpression expression)
+	'''(«expression.lhs») || («expression.rhs»)'''
+	
+	def dispatch generateLogicalExpressionName(EqualsExpression expression) 
+	'''«expression.lhs.name» == «expression.rhs»'''
+	
+	def dispatch generateLogicalExpressionName(EqualsBooleanExpression expression) 
+	'''«expression.lhs.name» == «expression.rhs»'''
+	
+	def dispatch generateLogicalExpressionName(GreaterThanExpression expression)
+	'''«expression.lhs.name» > «expression.rhs»'''
+	
+	def dispatch generateLogicalExpressionName(LesserThanExpression expression)
+	'''«expression.lhs.name» < «expression.rhs»'''
+	
+	def dispatch generateLogicalExpressionName(NotLogicalExpression expression)
+	'''not «expression.operand»'''
 }
