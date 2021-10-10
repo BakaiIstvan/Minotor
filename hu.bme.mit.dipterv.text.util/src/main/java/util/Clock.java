@@ -26,6 +26,7 @@ public class Clock implements IClock {
 
 	@Override
 	public void resetClock(String clock) {
+		System.out.println("[Clock] reset " + clock);
 		if (stopwatches.containsKey(clock)) {
 			stopwatches.get(clock).reset();
 		} else {

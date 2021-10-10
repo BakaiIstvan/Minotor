@@ -16,3 +16,5 @@ script:
  - mvn clean install -U
  - cd ../hu.bme.mit.dipterv.text.parexample
  - mvn clean install -U
+ - cd ../hu.bme.mit.dipterv.text.operatorexample
+ - mvn clean install -U

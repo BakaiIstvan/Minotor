@@ -126,16 +126,6 @@ public class Monitor implements IMonitor {
 	}
 	
 	private void updateMonitorStatus(Transition transition) {
-		if (actualState.getType().equals(StateType.FINAL)) {
-			List<Transition> transitions = automaton.findSender(this.actualState);
-			if (transitions.size() == 1
-			 && transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)
-			 && transitions.get(0).getReceiver().getType().equals(StateType.FINAL)) {
-				transition = transitions.get(0);
-				this.actualState = transition.getReceiver();
-			}
-		}
-
 		System.out.println("transition triggered: " + transition.toString());
 		System.out.println(actualState.getId());
 
@@ -159,6 +149,19 @@ public class Monitor implements IMonitor {
 				if (btransition.getConstraint().getReset() != null && !btransition.getConstraint().getReset().isEmpty()) {
 					clock.resetClock(btransition.getConstraint().getReset());
 				}
+			}
+		}
+		
+		if (actualState.getType().equals(StateType.FINAL)) {
+			List<Transition> transitions = automaton.findSender(this.actualState);
+			if (transitions.size() == 1
+			 && transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)
+			 && transitions.get(0).getReceiver().getType().equals(StateType.FINAL)) {
+				transition = transitions.get(0);
+				this.actualState = transition.getReceiver();
+				
+				System.out.println("transition triggered: " + transition.toString());
+				System.out.println(actualState.getId());
 			}
 		}
 	}
