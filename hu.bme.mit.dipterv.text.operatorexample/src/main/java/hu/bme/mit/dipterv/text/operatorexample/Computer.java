@@ -5,17 +5,24 @@ import java.util.concurrent.TimeUnit;
 import util.IMonitor;
 
 public class Computer {
-	public Server server;
-	public IMonitor monitor;
+	private Server server;
+	private IMonitor monitor;
+	private int timeout;
 
-	Computer(Server server, IMonitor monitor, int tries, boolean success) {
+	Computer(Server server, IMonitor monitor, int tries, boolean success, int timeout, boolean error) {
 		this.server = server;
 		this.server.setComputer(this);
 		this.monitor = monitor;
-
+		this.timeout = timeout;
+		
         for (int i = 0; i < tries; i++) {
+        	System.out.println("[Computer] Tries: " + ++i);
             login();
-            server.attemptLogin();
+            if (error) {
+    			server.logout();
+    		} else {
+    			server.attemptLogin();
+    		}
         }
 
         if (success) {
@@ -30,7 +37,7 @@ public class Computer {
 
     public void logoutUser() {
         try {
-            TimeUnit.SECONDS.sleep(4);
+            TimeUnit.SECONDS.sleep(timeout);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

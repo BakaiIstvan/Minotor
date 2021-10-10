@@ -181,7 +181,7 @@ public class Monitor implements IMonitor {
 
 	@Override
 	public boolean requirementSatisfied() {
-		return this.actualState == this.automaton.getFinale();
+		return this.actualState == this.automaton.getFinale() && goodStateReached();
 	}
 
 	@Override

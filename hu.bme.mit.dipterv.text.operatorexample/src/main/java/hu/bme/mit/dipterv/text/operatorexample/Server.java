@@ -22,6 +22,9 @@ public class Server {
 
 	public void attemptLogin() {
 		monitor.update("computer", "server", "attemptLogin", new String[] {});
+	}
+	
+	public void initiateLogout() {
 		if (!success) {
 			computer.logoutUser();
 			computer.lockComputer();
