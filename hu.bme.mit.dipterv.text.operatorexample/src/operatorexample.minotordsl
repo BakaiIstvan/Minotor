@@ -1,0 +1,25 @@
+specification Connection {
+	object Computer computer;
+	object Server server;
+
+	bool success = true;
+
+	constraint constraints {
+		message logout() computer -> server;
+	}
+
+	scenario logging {
+		loop (1, 3) {
+			message login() computer -> computer;
+			pastConstraint {constraints} message attemptLogin() computer -> server;
+		}
+
+		alt (equals(success, true)) {
+			message checkEmail() computer -> server;
+			message newEmail() computer -> server;
+		} (equals(success, false)) {
+			message logoutUser() server -> computer;
+			message lockComputer() server -> computer;
+		}
+	}
+}

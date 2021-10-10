@@ -1,0 +1,20 @@
+specification Email {
+	object Computer computer;
+	object Server server;
+
+	constraint constraints{
+		message logout() computer -> server;
+	}
+
+	scenario email {
+		par {
+			case checkEmail {
+				message checkEmail() computer -> computer;
+			}
+
+			case newEmail {
+				pastConstraint {constraints} message newEmail() computer -> server;
+			}
+		}
+	}
+}

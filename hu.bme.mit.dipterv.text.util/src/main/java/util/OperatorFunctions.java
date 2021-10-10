@@ -1,11 +1,13 @@
 package util;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class OperatorFunctions {
-	public ArrayList<Automaton> par(ArrayList<Automaton> automatas) {
+	public Map<String, Entry<Boolean, Automaton>> par(ArrayList<Automaton> automatas) {
         ArrayList<ArrayList<Automaton>> automataList = new ArrayList<>();
         permute(automataList, new ArrayList<>(), automatas);
         return listConverter((automataList));
@@ -27,92 +29,55 @@ public class OperatorFunctions {
 	    }
 	}
 
-	private ArrayList<Automaton> listConverter(ArrayList<ArrayList<Automaton>> list) {
-	    ArrayList<Automaton> result = new ArrayList<>();
+	private Map<String, Entry<Boolean, Automaton>> listConverter(ArrayList<ArrayList<Automaton>> list) {
+		Map<String, Entry<Boolean, Automaton>> result = new HashMap<>();
+		int counter = 0;
 	    for (ArrayList<Automaton> alist : list) {
 	        Automaton newauto = new Automaton("listConverter");
 	        for (Automaton auto : alist) {
 	            newauto.collapse(copyAutomaton(auto));
 	        }
-	        result.add(newauto);
+	        
+	        result.put("listConverter" + counter, new AbstractMap.SimpleEntry<Boolean, Automaton>(true, newauto));
+	        counter++;
 	    }
 	    return result;
 	}
 
-	public Map<String, Automaton> loopSetup(Automaton loopauto, int min, int max) {
-		Map<String, Automaton> result = new HashMap<>();
+	public Map<String, Entry<Boolean, Automaton>> loopSetup(Automaton loopauto, int min, int max) {
+		Map<String, Entry<Boolean, Automaton>> result = new HashMap<>();
 	    
 	    for (int i = min; i <= max; i++) {
 	        Automaton newauto = new Automaton("loopauto" + i);
 	        for (int j = 0; j < i; j++) {
 	            newauto.collapse(copyAutomaton(loopauto));
 	        }
-	        result.put("loop" + i, newauto);
+	        result.put("loopauto" + i, new AbstractMap.SimpleEntry<Boolean, Automaton>(true, newauto));
 	    }
 	    return result;
 	}
 
 	private Automaton copyAutomaton(Automaton referenceAuto) {
         Automaton result = new Automaton("copy automaton");
-        int count = 0;
-        State previousSender = new State();
-        State referencePreviousSender = new State();
-
-        for (Transition t : referenceAuto.getTransitions()) {
-        	BasicTransition basict = (BasicTransition)t;
-            State sender = new State();
-            State receiver = new State();
-            Transition transition = new BasicTransition(basict);
-            Automaton temp = new Automaton("temp");
-
-            if (t.getSender() == referencePreviousSender) {
-                receiver.setId("c" + count);
-                count++;
-                receiver.setType(t.getReceiver().getType());
-
-                transition.setSender(previousSender);
-                transition.setReceiver(receiver);
-                temp.addState(previousSender);
-                temp.addState(receiver);
-                temp.setInitial(previousSender);
-                temp.setFinale(receiver);
-            } else {
-                if (t.getSender() == t.getReceiver()) {
-                    sender.setId("c" + count);
-                    count++;
-                    sender.setType(t.getSender().getType());
-
-                    transition.setSender(sender);
-                    transition.setReceiver(sender);
-
-                    temp.addState(sender);
-                    temp.setInitial(sender);
-                    temp.setFinale(sender);
-                } else {
-                    sender.setId("c" + count);
-                    count++;
-                    sender.setType(t.getSender().getType());
-
-                    receiver.setId("c" + count);
-                    count++;
-                    receiver.setType(t.getReceiver().getType());
-
-                    transition.setSender(sender);
-                    transition.setReceiver(receiver);
-
-                    temp.addState(sender);
-                    temp.addState(receiver);
-                    temp.setInitial(sender);
-                    temp.setFinale(receiver);
-                }
-                previousSender = sender;
-                referencePreviousSender = t.getSender();
-            }
-
-            temp.addTransition(transition);
-            result.collapse(temp);
+        
+        for (State referenceState : referenceAuto.getStates()) {
+        	result.addState(new State(referenceState.getId(), referenceState.getType()));
         }
-
+        
+        result.setInitial(result.getStates().stream().filter(state -> state.getId().equals(referenceAuto.getInitial().getId())).findFirst().orElse(null));
+        result.setFinale(result.getStates().stream().filter(state -> state.getId().equals(referenceAuto.getFinale().getId())).findFirst().orElse(null));
+        
+        for (Transition referenceTransition : referenceAuto.getTransitions()) {
+        	BasicTransition bReferenceTransition = (BasicTransition)referenceTransition;
+        	BasicTransition bTransition = new BasicTransition(result.getStates().stream().filter(state -> state.getId().equals(bReferenceTransition.getSender().getId())).findFirst().orElse(null)
+        													, result.getStates().stream().filter(state -> state.getId().equals(bReferenceTransition.getReceiver().getId())).findFirst().orElse(null)
+        													, bReferenceTransition.getReset()
+        													, bReferenceTransition.getLabel()
+        													, bReferenceTransition.getConstraint()
+        													, bReferenceTransition.getClockConstraint());
+        	result.addTransition(bTransition);
+        }
+        
         return result;
     }
 }

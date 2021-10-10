@@ -4,14 +4,17 @@ import java.util.List;
 import java.util.Map;
 
 public class EpsilonTransition extends Transition {
+	private boolean canTrigger;
 
-	public EpsilonTransition(State sender, State receiver, String reset) {
+	public EpsilonTransition(State sender, State receiver, String reset, boolean canTrigger) {
 		super(sender, receiver, reset);
+		this.canTrigger = canTrigger;
 	}
 
 	@Override
 	public boolean canTrigger(Map<String, Integer> clockValues, String receivedMessage, List<String> previousMessages) {
-		return true;
+		System.out.println("[EpsilonTransition]" + toString() + " canTrigger is " + canTrigger);
+		return canTrigger;
 	}
 	
 	@Override
@@ -21,7 +24,7 @@ public class EpsilonTransition extends Transition {
 
 	@Override
 	public int compareTo(Transition t2) {
-		return 0;
+		return -1;
 	}
 
 }
