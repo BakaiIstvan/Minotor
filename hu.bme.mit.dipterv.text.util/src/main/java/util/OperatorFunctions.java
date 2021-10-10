@@ -59,68 +59,25 @@ public class OperatorFunctions {
 
 	private Automaton copyAutomaton(Automaton referenceAuto) {
         Automaton result = new Automaton("copy automaton");
-        int count = 0;
-        State previousSender = new State();
-        State referencePreviousSender = new State();
-
-        for (Transition t : referenceAuto.getTransitions()) {
-        	BasicTransition basict = (BasicTransition)t;
-            State sender = new State();
-            State receiver = new State();
-            Transition transition = new BasicTransition(basict);
-            Automaton temp = new Automaton("temp");
-
-            if (t.getSender() == referencePreviousSender) {
-                receiver.setId("c" + count);
-                count++;
-                receiver.setType(t.getReceiver().getType());
-
-                transition.setSender(previousSender);
-                transition.setReceiver(receiver);
-                temp.addState(previousSender);
-                temp.addState(receiver);
-                temp.setInitial(previousSender);
-                temp.setFinale(receiver);
-                receiver.setType(StateType.FINAL);
-            } else {
-                if (t.getSender() == t.getReceiver()) {
-                    sender.setId("c" + count);
-                    count++;
-                    sender.setType(t.getSender().getType());
-
-                    transition.setSender(sender);
-                    transition.setReceiver(sender);
-
-                    temp.addState(sender);
-                    temp.setInitial(sender);
-                    temp.setFinale(sender);
-                    sender.setType(StateType.FINAL);
-                } else {
-                    sender.setId("c" + count);
-                    count++;
-                    sender.setType(t.getSender().getType());
-
-                    receiver.setId("c" + count);
-                    count++;
-                    receiver.setType(t.getReceiver().getType());
-
-                    transition.setSender(sender);
-                    transition.setReceiver(receiver);
-
-                    temp.addState(sender);
-                    temp.addState(receiver);
-                    temp.setInitial(sender);
-                    temp.setFinale(receiver);
-                    receiver.setType(StateType.FINAL);
-                }
-                previousSender = sender;
-                referencePreviousSender = t.getSender();
-            }
-
-            temp.addTransition(transition);
-            result.collapse(temp);
+        
+        for (State referenceState : referenceAuto.getStates()) {
+        	result.addState(new State(referenceState.getId(), referenceState.getType()));
         }
-
+        
+        result.setInitial(result.getStates().stream().filter(state -> state.getId().equals(referenceAuto.getInitial().getId())).findFirst().orElse(null));
+        result.setFinale(result.getStates().stream().filter(state -> state.getId().equals(referenceAuto.getFinale().getId())).findFirst().orElse(null));
+        
+        for (Transition referenceTransition : referenceAuto.getTransitions()) {
+        	BasicTransition bReferenceTransition = (BasicTransition)referenceTransition;
+        	BasicTransition bTransition = new BasicTransition(result.getStates().stream().filter(state -> state.getId().equals(bReferenceTransition.getSender().getId())).findFirst().orElse(null)
+        													, result.getStates().stream().filter(state -> state.getId().equals(bReferenceTransition.getReceiver().getId())).findFirst().orElse(null)
+        													, bReferenceTransition.getReset()
+        													, bReferenceTransition.getLabel()
+        													, bReferenceTransition.getConstraint()
+        													, bReferenceTransition.getClockConstraint());
+        	result.addTransition(bTransition);
+        }
+        
         return result;
     }
 }

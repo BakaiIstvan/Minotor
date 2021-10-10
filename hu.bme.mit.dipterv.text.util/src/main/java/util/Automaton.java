@@ -90,7 +90,7 @@ public class Automaton {
         return receiverTransitions;
      }
 
-    public void addTransition(Transition newTransition){
+    public void addTransition(Transition newTransition) {
    		transitions.add(newTransition);
    }
 

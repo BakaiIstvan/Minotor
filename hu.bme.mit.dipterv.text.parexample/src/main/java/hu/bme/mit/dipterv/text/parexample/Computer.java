@@ -6,15 +6,19 @@ public class Computer {
 	public Server server;
 	public IMonitor monitor;
 	
-	Computer(Server server, IMonitor monitor) {
+	Computer(Server server, IMonitor monitor, boolean branch) {
 		this.server = server;
 		this.monitor = monitor;
-		monitor.update("computer", "computer", "checkEmail", new String[] {});
-		checkEmail();
+		if (branch) {
+			checkEmail();
+			server.newEmail();
+		} else {
+			server.newEmail();
+			checkEmail();
+		}
 	}
 	
 	void checkEmail() {
-		server.newEmail();
-		monitor.update("computer", "server", "newEmail", new String[] {});
+		monitor.update("computer", "computer", "checkEmail", new String[] {});
 	}
 }

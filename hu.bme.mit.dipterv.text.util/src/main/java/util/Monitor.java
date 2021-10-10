@@ -73,6 +73,7 @@ public class Monitor implements IMonitor {
 
 				iterator.remove();
 				if (!transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)) {
+					transitions.sort((t1, t2) -> t1.compareTo(t2));
 					iterator = transitions.listIterator();
 				}
 			} else if (transition instanceof EpsilonTransition && !transition.canTrigger(null, receivedMessage, previousMessages)) {

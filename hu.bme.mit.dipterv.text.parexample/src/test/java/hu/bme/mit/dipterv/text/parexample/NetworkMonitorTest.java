@@ -18,8 +18,21 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		Server server = new Server();
-		Computer computer = new Computer(server, monitor);
+		Server server = new Server(monitor);
+		Computer computer = new Computer(server, monitor, true);
+		Assertions.assertTrue(monitor.goodStateReached());
+		Assertions.assertTrue(monitor.requirementSatisfied());
+	}
+	
+	@Test
+	public void testNetworkOtherRequirementSatisfied() {
+		Specification specification = new Specification();
+		specification.listAutomatas();
+		IClock clock = new Clock();
+		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
+		
+		Server server = new Server(monitor);
+		Computer computer = new Computer(server, monitor, false);
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
 	}
