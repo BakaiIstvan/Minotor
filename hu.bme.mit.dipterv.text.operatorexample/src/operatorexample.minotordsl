@@ -1,25 +1,35 @@
 specification Connection {
+
 	object Computer computer;
 	object Server server;
 
-	bool success = true;
+	string receiver = "John";
+	string subject = "Next Meeting";
+	bool success = false;
 
-	constraint constraints {
+	clock x;
+	clock y;
+
+	constraint logout {
 		message logout() computer -> server;
 	}
 
-	scenario logging {
+	constraint delete {
+		message deleteEmail(subject) computer -> server;
+	}
+
+	scenario authentication {
 		loop (1, 3) {
-			message login() computer -> computer;
-			pastConstraint {constraints} message attemptLogin() computer -> server;
+			message login() computer -> computer reset x;
+			pastConstraint {logout} message attemptLogin() computer -> server reset y;
 		}
 
 		alt (equals(success, true)) {
-			message checkEmail() computer -> server;
-			message newEmail() computer -> server;
+			message checkEmail() computer -> server clockConstraint {<(x, 2)};
+			required futureConstraint {delete} message newEmail(receiver, subject) computer -> server reset x;
 		} (equals(success, false)) {
-			message logoutUser() server -> computer;
-			message lockComputer() server -> computer;
+			required message logoutUser() server -> computer clockConstraint {>(y, 3)};
+			message lockComputer() server -> computer reset y;
 		}
 	}
 }

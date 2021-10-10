@@ -126,16 +126,6 @@ public class Monitor implements IMonitor {
 	}
 	
 	private void updateMonitorStatus(Transition transition) {
-		if (actualState.getType().equals(StateType.FINAL)) {
-			List<Transition> transitions = automaton.findSender(this.actualState);
-			if (transitions.size() == 1
-			 && transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)
-			 && transitions.get(0).getReceiver().getType().equals(StateType.FINAL)) {
-				transition = transitions.get(0);
-				this.actualState = transition.getReceiver();
-			}
-		}
-
 		System.out.println("transition triggered: " + transition.toString());
 		System.out.println(actualState.getId());
 
@@ -161,6 +151,19 @@ public class Monitor implements IMonitor {
 				}
 			}
 		}
+		
+		if (actualState.getType().equals(StateType.FINAL)) {
+			List<Transition> transitions = automaton.findSender(this.actualState);
+			if (transitions.size() == 1
+			 && transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)
+			 && transitions.get(0).getReceiver().getType().equals(StateType.FINAL)) {
+				transition = transitions.get(0);
+				this.actualState = transition.getReceiver();
+				
+				System.out.println("transition triggered: " + transition.toString());
+				System.out.println(actualState.getId());
+			}
+		}
 	}
 
 	private String getReceivedMessage(String sender, String receiver, String messageType, String[] parameters) {
@@ -178,7 +181,7 @@ public class Monitor implements IMonitor {
 
 	@Override
 	public boolean requirementSatisfied() {
-		return this.actualState == this.automaton.getFinale();
+		return this.actualState == this.automaton.getFinale() && goodStateReached();
 	}
 
 	@Override

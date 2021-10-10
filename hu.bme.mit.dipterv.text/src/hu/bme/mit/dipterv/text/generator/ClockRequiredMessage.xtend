@@ -271,7 +271,7 @@ class ClockRequiredMessage {
   										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.futureMessage.get(0).constraintexp)»)
   										  		«ELSE»null«ENDIF»
   										  	  , null)
-										  , null);
+										  , null));
 	'''
 	
 	def compile_strict_required_future_clock(RequiredStrictFutureMessage m)'''
@@ -358,6 +358,6 @@ class ClockRequiredMessage {
   										  						 , «new ClockConstraintGenerator().compile_ClockConstraintExpression(m.strictFutureMessage.get(0).futureMessage.get(0).constraintexp)»)
   										  		«ELSE»null«ENDIF»
   										  	  , null)
-										  , null);
+										  , null));
 	'''
 }
