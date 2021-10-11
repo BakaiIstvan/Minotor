@@ -18,8 +18,9 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		Server server = new Server(monitor);
-		Computer computer = new Computer(server, monitor, true);
+		monitor.update("computer", "computer", "checkEmail", new String[] {});
+		monitor.update("computer", "server", "newEmail", new String[] {});
+		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
 	}
@@ -31,8 +32,9 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		Server server = new Server(monitor);
-		Computer computer = new Computer(server, monitor, false);
+		monitor.update("computer", "server", "newEmail", new String[] {});
+		monitor.update("computer", "computer", "checkEmail", new String[] {});
+		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
 	}
@@ -40,5 +42,17 @@ public class NetworkMonitorTest implements ISystem {
 	@Override
 	public void receiveMonitorStatus(String message) {
 		System.out.println("[NetworkMonitorTest]Received status from monitor: " + message);
+	}
+
+	@Override
+	public void receiveMonitorError(String actualMessage, String lastAcceptedMessage) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void receiveMonitorSuccess() {
+		// TODO Auto-generated method stub
+		
 	}
 }

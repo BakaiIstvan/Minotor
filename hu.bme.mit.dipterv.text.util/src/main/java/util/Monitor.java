@@ -122,6 +122,7 @@ public class Monitor implements IMonitor {
 			this.errorDetected = true;
 			System.out.println("Failure: receivedMessage didn't match any transitions.");
 			errorDetected(sender, receiver, messageType, parameters);
+			system.receiveMonitorStatus("error detected");
 		}
 	}
 	

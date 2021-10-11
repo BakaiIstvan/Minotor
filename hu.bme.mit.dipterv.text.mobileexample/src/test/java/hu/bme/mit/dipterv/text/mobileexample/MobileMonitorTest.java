@@ -1,5 +1,7 @@
 package hu.bme.mit.dipterv.text.mobileexample;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -19,18 +21,13 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		User user = new User();
-		Device device = new Device();
-		Database db = new Database();
-		user.device = device;
-		device.user = user;
-		device.db = db;
-		db.device = device;
-		user.monitor = monitor;
-		device.monitor = monitor;
-		db.monitor = monitor;
-		
-		user.init(false, 0);
+		monitor.update("user", "device", "openApp", new String[] {});
+		monitor.update("device", "device", "accessWebcam", new String[] {});
+		monitor.update("device", "user", "getPhoto", new String[] {});
+		monitor.update("someone", "else", "message", new String[] {});
+		monitor.update("device", "db", "retrieveMood", new String[] {});
+		monitor.update("device", "db", "retrieveMusic", new String[] {});
+		monitor.update("db", "device", "generatePlaylist", new String[] {});
 
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -43,18 +40,13 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		User user = new User();
-		Device device = new Device();
-		Database db = new Database();
-		user.device = device;
-		device.user = user;
-		device.db = db;
-		db.device = device;
-		user.monitor = monitor;
-		device.monitor = monitor;
-		db.monitor = monitor;
-		
-		user.init(true, 0);
+		monitor.update("user", "device", "openApp", new String[] {});
+		monitor.update("device", "device", "accessWebcam", new String[] {});
+		monitor.update("device", "user", "getPhoto", new String[] {});
+		monitor.update("user", "device", "cameraOffline", new String[] {});
+		monitor.update("device", "db", "retrieveMood", new String[] {});
+		monitor.update("device", "db", "retrieveMusic", new String[] {});
+		monitor.update("db", "device", "generatePlaylist", new String[] {});
 
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -68,19 +60,20 @@ public class MobileMonitorTest implements ISystem {
 		specification.listAutomatas();
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
-		
-		User user = new User();
-		Device device = new Device();
-		Database db = new Database();
-		user.device = device;
-		device.user = user;
-		device.db = db;
-		db.device = device;
-		user.monitor = monitor;
-		device.monitor = monitor;
-		db.monitor = monitor;
-		
-		user.init(false, 5);
+	
+		monitor.update("user", "device", "openApp", new String[] {});
+		try {
+			TimeUnit.SECONDS.sleep(5);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		monitor.update("device", "device", "accessWebcam", new String[] {});
+		monitor.update("device", "user", "getPhoto", new String[] {});
+		monitor.update("someone", "else", "message", new String[] {});
+		monitor.update("device", "db", "retrieveMood", new String[] {});
+		monitor.update("device", "db", "retrieveMusic", new String[] {});
+		monitor.update("db", "device", "generatePlaylist", new String[] {});
 
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -96,18 +89,19 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		User user = new User();
-		Device device = new Device();
-		Database db = new Database();
-		user.device = device;
-		device.user = user;
-		device.db = db;
-		db.device = device;
-		user.monitor = monitor;
-		device.monitor = monitor;
-		db.monitor = monitor;
-		
-		user.init(false, 6);
+		monitor.update("user", "device", "openApp", new String[] {});
+		try {
+			TimeUnit.SECONDS.sleep(6);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		monitor.update("device", "device", "accessWebcam", new String[] {});
+		monitor.update("device", "user", "getPhoto", new String[] {});
+		monitor.update("someone", "else", "message", new String[] {});
+		monitor.update("device", "db", "retrieveMood", new String[] {});
+		monitor.update("device", "db", "retrieveMusic", new String[] {});
+		monitor.update("db", "device", "generatePlaylist", new String[] {});
 
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -117,5 +111,17 @@ public class MobileMonitorTest implements ISystem {
 	@Override
 	public void receiveMonitorStatus(String message) {
 		System.out.println("[MobileMonitorTest] Received status from monitor: " + message);
+	}
+
+	@Override
+	public void receiveMonitorError(String actualMessage, String lastAcceptedMessage) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void receiveMonitorSuccess() {
+		// TODO Auto-generated method stub
+		
 	}
 }

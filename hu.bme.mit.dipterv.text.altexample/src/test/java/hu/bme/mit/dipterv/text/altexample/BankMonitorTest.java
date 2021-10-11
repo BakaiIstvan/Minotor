@@ -21,17 +21,9 @@ public class BankMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		UserInterface ui = new UserInterface();
-		ATM atm = new ATM();
-		BankDB db = new BankDB();
-		ui.atm = atm;
-		atm.ui = ui;
-		atm.db = db;
-		ui.monitor = monitor;
-		atm.monitor = monitor;
-		db.monitor = monitor;
-		
-		ui.start(true);
+		monitor.update("ui", "atm", "login", new String[] {"success"});
+		monitor.update("ui", "atm", "wReq", new String[] {});
+		monitor.update("atm", "db", "uDB", new String[] {});
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -47,17 +39,9 @@ public class BankMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		UserInterface ui = new UserInterface();
-		ATM atm = new ATM();
-		BankDB db = new BankDB();
-		ui.atm = atm;
-		atm.ui = ui;
-		atm.db = db;
-		ui.monitor = monitor;
-		atm.monitor = monitor;
-		db.monitor = monitor;
-		
-		ui.start(false);
+		monitor.update("ui", "atm", "login", new String[] {"success"});
+		monitor.update("ui", "atm", "loginUnsuccesful", new String[] {});
+		monitor.update("atm", "ui", "lockMachine", new String[] {});
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -67,5 +51,17 @@ public class BankMonitorTest implements ISystem {
 	@Override
 	public void receiveMonitorStatus(String message) {
 		System.out.println("[BankMonitorTest]Received status from monitor: " + message);
+	}
+
+	@Override
+	public void receiveMonitorError(String actualMessage, String lastAcceptedMessage) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void receiveMonitorSuccess() {
+		// TODO Auto-generated method stub
+		
 	}
 }
