@@ -14,9 +14,19 @@ import util.Monitor;
 import util.ISystem;
 
 public class NetworkMonitorTest implements ISystem {
-	//TODO: tesztekhez trace-ket írni, komplikált implementációt kitörölni.
+	private boolean requirementSatisfied = false;
+	private boolean errorDetected = false;
+	
+	//TODO: use @BeforeEach, didn't work for some reason last time
+	public void resetValues() {
+		requirementSatisfied = false;
+		errorDetected = false;
+		System.out.println("[NetworkMonitorTest] Resetting values");
+	}
+	
     @Test
 	public void testNetworkRequirementSatisfied() {
+    	resetValues();
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
@@ -38,10 +48,13 @@ public class NetworkMonitorTest implements ISystem {
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
 	}
     
     @Test
 	public void testNetworkRequirementSatisfiedTwice() {
+    	resetValues();
     	System.out.println("Twice ---------------------------------------------------------------------------");
 		Specification specification = new Specification();
 		specification.listAutomatas();
@@ -64,11 +77,14 @@ public class NetworkMonitorTest implements ISystem {
         
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
 		System.out.println("Twice --------------------------------------------------------------------------- END");
 	}
     
     /*@Test
 	public void testNetworkRequirementSatisfiedThreeTimes() {
+		resetValues();
     	System.out.println("Three times ---------------------------------------------------------------------------");
 		Specification specification = new Specification();
 		specification.listAutomatas();
@@ -91,11 +107,14 @@ public class NetworkMonitorTest implements ISystem {
         
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
 		System.out.println("Three times --------------------------------------------------------------------------- END");
 	}*/
     
     @Test
 	public void testNetworkRequirementSatisfiedFourTimes() {
+    	resetValues();
     	System.out.println("Four times ---------------------------------------------------------------------------");
 		Specification specification = new Specification();
 		specification.listAutomatas();
@@ -118,11 +137,14 @@ public class NetworkMonitorTest implements ISystem {
         
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
+		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertTrue(errorDetected);
 		System.out.println("Four times --------------------------------------------------------------------------- END");
 	}
     
     @Test
 	public void testNetworkAltTrueCase() {
+    	resetValues();
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
@@ -144,10 +166,13 @@ public class NetworkMonitorTest implements ISystem {
 		
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
+		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertTrue(errorDetected);
 	}
     
     @Test
    	public void testNetworkLogoutTooFast() {
+    	resetValues();
    		Specification specification = new Specification();
    		specification.listAutomatas();
    		IClock clock = new Clock();
@@ -169,10 +194,13 @@ public class NetworkMonitorTest implements ISystem {
    		
    		Assertions.assertFalse(monitor.goodStateReached());
    		Assertions.assertFalse(monitor.requirementSatisfied());
+   		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertTrue(errorDetected);
    	}
     
     @Test
    	public void testNetworkLogoutConstrait() {
+    	resetValues();
    		Specification specification = new Specification();
    		specification.listAutomatas();
    		IClock clock = new Clock();
@@ -195,6 +223,8 @@ public class NetworkMonitorTest implements ISystem {
    		
    		Assertions.assertFalse(monitor.goodStateReached());
    		Assertions.assertFalse(monitor.requirementSatisfied());
+   		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertTrue(errorDetected);
    	}
 
     @Override
@@ -202,15 +232,16 @@ public class NetworkMonitorTest implements ISystem {
 		System.out.println("[NetworkMonitorTest]Received status from monitor: " + message);
 	}
 
-	@Override
+    @Override
 	public void receiveMonitorError(String actualMessage, String lastAcceptedMessage) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("[NetworkMonitorTest] Received error report from Monitor for " + actualMessage + " message.");
+		System.out.println("Last accepted message was: " + lastAcceptedMessage);
+		errorDetected = true;
 	}
 
 	@Override
 	public void receiveMonitorSuccess() {
-		// TODO Auto-generated method stub
-		
+		System.out.println("[NetworkMonitorTest] Monitor reported that the requirement was satisfied");
+		requirementSatisfied = true;
 	}
 }

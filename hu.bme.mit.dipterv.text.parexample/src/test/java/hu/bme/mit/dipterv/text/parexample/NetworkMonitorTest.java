@@ -11,8 +11,19 @@ import util.ISystem;
 import util.Monitor;
 
 public class NetworkMonitorTest implements ISystem {
+	private boolean requirementSatisfied = false;
+	private boolean errorDetected = false;
+	
+	//TODO: use @BeforeEach, didn't work for some reason last time
+	public void resetValues() {
+		requirementSatisfied = false;
+		errorDetected = false;
+		System.out.println("[NetworkMonitorTest] Resetting values");
+	}
+	
 	@Test
 	public void testNetworkRequirementSatisfied() {
+		resetValues();
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
@@ -23,10 +34,13 @@ public class NetworkMonitorTest implements ISystem {
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
 	}
 	
 	@Test
 	public void testNetworkOtherRequirementSatisfied() {
+		resetValues();
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
@@ -37,6 +51,8 @@ public class NetworkMonitorTest implements ISystem {
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
 	}
 
 	@Override
@@ -46,13 +62,14 @@ public class NetworkMonitorTest implements ISystem {
 
 	@Override
 	public void receiveMonitorError(String actualMessage, String lastAcceptedMessage) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("[NetworkMonitorTest] Received error report from Monitor for " + actualMessage + " message.");
+		System.out.println("Last accepted message was: " + lastAcceptedMessage);
+		errorDetected = true;
 	}
 
 	@Override
 	public void receiveMonitorSuccess() {
-		// TODO Auto-generated method stub
-		
+		System.out.println("[NetworkMonitorTest] Monitor reported that the requirement was satisfied");
+		requirementSatisfied = true;
 	}
 }
