@@ -4,6 +4,8 @@ import util.Clock;
 import util.IClock;
 import util.IMonitor;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,111 +14,234 @@ import util.Monitor;
 import util.ISystem;
 
 public class NetworkMonitorTest implements ISystem {
+	private boolean requirementSatisfied = false;
+	private boolean errorDetected = false;
+	
+	//TODO: use @BeforeEach, didn't work for some reason last time
+	public void resetValues() {
+		requirementSatisfied = false;
+		errorDetected = false;
+		System.out.println("[NetworkMonitorTest] Resetting values");
+	}
+	
     @Test
 	public void testNetworkRequirementSatisfied() {
+    	resetValues();
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
-
-		Server server = new Server(monitor, false);
-		Computer computer = new Computer(server, monitor, 1, false, 4, false);
-		server.initiateLogout();
+		
+		for (int i = 0; i < 1; i++) {
+        	System.out.println("[Computer] Tries: " + ++i);
+        	monitor.update("computer", "computer", "login", new String[] {});
+        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        }
+		
+		try {
+            TimeUnit.SECONDS.sleep(4);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        monitor.update("server", "computer", "logoutUser", new String[] {});
+        monitor.update("server", "computer", "lockComputer", new String[] {});
+		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
 	}
     
     @Test
 	public void testNetworkRequirementSatisfiedTwice() {
+    	resetValues();
     	System.out.println("Twice ---------------------------------------------------------------------------");
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 
-		Server server = new Server(monitor, false);
-		Computer computer = new Computer(server, monitor, 2, false, 4, false);
-		server.initiateLogout();
+		for (int i = 0; i < 2; i++) {
+        	System.out.println("[Computer] Tries: " + ++i);
+        	monitor.update("computer", "computer", "login", new String[] {});
+        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        }
+		
+		try {
+            TimeUnit.SECONDS.sleep(4);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        monitor.update("server", "computer", "logoutUser", new String[] {});
+        monitor.update("server", "computer", "lockComputer", new String[] {});
+        
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
 		System.out.println("Twice --------------------------------------------------------------------------- END");
 	}
     
     /*@Test
 	public void testNetworkRequirementSatisfiedThreeTimes() {
+		resetValues();
     	System.out.println("Three times ---------------------------------------------------------------------------");
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 
-		Server server = new Server(monitor, false);
-		Computer computer = new Computer(server, monitor, 3, false, 4, false);
-		server.initiateLogout();
+		for (int i = 0; i < 3; i++) {
+        	System.out.println("[Computer] Tries: " + ++i);
+        	monitor.update("computer", "computer", "login", new String[] {});
+        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        }
+		
+		try {
+            TimeUnit.SECONDS.sleep(4);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        monitor.update("server", "computer", "logoutUser", new String[] {});
+        monitor.update("server", "computer", "lockComputer", new String[] {});
+        
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
 		System.out.println("Three times --------------------------------------------------------------------------- END");
 	}*/
     
     @Test
 	public void testNetworkRequirementSatisfiedFourTimes() {
+    	resetValues();
     	System.out.println("Four times ---------------------------------------------------------------------------");
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 
-		Server server = new Server(monitor, false);
-		Computer computer = new Computer(server, monitor, 4, false, 4, false);
-		server.initiateLogout();
+		for (int i = 0; i < 4; i++) {
+        	System.out.println("[Computer] Tries: " + ++i);
+        	monitor.update("computer", "computer", "login", new String[] {});
+        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        }
+		
+		try {
+            TimeUnit.SECONDS.sleep(4);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        monitor.update("server", "computer", "logoutUser", new String[] {});
+        monitor.update("server", "computer", "lockComputer", new String[] {});
+        
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
+		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertTrue(errorDetected);
 		System.out.println("Four times --------------------------------------------------------------------------- END");
 	}
     
     @Test
 	public void testNetworkAltTrueCase() {
+    	resetValues();
 		Specification specification = new Specification();
 		specification.listAutomatas();
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 
-		Server server = new Server(monitor, true);
-		Computer computer = new Computer(server, monitor, 2, true, 4, false);
+		for (int i = 0; i < 2; i++) {
+        	System.out.println("[Computer] Tries: " + ++i);
+        	monitor.update("computer", "computer", "login", new String[] {});
+        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        }
+		
+		try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+		monitor.update("computer", "server", "checkEmail", new String[] {});
+		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"});
+		
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
+		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertTrue(errorDetected);
 	}
     
     @Test
    	public void testNetworkLogoutTooFast() {
+    	resetValues();
    		Specification specification = new Specification();
    		specification.listAutomatas();
    		IClock clock = new Clock();
    		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
-
-   		Server server = new Server(monitor, false);
-   		Computer computer = new Computer(server, monitor, 2, false, 2, false);
-   		server.initiateLogout();
+   		
+   		for (int i = 0; i < 2; i++) {
+        	System.out.println("[Computer] Tries: " + ++i);
+        	monitor.update("computer", "computer", "login", new String[] {});
+        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        }
+		
+		try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        monitor.update("server", "computer", "logoutUser", new String[] {});
+        monitor.update("server", "computer", "lockComputer", new String[] {});
+   		
    		Assertions.assertFalse(monitor.goodStateReached());
    		Assertions.assertFalse(monitor.requirementSatisfied());
+   		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertTrue(errorDetected);
    	}
     
     @Test
    	public void testNetworkLogoutConstrait() {
+    	resetValues();
    		Specification specification = new Specification();
    		specification.listAutomatas();
    		IClock clock = new Clock();
    		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
-
-   		Server server = new Server(monitor, false);
-   		Computer computer = new Computer(server, monitor, 2, false, 4, true);
-   		server.initiateLogout();
+ 		
+   		for (int i = 0; i < 2; i++) {
+        	System.out.println("[Computer] Tries: " + ++i);
+        	monitor.update("computer", "computer", "login", new String[] {});
+        	monitor.update("computer", "server", "logout", new String[] {});
+        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        }
+		
+		try {
+            TimeUnit.SECONDS.sleep(4);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        monitor.update("server", "computer", "logoutUser", new String[] {});
+        monitor.update("server", "computer", "lockComputer", new String[] {});
+   		
    		Assertions.assertFalse(monitor.goodStateReached());
    		Assertions.assertFalse(monitor.requirementSatisfied());
+   		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertTrue(errorDetected);
    	}
 
     @Override
 	public void receiveMonitorStatus(String message) {
 		System.out.println("[NetworkMonitorTest]Received status from monitor: " + message);
+	}
+
+    @Override
+	public void receiveMonitorError(String actualMessage, String lastAcceptedMessage) {
+		System.out.println("[NetworkMonitorTest] Received error report from Monitor for " + actualMessage + " message.");
+		System.out.println("Last accepted message was: " + lastAcceptedMessage);
+		errorDetected = true;
+	}
+
+	@Override
+	public void receiveMonitorSuccess() {
+		System.out.println("[NetworkMonitorTest] Monitor reported that the requirement was satisfied");
+		requirementSatisfied = true;
 	}
 }

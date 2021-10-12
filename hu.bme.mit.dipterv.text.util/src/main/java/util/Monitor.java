@@ -16,6 +16,7 @@ public class Monitor implements IMonitor {
 	private boolean errorDetected;
 	private IClock clock;
 	private ISystem system;
+	private String lastAcceptedMessage;
 
 	public Monitor(Automaton automaton
 				 , IClock clock
@@ -31,6 +32,7 @@ public class Monitor implements IMonitor {
 		this.errorDetected = false;
 		this.clock = clock;
 		this.system = system;
+		this.lastAcceptedMessage = "";
 	}
 
 	@Override
@@ -109,7 +111,10 @@ public class Monitor implements IMonitor {
 						this.errorDetected = true;
 						System.out.println("Failure: actual state is accept state -> error.");
 						errorDetected(sender, receiver, messageType, parameters);
+						system.receiveMonitorStatus("error detected");
+						system.receiveMonitorError(receivedMessage, lastAcceptedMessage);
 					}
+					lastAcceptedMessage = receivedMessage;
 				}
 			}
 			
@@ -122,6 +127,8 @@ public class Monitor implements IMonitor {
 			this.errorDetected = true;
 			System.out.println("Failure: receivedMessage didn't match any transitions.");
 			errorDetected(sender, receiver, messageType, parameters);
+			system.receiveMonitorStatus("error detected");
+			system.receiveMonitorError(receivedMessage, lastAcceptedMessage);
 		}
 	}
 	
@@ -137,6 +144,7 @@ public class Monitor implements IMonitor {
 
 		if (requirementSatisfied()) {
 			system.receiveMonitorStatus("Requirement satisfied");
+			system.receiveMonitorSuccess();
 		}
 
 		if (transition.hasReset()) {
@@ -162,6 +170,10 @@ public class Monitor implements IMonitor {
 				
 				System.out.println("transition triggered: " + transition.toString());
 				System.out.println(actualState.getId());
+				if (requirementSatisfied()) {
+					system.receiveMonitorStatus("Requirement satisfied");
+					system.receiveMonitorSuccess();
+				}
 			}
 		}
 	}
