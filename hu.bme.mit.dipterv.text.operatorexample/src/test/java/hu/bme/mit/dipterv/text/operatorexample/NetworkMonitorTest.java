@@ -82,7 +82,7 @@ public class NetworkMonitorTest implements ISystem {
 		System.out.println("Twice --------------------------------------------------------------------------- END");
 	}
     
-    /*@Test
+    @Test
 	public void testNetworkRequirementSatisfiedThreeTimes() {
 		resetValues();
     	System.out.println("Three times ---------------------------------------------------------------------------");
@@ -110,7 +110,7 @@ public class NetworkMonitorTest implements ISystem {
 		Assertions.assertTrue(requirementSatisfied);
 		Assertions.assertFalse(errorDetected);
 		System.out.println("Three times --------------------------------------------------------------------------- END");
-	}*/
+	}
     
     @Test
 	public void testNetworkRequirementSatisfiedFourTimes() {
