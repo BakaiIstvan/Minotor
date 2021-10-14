@@ -29,6 +29,9 @@ public class Clock implements IClock {
 		System.out.println("[Clock] reset " + clock);
 		if (stopwatches.containsKey(clock)) {
 			stopwatches.get(clock).reset();
+			if (!stopwatches.get(clock).isStarted()) {
+				stopwatches.get(clock).start();
+			}
 		} else {
 			StopWatch watch = new StopWatch();
 			watch.start();

@@ -44,17 +44,47 @@ public class OperatorFunctions {
 	    return result;
 	}
 
-	public Map<String, Entry<Boolean, Automaton>> loopSetup(Automaton loopauto, int min, int max) {
-		Map<String, Entry<Boolean, Automaton>> result = new HashMap<>();
-	    
-	    for (int i = min; i <= max; i++) {
-	        Automaton newauto = new Automaton("loopauto" + i);
-	        for (int j = 0; j < i; j++) {
-	            newauto.collapse(copyAutomaton(loopauto));
+	public Automaton loopSetup(Automaton loopauto, int min, int max) {
+		Automaton result = new Automaton("loopauto");
+		State lastFinale;
+		
+		for (int i = 0; i < min; i++) {
+			result.collapse(copyAutomaton(loopauto));
+		}
+		
+		lastFinale = result.getFinale();
+		State finalState = new State("qfinal", StateType.FINAL);
+		result.addTransition(new EpsilonTransition(lastFinale, finalState, "epsilon", true));
+		result.setFinale(finalState);
+		
+		for (int i = 0; i < max - min; i++) {
+			Automaton copyAutomaton = copyAutomaton(loopauto);
+			
+			ArrayList<Transition> receive = result.findReceiver(lastFinale);
+	        ArrayList<Transition> send = result.findSender(lastFinale);
+	
+	        for (State s : copyAutomaton.getStates()) {
+	            result.addState(s);
 	        }
-	        result.put("loopauto" + i, new AbstractMap.SimpleEntry<Boolean, Automaton>(true, newauto));
-	    }
-	    return result;
+	
+	        for (Transition t : copyAutomaton.getTransitions()) {
+	            result.addTransition(t);
+	        }
+	
+	        for (Transition t : receive) {
+	            t.setReceiver(copyAutomaton.getInitial());
+	        }
+	
+	        for (Transition t : send) {
+	            t.setSender(copyAutomaton.getInitial());
+	        }
+	
+	        result.getStates().remove(lastFinale);
+	        lastFinale = copyAutomaton.getFinale();
+	        result.addTransition(new EpsilonTransition(lastFinale, finalState, "epsilon", true));
+		}
+		
+		return result;
 	}
 
 	private Automaton copyAutomaton(Automaton referenceAuto) {
