@@ -108,7 +108,7 @@ class MinotorDslGenerator extends AbstractGenerator {
 								«generateMessage(m)»
 								loopauto.collapse(b);
 							«ENDFOR»
-							a.merge(opFunctions.loopSetup(loopauto, «l.min», «l.max»));
+							a.collapse(opFunctions.loopSetup(loopauto, «l.min», «l.max»));
 						«ENDFOR»
 						«FOR p : sc.par»
 							parauto = new ArrayList<Automaton>();

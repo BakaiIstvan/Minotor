@@ -16,14 +16,14 @@ import util.ISystem;
 public class NetworkMonitorTest implements ISystem {
 	private boolean requirementSatisfied = false;
 	private boolean errorDetected = false;
-	
+
 	//TODO: use @BeforeEach, didn't work for some reason last time
 	public void resetValues() {
 		requirementSatisfied = false;
 		errorDetected = false;
 		System.out.println("[NetworkMonitorTest] Resetting values");
 	}
-	
+
     @Test
 	public void testNetworkRequirementSatisfied() {
     	resetValues();
@@ -33,7 +33,7 @@ public class NetworkMonitorTest implements ISystem {
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
 		for (int i = 0; i < 1; i++) {
-        	System.out.println("[Computer] Tries: " + ++i);
+        	System.out.println("[Computer] Tries: " + (i + 1));
         	monitor.update("computer", "computer", "login", new String[] {});
         	monitor.update("computer", "server", "attemptLogin", new String[] {});
         }
@@ -62,7 +62,7 @@ public class NetworkMonitorTest implements ISystem {
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 
 		for (int i = 0; i < 2; i++) {
-        	System.out.println("[Computer] Tries: " + ++i);
+        	System.out.println("[Computer] Tries: " + (i + 1));
         	monitor.update("computer", "computer", "login", new String[] {});
         	monitor.update("computer", "server", "attemptLogin", new String[] {});
         }
@@ -82,7 +82,7 @@ public class NetworkMonitorTest implements ISystem {
 		System.out.println("Twice --------------------------------------------------------------------------- END");
 	}
     
-    /*@Test
+    @Test
 	public void testNetworkRequirementSatisfiedThreeTimes() {
 		resetValues();
     	System.out.println("Three times ---------------------------------------------------------------------------");
@@ -92,7 +92,7 @@ public class NetworkMonitorTest implements ISystem {
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 
 		for (int i = 0; i < 3; i++) {
-        	System.out.println("[Computer] Tries: " + ++i);
+        	System.out.println("[Computer] Tries: " + (i + 1));
         	monitor.update("computer", "computer", "login", new String[] {});
         	monitor.update("computer", "server", "attemptLogin", new String[] {});
         }
@@ -110,7 +110,7 @@ public class NetworkMonitorTest implements ISystem {
 		Assertions.assertTrue(requirementSatisfied);
 		Assertions.assertFalse(errorDetected);
 		System.out.println("Three times --------------------------------------------------------------------------- END");
-	}*/
+	}
     
     @Test
 	public void testNetworkRequirementSatisfiedFourTimes() {
@@ -122,7 +122,7 @@ public class NetworkMonitorTest implements ISystem {
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 
 		for (int i = 0; i < 4; i++) {
-        	System.out.println("[Computer] Tries: " + ++i);
+        	System.out.println("[Computer] Tries: " + (i + 1));
         	monitor.update("computer", "computer", "login", new String[] {});
         	monitor.update("computer", "server", "attemptLogin", new String[] {});
         }
@@ -151,7 +151,7 @@ public class NetworkMonitorTest implements ISystem {
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 
 		for (int i = 0; i < 2; i++) {
-        	System.out.println("[Computer] Tries: " + ++i);
+        	System.out.println("[Computer] Tries: " + (i + 1));
         	monitor.update("computer", "computer", "login", new String[] {});
         	monitor.update("computer", "server", "attemptLogin", new String[] {});
         }
@@ -164,10 +164,10 @@ public class NetworkMonitorTest implements ISystem {
 		monitor.update("computer", "server", "checkEmail", new String[] {});
 		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"});
 		
-		Assertions.assertFalse(monitor.goodStateReached());
+		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
 		Assertions.assertFalse(requirementSatisfied);
-		Assertions.assertTrue(errorDetected);
+		Assertions.assertFalse(errorDetected);
 	}
     
     @Test
@@ -179,7 +179,7 @@ public class NetworkMonitorTest implements ISystem {
    		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
    		
    		for (int i = 0; i < 2; i++) {
-        	System.out.println("[Computer] Tries: " + ++i);
+        	System.out.println("[Computer] Tries: " + (i + 1));
         	monitor.update("computer", "computer", "login", new String[] {});
         	monitor.update("computer", "server", "attemptLogin", new String[] {});
         }
@@ -207,7 +207,7 @@ public class NetworkMonitorTest implements ISystem {
    		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
  		
    		for (int i = 0; i < 2; i++) {
-        	System.out.println("[Computer] Tries: " + ++i);
+        	System.out.println("[Computer] Tries: " + (i + 1));
         	monitor.update("computer", "computer", "login", new String[] {});
         	monitor.update("computer", "server", "logout", new String[] {});
         	monitor.update("computer", "server", "attemptLogin", new String[] {});

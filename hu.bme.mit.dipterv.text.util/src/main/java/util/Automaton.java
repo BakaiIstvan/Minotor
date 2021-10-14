@@ -95,41 +95,41 @@ public class Automaton {
    }
 
    public void collapse(Automaton automaton){
-        if (this.states.isEmpty() && this.transitions.isEmpty()) {
-            for (State s : automaton.states) {
-                this.addState(s);
-            }
-
-            for (Transition t : automaton.transitions) {
-                this.addTransition(t);
-            }
-
-            this.initial = automaton.initial;
-            this.finale = automaton.finale;
-
-        } else {
-            ArrayList<Transition> receive = findReceiver(this.finale);
-            ArrayList<Transition> send = findSender(this.finale);
-
-            for (State s : automaton.states) {
-                this.addState(s);
-            }
-
-            for (Transition t : automaton.transitions) {
-                this.addTransition(t);
-            }
-
-            for (Transition t : receive) {
-                t.setReceiver(automaton.initial);
-            }
-
-            for (Transition t : send) {
-                t.setSender(automaton.initial);
-            }
-
-            this.states.remove(finale);
-            this.finale = automaton.finale;
-        }
+	   if (this.states.isEmpty() && this.transitions.isEmpty()) {
+	        for (State s : automaton.states) {
+	            this.addState(s);
+	        }
+	
+	        for (Transition t : automaton.transitions) {
+	            this.addTransition(t);
+	        }
+	
+	        this.initial = automaton.initial;
+	        this.finale = automaton.finale;
+	
+	    } else {
+	        ArrayList<Transition> receive = findReceiver(this.finale);
+	        ArrayList<Transition> send = findSender(this.finale);
+	
+	        for (State s : automaton.states) {
+	            this.addState(s);
+	        }
+	
+	        for (Transition t : automaton.transitions) {
+	            this.addTransition(t);
+	        }
+	
+	        for (Transition t : receive) {
+	            t.setReceiver(automaton.initial);
+	        }
+	
+	        for (Transition t : send) {
+	            t.setSender(automaton.initial);
+	        }
+	
+	        this.states.remove(finale);
+	        this.finale = automaton.finale;
+	    }
    }
    public void merge(Map<String, Entry<Boolean, Automaton>> automatas){
 
