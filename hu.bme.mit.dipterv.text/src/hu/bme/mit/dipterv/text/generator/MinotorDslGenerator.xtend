@@ -7,8 +7,6 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import org.eclipse.xtext.naming.IQualifiedNameProvider
-import com.google.inject.Inject
 import hu.bme.mit.dipterv.text.minotorDsl.Domain
 import hu.bme.mit.dipterv.text.minotorDsl.Message
 import hu.bme.mit.dipterv.text.minotorDsl.LogicalExpression
@@ -32,6 +30,7 @@ import hu.bme.mit.dipterv.text.minotorDsl.RequiredStrictFutureMessage
 import hu.bme.mit.dipterv.text.minotorDsl.FailMessage
 import hu.bme.mit.dipterv.text.minotorDsl.FailStrictMessage
 import hu.bme.mit.dipterv.text.minotorDsl.FailPastMessage
+import com.google.inject.Inject
 
 /**
  * Generates code from your model files on save.
@@ -39,9 +38,13 @@ import hu.bme.mit.dipterv.text.minotorDsl.FailPastMessage
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 class MinotorDslGenerator extends AbstractGenerator {
-	@Inject extension IQualifiedNameProvider
+	
+	@Inject
+	DiagramGenerator diagramGenerator
 	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+		diagramGenerator.doGenerate(resource, fsa, context);
+		
 		for(s : resource.allContents.toIterable.filter(Domain)){
 			fsa.generateFile("Specification.java", s.compile)
 		}

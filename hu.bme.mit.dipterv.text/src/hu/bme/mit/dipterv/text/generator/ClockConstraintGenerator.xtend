@@ -25,6 +25,33 @@ class ClockConstraintGenerator {
 	def dispatch generateClockConstraint(SmallerEqualClockConstraint c)
 	'''«c.clock.name» <= «c.constant»'''
 	
+	def compile_clockConstraintExpressionXML(ClockConstraintExpression ce)
+	'''«ce.generateClockConstraintExpressionXML»'''
+	
+	def dispatch generateClockConstraintExpressionXML(ClockConstraint c)
+	'''«c.compile_clockConstraintXML»'''
+	
+	def dispatch generateClockConstraintExpressionXML(NotClockConstraintExpression ce)
+	'''!«ce.notClockConstraint.compile_clockConstraintXML»'''
+	
+	def dispatch generateClockConstraintExpressionXML(AndClockConstraintExpression ce)
+	'''«ce.lclockconstraint.compile_clockConstraintXML» &amp;&amp; «ce.rclockconstraint.compile_clockConstraintXML»'''
+	
+	def compile_clockConstraintXML(ClockConstraint c)
+	'''«c.generateClockConstraintXML»'''
+	
+	def dispatch generateClockConstraintXML(GreaterClockConstraint c)
+	'''«c.clock.name» &gt; «c.constant»'''
+	
+	def dispatch generateClockConstraintXML(SmallerClockConstraint c)
+	'''«c.clock.name» &lt; «c.constant»'''
+	
+	def dispatch generateClockConstraintXML(GreaterEqualClockConstraint c)
+	'''«c.clock.name» &gt;= «c.constant»'''
+	
+	def dispatch generateClockConstraintXML(SmallerEqualClockConstraint c)
+	'''«c.clock.name» &lt;= «c.constant»'''
+	
 	def compile_ClockConstraintExpression(ClockConstraintExpression ce)
 	'''(«ce.compile_clockConstraintName») -> «ce.generateClockConstraintExpression»'''
 	
