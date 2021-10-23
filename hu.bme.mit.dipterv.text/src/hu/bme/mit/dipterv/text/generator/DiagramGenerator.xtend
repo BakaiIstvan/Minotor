@@ -26,7 +26,7 @@ import hu.bme.mit.dipterv.text.minotorDsl.Par
 
 class DiagramGenerator extends AbstractGenerator {
 	
-	int transitionCounter = 0;
+	int transitionCounter = -1;
 	int altCounter = 0;
 	int parCounter = 0;
 	int loopCounter = 0;
@@ -37,7 +37,7 @@ class DiagramGenerator extends AbstractGenerator {
 		}
 	}
 	
-	def compile(Domain s) '''
+	def compile(Domain s)'''
 		<?xml version="1.0" encoding="UTF-8"?>
 		<minotor:SequenceDiagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:minotor="hu.bme.mit.mdsd.xboyz.erdiagram" Name="«s.name»">
 		
@@ -80,27 +80,24 @@ class DiagramGenerator extends AbstractGenerator {
 	    </alts>
 		«ENDFOR»
 		«FOR m : scenarioContent.message»
-		«compile_scenario_message(m, s)»
+		«compile_message(m, s)»
 		«ENDFOR»
 		«ENDFOR»
 
 		</minotor:SequenceDiagram>
 	'''
 	
-	def compile_scenario_message(Message message, Domain domain)
-	'''«generateMessage(message, domain)»'''
-	
 	def incrementCounter() {
 		transitionCounter++
 	}
 	
-	def compile_message(Message m, Domain domain)
-	'''«generateMessage(m, domain)»'''
+	def compile_message(Message m, Domain domain) {
+		incrementCounter()
+		generateMessage(m, domain)
+	}
 	
 	def dispatch generateMessage(LooseMessage m, Domain domain)
-	'''<transitions Name="«new LabelGenerator().compile_messageLabel(m)»" Type="REGULAR" Label="e: «new LabelGenerator().compile_messageLabel(m)»" source="//@lifelines.«compile_message_source(m, domain)»" target="//@lifelines.«compile_message_target(m, domain)»" «IF transitionCounter > 0»before="//@transitions.«transitionCounter - 1»"«ENDIF» «IF transitionCounter < domain.scenarios.get(0).scenariocontents.size()»after="//@transitions.«transitionCounter + 1»"«ENDIF» «IF m.resetclock !== null»reset="«m.resetclock.clock.name»"«ENDIF» «IF m.CConstraint !== null»clockConstraint="«new ClockConstraintGenerator().compile_clockConstraintExpressionXML(m.CConstraint)»"«ENDIF»/>
-	   «incrementCounter()»
-	'''
+	'''<transitions Name="«new LabelGenerator().compile_message_xml(m)»" Type="REGULAR" Label="e: «new LabelGenerator().compile_message_xml(m)»" source="//@lifelines.«compile_message_source(m, domain)»" target="//@lifelines.«compile_message_target(m, domain)»" «IF transitionCounter > 0»before="//@transitions.«transitionCounter - 1»"«ENDIF» «IF transitionCounter < domain.scenarios.get(0).scenariocontents.size()»after="//@transitions.«transitionCounter + 1»"«ENDIF» «IF m.resetclock !== null»reset="«m.resetclock.clock.name»"«ENDIF» «IF m.CConstraint !== null»clockConstraint="«new ClockConstraintGenerator().compile_clockConstraintExpressionXML(m.CConstraint)»"«ENDIF»/>'''
 	
 	def dispatch generateMessage(StrictMessage m, Domain domain)
 	'''«m.message.get(0).sender»'''
