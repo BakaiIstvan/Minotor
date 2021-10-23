@@ -27,10 +27,13 @@ import hu.bme.mit.dipterv.text.minotorDsl.Par
 class DiagramGenerator extends AbstractGenerator {
 	
 	int transitionCounter = 0;
+	int altCounter = 0;
+	int parCounter = 0;
+	int loopCounter = 0;
 	
 	override doGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		for(s : input.allContents.toIterable.filter(Domain)){
-			fsa.generateFile("Specification.java", s.compile)
+			fsa.generateFile("Scenario.xml", s.compile)
 		}
 	}
 	
@@ -59,38 +62,33 @@ class DiagramGenerator extends AbstractGenerator {
 		«ENDFOR»
 		
 		«FOR scenarioContent: s.scenarios.get(0).scenariocontents»
-		«compile_scenario_content(scenarioContent, s)»
+		«FOR l : scenarioContent.loop»
+		<loops Name="«l.toString()»" Min="«l.min»" Max="«l.max»"/>
+		«ENDFOR»
+		«FOR par : scenarioContent.par»
+		<pars Name="«par.toString()»">
+	    	«FOR parexpression : par.parexpression»
+        	<parpartition Name="«parexpression.toString()»"/>
+        	«ENDFOR»
+		</pars>
+		«ENDFOR»
+		«FOR alt : scenarioContent.alt»
+		<alts Name="«alt.toString()»">
+			«FOR altexpression : alt.expressions»
+	    	<altpartition Name="«new MinotorDslGenerator().compile_alt_condition_name(altexpression.altCondition)»"/>
+	    	«ENDFOR»
+	    </alts>
+		«ENDFOR»
+		«FOR m : scenarioContent.message»
+		«compile_scenario_message(m, s)»
+		«ENDFOR»
 		«ENDFOR»
 
 		</minotor:SequenceDiagram>
 	'''
 	
-	def compile_scenario_content(ScenarioContent sc, Domain domain)
-	'''«generateScenarioContent(sc, domain)»'''
-	
-	def dispatch generateScenarioContent(Loop l, Domain domain)
-	'''<loops Name="«l.toString()»" Min="«l.min»" Max="«l.max»"/>'''
-	
-	def dispatch generateScenarioContent(Alt alt, Domain domain)
-	'''<alts Name="«alt.toString()»">
-		  «FOR altexpression : alt.expressions»
-	      <altpartition Name="«new MinotorDslGenerator().compile_alt_condition_name(altexpression.altCondition)»"/>
-	      «ENDFOR»
-	   </alts>
-	'''
-	
-	def dispatch generateScenarioContent(Par par, Domain domain)
-	'''<pars Name="«par.toString()»">
-		  «FOR parexpression : par.parexpression»
-	      <parpartition Name="«parexpression.toString()»"/>
-	      «ENDFOR»
-	   </pars>
-	'''
-	
-	def dispatch generateScenarioContent(Message message, Domain domain)
-	'''<transitions «compile_message(message, domain)»/>
-	   «incrementCounter()»
-	'''
+	def compile_scenario_message(Message message, Domain domain)
+	'''«generateMessage(message, domain)»'''
 	
 	def incrementCounter() {
 		transitionCounter++
@@ -100,7 +98,9 @@ class DiagramGenerator extends AbstractGenerator {
 	'''«generateMessage(m, domain)»'''
 	
 	def dispatch generateMessage(LooseMessage m, Domain domain)
-	'''Name="«new LabelGenerator().compile_messageLabel(m)»" Type="REGULAR" Label="e: «new LabelGenerator().compile_messageLabel(m)»" source="//@lifelines.«compile_message_source(m, domain)»" target="//@lifelines.«compile_message_target(m, domain)»" «IF transitionCounter > 0»before="//@transitions.«transitionCounter - 1»"«ENDIF» «IF transitionCounter < domain.scenarios.get(0).scenariocontents.size()»after="//@transitions.«transitionCounter + 1»"«ENDIF» «IF m.resetclock !== null»reset="«m.resetclock.clock.name»"«ENDIF» «IF m.CConstraint !== null»clockConstraint="«new ClockConstraintGenerator().compile_clockConstraintExpressionXML(m.CConstraint)»"/>«ENDIF»'''
+	'''<transitions Name="«new LabelGenerator().compile_messageLabel(m)»" Type="REGULAR" Label="e: «new LabelGenerator().compile_messageLabel(m)»" source="//@lifelines.«compile_message_source(m, domain)»" target="//@lifelines.«compile_message_target(m, domain)»" «IF transitionCounter > 0»before="//@transitions.«transitionCounter - 1»"«ENDIF» «IF transitionCounter < domain.scenarios.get(0).scenariocontents.size()»after="//@transitions.«transitionCounter + 1»"«ENDIF» «IF m.resetclock !== null»reset="«m.resetclock.clock.name»"«ENDIF» «IF m.CConstraint !== null»clockConstraint="«new ClockConstraintGenerator().compile_clockConstraintExpressionXML(m.CConstraint)»"«ENDIF»/>
+	   «incrementCounter()»
+	'''
 	
 	def dispatch generateMessage(StrictMessage m, Domain domain)
 	'''«m.message.get(0).sender»'''
