@@ -64,7 +64,7 @@ class DiagramGenerator extends AbstractGenerator {
 		«par.compile_par»
 		«FOR parExpression : 0..<par.parexpression.size»
 		«FOR parMessage : par.parexpression.get(parExpression).messages»
-		<transitions «compile_message(parMessage, s)»  parparition="//@pars.«parCounter»/@parpartition.«parExpression»"/>
+		<transitions «compile_message(parMessage, s)»  parpartition="//@pars.«parCounter»/@parpartition.«parExpression»"/>
 		«ENDFOR»
 		«ENDFOR»
 		«ENDFOR»
