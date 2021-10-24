@@ -189,7 +189,7 @@ Constraint:
 ;
 
 Alt:
-	'alt' expressions+=Expression*
+	'alt' expressions+=Expression* //paraméterek kiértékelése az alt feltételben, köthető legyen változóhoz. pl. success visszatérési értékének feldolgozása
 ;
 
 Expression:

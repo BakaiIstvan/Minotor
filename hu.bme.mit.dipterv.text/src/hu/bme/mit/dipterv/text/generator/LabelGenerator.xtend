@@ -86,4 +86,48 @@ class LabelGenerator {
 	def dispatch generateMessageLabel(FailPastMessage m)
 	'''«m.pastMessage.get(0).message.get(0).compile_looseMessageHelper»'''
 
+	def compile_looseMessageHelperXml(LooseMessage m)
+	'''«m.name»(«FOR p: m.params»«FOR param: 0..<p.params.size»«p.params.get(param).name»«IF param != p.params.size - 1», «ENDIF»«ENDFOR»«ENDFOR»«FOR p: m.constantparams»«FOR param: 0..<p.values.size»«IF p.values.get(param).value.startsWith("\"")»«p.values.get(param).value»«ELSE»«p.values.get(param).value»«ENDIF»«IF param != p.values.size - 1», «ENDIF»«ENDFOR»«ENDFOR»)'''
+
+	def compile_message_xml(Message m)
+	'''«m.generateMessageXml»'''
+	
+	def dispatch generateMessageXml(LooseMessage m)
+	'''«m.compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(StrictMessage m)
+	'''«m.message.get(0).compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(PastMessage m)
+	'''«m.message.get(0).compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(FutureMessage m)
+	'''«m.message.get(0).compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(StrictFutureMessage m)
+	'''«m.futureMessage.get(0).message.get(0).compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(RequiredLooseMessage m)
+	'''«m.message.get(0).compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(RequiredStrictMessage m)
+	'''«m.strictMessage.get(0).message.get(0).compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(RequiredPastMessage m)
+	'''«m.pastMessage.get(0).message.get(0).compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(RequiredFutureMessage m)
+	'''«m.futureMessage.get(0).message.get(0).compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(RequiredStrictFutureMessage m)
+	'''«m.strictFutureMessage.get(0).futureMessage.get(0).message.get(0).compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(FailMessage m)
+	'''«m.message.get(0).compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(FailStrictMessage m)
+	'''«m.strictMessage.get(0).message.get(0).compile_looseMessageHelperXml»'''
+	
+	def dispatch generateMessageXml(FailPastMessage m)
+	'''«m.pastMessage.get(0).message.get(0).compile_looseMessageHelperXml»'''
 }
