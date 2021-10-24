@@ -27,9 +27,9 @@ import hu.bme.mit.dipterv.text.minotorDsl.Par
 class DiagramGenerator extends AbstractGenerator {
 	
 	int transitionCounter = -1;
-	int altCounter = 0;
-	int parCounter = 0;
-	int loopCounter = 0;
+	int altCounter = -1;
+	int parCounter = -1;
+	int loopCounter = -1;
 	
 	override doGenerate(Resource input, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		for(s : input.allContents.toIterable.filter(Domain)){
@@ -56,48 +56,77 @@ class DiagramGenerator extends AbstractGenerator {
 		«FOR constraint: s.constraints»
 		<constraints Name="«constraint.name»">
 			«FOR message: constraint.messages»
-	    	<transitions Name="«new LabelGenerator().compile_messageLabel(message)»" source="//@lifelines.«compile_message_source(message, s)»" target="//@lifelines.«compile_message_target(message, s)»"/>
+	    	<transitions Name="«new LabelGenerator().compile_message_xml(message)»" source="//@lifelines.«compile_message_source(message, s)»" target="//@lifelines.«compile_message_target(message, s)»"/>
 	    	«ENDFOR»
 		</constraints>
 		«ENDFOR»
 		
 		«FOR scenarioContent: s.scenarios.get(0).scenariocontents»
 		«FOR l : scenarioContent.loop»
-		<loops Name="«l.toString()»" Min="«l.min»" Max="«l.max»"/>
+		«l.compile_loop»
+		«FOR loopMessage : l.messages»
+		<transitions «compile_message(loopMessage, s)»  loop="//@loops.«loopCounter»"/>
 		«ENDFOR»
+		«ENDFOR»
+
 		«FOR par : scenarioContent.par»
-		<pars Name="«par.toString()»">
-	    	«FOR parexpression : par.parexpression»
-        	<parpartition Name="«parexpression.toString()»"/>
-        	«ENDFOR»
-		</pars>
+		«par.compile_par»
+		«FOR parExpression : 0..<par.parexpression.size»
+		«FOR parMessage : par.parexpression.get(parExpression).messages»
+		<transitions «compile_message(parMessage, s)»  parparition="//@pars.«parCounter»/@parpartition.«parExpression»"/>
 		«ENDFOR»
+		«ENDFOR»
+		«ENDFOR»
+
 		«FOR alt : scenarioContent.alt»
-		<alts Name="«alt.toString()»">
-			«FOR altexpression : alt.expressions»
-	    	<altpartition Name="«new MinotorDslGenerator().compile_alt_condition_name(altexpression.altCondition)»"/>
-	    	«ENDFOR»
-	    </alts>
+		«alt.compile_alt»
+		«FOR altExpression : 0..<alt.expressions.size»
+		«FOR altMessage : alt.expressions.get(altExpression).messages»
+		<transitions «compile_message(altMessage, s)»  altpartition="//@alts.«altCounter»/@altpartition.«altExpression»"/>
 		«ENDFOR»
+		«ENDFOR»
+		«ENDFOR»
+
 		«FOR m : scenarioContent.message»
-		«compile_message(m, s)»
+		<transitions «compile_message(m, s)»/>
 		«ENDFOR»
 		«ENDFOR»
 
 		</minotor:SequenceDiagram>
 	'''
 	
-	def incrementCounter() {
-		transitionCounter++
+	def compile_loop(Loop l) {
+		loopCounter++
+		'''<loops Name="«l.toString()»" Min="«l.min»" Max="«l.max»"/>'''
+	}
+	
+	def compile_par(Par par) {
+		parCounter++
+		'''<pars Name="«par.toString()»">
+	    	«FOR parexpression : par.parexpression»
+        	<parpartition Name="«parexpression.name»"/>
+        	«ENDFOR»
+		</pars>
+		'''
+	}
+	
+	def compile_alt(Alt alt) {
+		altCounter++
+		'''<alts Name="«alt.toString()»">
+			«FOR altexpression : alt.expressions»
+	    	<altpartition Name="«new MinotorDslGenerator().compile_alt_condition_name(altexpression.altCondition)»"/>
+	    	«ENDFOR»
+	    </alts>
+	    '''
 	}
 	
 	def compile_message(Message m, Domain domain) {
-		incrementCounter()
-		generateMessage(m, domain)
+		transitionCounter++
+		'''«generateMessage(m, domain)»'''
 	}
 	
 	def dispatch generateMessage(LooseMessage m, Domain domain)
-	'''<transitions Name="«new LabelGenerator().compile_message_xml(m)»" Type="REGULAR" Label="e: «new LabelGenerator().compile_message_xml(m)»" source="//@lifelines.«compile_message_source(m, domain)»" target="//@lifelines.«compile_message_target(m, domain)»" «IF transitionCounter > 0»before="//@transitions.«transitionCounter - 1»"«ENDIF» «IF transitionCounter < domain.scenarios.get(0).scenariocontents.size()»after="//@transitions.«transitionCounter + 1»"«ENDIF» «IF m.resetclock !== null»reset="«m.resetclock.clock.name»"«ENDIF» «IF m.CConstraint !== null»clockConstraint="«new ClockConstraintGenerator().compile_clockConstraintExpressionXML(m.CConstraint)»"«ENDIF»/>'''
+	'''Name="«new LabelGenerator().compile_message_xml(m)»" Type="REGULAR" Label="e: «new LabelGenerator().compile_message_xml(m)»" source="//@lifelines.«compile_message_source(m, domain)»" target="//@lifelines.«compile_message_target(m, domain)»" «IF transitionCounter > 0»before="//@transitions.«transitionCounter - 1»"«ENDIF» «IF transitionCounter < domain.scenarios.get(0).scenariocontents.size()»after="//@transitions.«transitionCounter + 1»"«ENDIF» «IF m.resetclock !== null»reset="«m.resetclock.clock.name»"«ENDIF» «IF m.CConstraint !== null»clockConstraint="«new ClockConstraintGenerator().compile_clockConstraintExpressionXML(m.CConstraint)»"«ENDIF»'''
 	
 	def dispatch generateMessage(StrictMessage m, Domain domain)
 	'''«m.message.get(0).sender»'''
