@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Monitor implements IMonitor {
 	private Automaton automaton;
@@ -204,5 +205,26 @@ public class Monitor implements IMonitor {
 	public void errorDetected(String sender, String receiver, String messageType, String[] parameters) {
 		System.out.println("Error detected when receiving message: " + getReceivedMessage(sender, receiver, messageType, parameters));
 		//TODO: implement error tolerance here
+	}
+
+	@Override
+	public void noMoreMessages() {
+		if (actualState.getType().equals(StateType.FINAL)) {
+			List<Transition> transitions = automaton.findSender(this.actualState);
+			if (transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)
+			 && transitions.stream().anyMatch(t -> t.getReceiver().getType().equals(StateType.FINAL))) {
+				Transition transition = transitions.stream().filter(t -> t.getReceiver().getType().equals(StateType.FINAL)).findFirst().orElse(null);
+				if (transition != null) {
+					this.actualState = transition.getReceiver();
+					
+					System.out.println("transition triggered: " + transition.toString());
+					System.out.println(actualState.getId());
+					if (requirementSatisfied()) {
+						system.receiveMonitorStatus("Requirement satisfied");
+						system.receiveMonitorSuccess();
+					}
+				}
+			}
+		}
 	}
 }

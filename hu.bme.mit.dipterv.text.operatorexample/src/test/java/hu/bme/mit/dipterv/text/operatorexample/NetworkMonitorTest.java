@@ -192,11 +192,12 @@ public class NetworkMonitorTest implements ISystem {
         }
 		monitor.update("computer", "server", "checkEmail", new String[] {}, true);
 		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
+		monitor.noMoreMessages();
 		System.out.println("True case satisfied --------------------------------------------------------------------------- END");
 		
 		Assertions.assertTrue(monitor.goodStateReached());
-		Assertions.assertFalse(monitor.requirementSatisfied());
-		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
 		Assertions.assertFalse(errorDetected);
 	}
     
