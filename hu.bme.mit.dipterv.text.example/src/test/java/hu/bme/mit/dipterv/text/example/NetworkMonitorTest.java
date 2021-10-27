@@ -32,15 +32,15 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {});
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {});
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"});
+		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
+		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
+		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
 		try {
 			TimeUnit.SECONDS.sleep(11);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"});
+		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -56,9 +56,9 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {});
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {});
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"});
+		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
+		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
+		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -74,16 +74,16 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {});
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {});
-		monitor.update("computer", "server", "logout", new String[] {});
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"});
+		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
+		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
+		monitor.update("computer", "server", "logout", new String[] {}, true);
+		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
 		try {
 			TimeUnit.SECONDS.sleep(11);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"});
+		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
 		
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -99,10 +99,10 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {});
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {});
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"});
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"});
+		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
+		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
+		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
+		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
 		
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());

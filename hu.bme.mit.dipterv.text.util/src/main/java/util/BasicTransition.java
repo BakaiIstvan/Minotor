@@ -53,7 +53,10 @@ public class BasicTransition extends Transition {
 	}
 	
 	@Override
-	public boolean canTrigger(Map<String, Integer> clockValues, String receivedMessage, List<String> previousMessages) {
+	public boolean canTrigger(Map<String, Integer> clockValues
+							, String receivedMessage
+							, List<String> previousMessages
+							, boolean parameterValue) {
 		if (label != null ) {
 			return (!label.contains("!") ? receivedMessage.equals(label) : !receivedMessage.equals(label.substring(2, label.length() - 1)))
 					&& (constraint != null ? constraint.getSatisfied(clockValues, previousMessages) : true)

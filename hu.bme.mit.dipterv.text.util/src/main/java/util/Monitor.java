@@ -41,7 +41,11 @@ public class Monitor implements IMonitor {
 	}
 
 	@Override
-	public void update(String sender, String receiver, String messageType, String[] parameters) {
+	public void update(String sender
+					 , String receiver
+					 , String messageType
+					 , String[] parameters
+					 , boolean parameterValue) {
 		List<Transition> transitions = automaton.findSender(this.actualState);
 		String receivedMessage = getReceivedMessage(sender, receiver, messageType, parameters);
 		previousMessages.add(receivedMessage);
@@ -58,7 +62,7 @@ public class Monitor implements IMonitor {
 			System.out.println("=----------------------------------=");
 			Transition transition = iterator.next();
 			System.out.println("Transition: " + transition.toString());
-			if (transition instanceof EpsilonTransition && transition.canTrigger(null, receivedMessage, previousMessages)) {
+			if (transition instanceof EpsilonTransition && transition.canTrigger(null, receivedMessage, previousMessages, parameterValue)) {
 				List<Transition> newTransitions = new ArrayList<Transition>(automaton.findSender(transition.getReceiver()));
 
 				for (Transition t : newTransitions) {
@@ -78,7 +82,7 @@ public class Monitor implements IMonitor {
 					transitions.sort((t1, t2) -> t1.compareTo(t2));
 					iterator = transitions.listIterator();
 				}
-			} else if (transition instanceof EpsilonTransition && !transition.canTrigger(null, receivedMessage, previousMessages)) {
+			} else if (transition instanceof EpsilonTransition && !transition.canTrigger(null, receivedMessage, previousMessages, parameterValue)) {
 				iterator.remove();
 				if (!transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)) {
 					iterator = transitions.listIterator();
@@ -102,7 +106,7 @@ public class Monitor implements IMonitor {
 					}
 				}
 				
-				if (transition.canTrigger(clockValues, receivedMessage, previousMessages)) {
+				if (transition.canTrigger(clockValues, receivedMessage, previousMessages, parameterValue)) {
 					this.actualState = transition.getReceiver();
 					updateMonitorStatus(transition);
 					edgeTriggered = true;

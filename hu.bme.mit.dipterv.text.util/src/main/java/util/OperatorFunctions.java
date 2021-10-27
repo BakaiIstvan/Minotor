@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class OperatorFunctions {
-	public Map<String, Entry<Boolean, Automaton>> par(ArrayList<Automaton> automatas) {
+	public Map<String, Entry<AltExpressionInterface, Automaton>> par(ArrayList<Automaton> automatas) {
         ArrayList<ArrayList<Automaton>> automataList = new ArrayList<>();
         permute(automataList, new ArrayList<>(), automatas);
         return listConverter((automataList));
@@ -29,8 +29,8 @@ public class OperatorFunctions {
 	    }
 	}
 
-	private Map<String, Entry<Boolean, Automaton>> listConverter(ArrayList<ArrayList<Automaton>> list) {
-		Map<String, Entry<Boolean, Automaton>> result = new HashMap<>();
+	private Map<String, Entry<AltExpressionInterface, Automaton>> listConverter(ArrayList<ArrayList<Automaton>> list) {
+		Map<String, Entry<AltExpressionInterface, Automaton>> result = new HashMap<>();
 		int counter = 0;
 	    for (ArrayList<Automaton> alist : list) {
 	        Automaton newauto = new Automaton("listConverter");
@@ -38,7 +38,7 @@ public class OperatorFunctions {
 	            newauto.collapse(copyAutomaton(auto));
 	        }
 	        
-	        result.put("listConverter" + counter, new AbstractMap.SimpleEntry<Boolean, Automaton>(true, newauto));
+	        result.put("listConverter" + counter, new AbstractMap.SimpleEntry<AltExpressionInterface, Automaton>(null, newauto));
 	        counter++;
 	    }
 	    return result;
@@ -54,7 +54,7 @@ public class OperatorFunctions {
 		
 		lastFinale = result.getFinale();
 		State finalState = new State("qfinal", StateType.FINAL);
-		result.addTransition(new EpsilonTransition(lastFinale, finalState, "epsilon", true));
+		result.addTransition(new EpsilonTransition(lastFinale, finalState, "epsilon", null));
 		result.setFinale(finalState);
 		
 		for (int i = 0; i < max - min; i++) {
@@ -81,7 +81,7 @@ public class OperatorFunctions {
 	
 	        result.getStates().remove(lastFinale);
 	        lastFinale = copyAutomaton.getFinale();
-	        result.addTransition(new EpsilonTransition(lastFinale, finalState, "epsilon", true));
+	        result.addTransition(new EpsilonTransition(lastFinale, finalState, "epsilon", null));
 		}
 		
 		return result;
