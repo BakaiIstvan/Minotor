@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Monitor implements IMonitor {
 	private Automaton automaton;
@@ -41,7 +42,11 @@ public class Monitor implements IMonitor {
 	}
 
 	@Override
-	public void update(String sender, String receiver, String messageType, String[] parameters) {
+	public void update(String sender
+					 , String receiver
+					 , String messageType
+					 , String[] parameters
+					 , boolean parameterValue) {
 		List<Transition> transitions = automaton.findSender(this.actualState);
 		String receivedMessage = getReceivedMessage(sender, receiver, messageType, parameters);
 		previousMessages.add(receivedMessage);
@@ -58,7 +63,7 @@ public class Monitor implements IMonitor {
 			System.out.println("=----------------------------------=");
 			Transition transition = iterator.next();
 			System.out.println("Transition: " + transition.toString());
-			if (transition instanceof EpsilonTransition && transition.canTrigger(null, receivedMessage, previousMessages)) {
+			if (transition instanceof EpsilonTransition && transition.canTrigger(null, receivedMessage, previousMessages, parameterValue)) {
 				List<Transition> newTransitions = new ArrayList<Transition>(automaton.findSender(transition.getReceiver()));
 
 				for (Transition t : newTransitions) {
@@ -78,7 +83,7 @@ public class Monitor implements IMonitor {
 					transitions.sort((t1, t2) -> t1.compareTo(t2));
 					iterator = transitions.listIterator();
 				}
-			} else if (transition instanceof EpsilonTransition && !transition.canTrigger(null, receivedMessage, previousMessages)) {
+			} else if (transition instanceof EpsilonTransition && !transition.canTrigger(null, receivedMessage, previousMessages, parameterValue)) {
 				iterator.remove();
 				if (!transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)) {
 					iterator = transitions.listIterator();
@@ -102,7 +107,7 @@ public class Monitor implements IMonitor {
 					}
 				}
 				
-				if (transition.canTrigger(clockValues, receivedMessage, previousMessages)) {
+				if (transition.canTrigger(clockValues, receivedMessage, previousMessages, parameterValue)) {
 					this.actualState = transition.getReceiver();
 					updateMonitorStatus(transition);
 					edgeTriggered = true;
@@ -200,5 +205,26 @@ public class Monitor implements IMonitor {
 	public void errorDetected(String sender, String receiver, String messageType, String[] parameters) {
 		System.out.println("Error detected when receiving message: " + getReceivedMessage(sender, receiver, messageType, parameters));
 		//TODO: implement error tolerance here
+	}
+
+	@Override
+	public void noMoreMessages() {
+		if (actualState.getType().equals(StateType.FINAL)) {
+			List<Transition> transitions = automaton.findSender(this.actualState);
+			if (transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)
+			 && transitions.stream().anyMatch(t -> t.getReceiver().getType().equals(StateType.FINAL))) {
+				Transition transition = transitions.stream().filter(t -> t.getReceiver().getType().equals(StateType.FINAL)).findFirst().orElse(null);
+				if (transition != null) {
+					this.actualState = transition.getReceiver();
+					
+					System.out.println("transition triggered: " + transition.toString());
+					System.out.println(actualState.getId());
+					if (requirementSatisfied()) {
+						system.receiveMonitorStatus("Requirement satisfied");
+						system.receiveMonitorSuccess();
+					}
+				}
+			}
+		}
 	}
 }

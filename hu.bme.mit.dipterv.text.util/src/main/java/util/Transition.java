@@ -46,5 +46,8 @@ public abstract class Transition implements Comparable<Transition> {
         this.sender = sender;
     }
     
-    public abstract boolean canTrigger(Map<String, Integer> clockValues, String receivedMessage, List<String> previousMessages);
+    public abstract boolean canTrigger(Map<String, Integer> clockValues
+    								 , String receivedMessage
+    								 , List<String> previousMessages
+    								 , boolean parameterValue);
 }

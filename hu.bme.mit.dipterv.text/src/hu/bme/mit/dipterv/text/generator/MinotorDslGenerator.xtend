@@ -78,6 +78,7 @@ class MinotorDslGenerator extends AbstractGenerator {
 		import util.Transition;
 		import util.NeverClaimWriter;
 		import util.OperatorFunctions;
+		import util.AltExpressionInterface;
 		
 		public class Specification{
 			private String id = "«s.name»";
@@ -98,7 +99,7 @@ class MinotorDslGenerator extends AbstractGenerator {
 				«FOR scenario:s.scenarios»
 					Automaton a = new Automaton("«scenario.name»");
 					Automaton b;
-					Map<String, Entry<Boolean, Automaton>> altauto;
+					Map<String, Entry<AltExpressionInterface, Automaton>> altauto;
 					ArrayList<Automaton> parauto;
 					Automaton loopauto;
 					Automaton expression;
@@ -126,14 +127,14 @@ class MinotorDslGenerator extends AbstractGenerator {
 							a.merge(opFunctions.par(parauto));
 						«ENDFOR»
 						«FOR a : sc.alt»
-						altauto = new HashMap<String, Entry<Boolean, Automaton>>();
+						altauto = new HashMap<String, Entry<AltExpressionInterface, Automaton>>();
 							«FOR e : a.expressions»
 								expression = new Automaton("expauto" + counter);
 								«FOR m : e.messages»
 									«generateMessage(m)»
 									expression.collapse(b);
 								«ENDFOR»
-								altauto.put("«compile_alt_condition_name(e.altCondition)»", new AbstractMap.SimpleEntry<Boolean, Automaton>(«compile_alt_condition(e.altCondition)», expression));
+								altauto.put("«compile_alt_condition_name(e.altCondition)»", new AbstractMap.SimpleEntry<AltExpressionInterface, Automaton>((«compile_alt_condition(e.altCondition)»), expression));
 							«ENDFOR»
 							a.merge(altauto);
 						«ENDFOR»
@@ -263,16 +264,16 @@ class MinotorDslGenerator extends AbstractGenerator {
 	'''(«expression.lhs») || («expression.rhs»)'''
 	
 	def dispatch generateLogicalExpression(EqualsExpression expression) 
-	'''«expression.lhs.value.value» == «expression.rhs»'''
+	'''«expression.lhs.name» -> «expression.lhs.name» == «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(EqualsBooleanExpression expression) 
-	'''«expression.lhs.value.value» == «expression.rhs»'''
+	'''«expression.lhs.name» -> «expression.lhs.name» == «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(GreaterThanExpression expression)
-	'''«expression.lhs.value.value» > «expression.rhs»'''
+	'''«expression.lhs.name» -> «expression.lhs.name» > «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(LesserThanExpression expression)
-	'''«expression.lhs.value.value» < «expression.rhs»'''
+	'''«expression.lhs.name» -> «expression.lhs.name» < «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(NotLogicalExpression expression)
 	'''!(«expression.operand»)'''

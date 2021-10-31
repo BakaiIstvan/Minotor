@@ -34,8 +34,8 @@ public class NetworkMonitorTest implements ISystem {
 		
 		for (int i = 0; i < 1; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {});
-        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        	monitor.update("computer", "computer", "login", new String[] {}, false);
+        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
         }
 		
 		try {
@@ -43,8 +43,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {});
-        monitor.update("server", "computer", "lockComputer", new String[] {});
+        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
+        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -63,8 +63,8 @@ public class NetworkMonitorTest implements ISystem {
 
 		for (int i = 0; i < 2; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {});
-        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        	monitor.update("computer", "computer", "login", new String[] {}, false);
+        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
         }
 		
 		try {
@@ -72,8 +72,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {});
-        monitor.update("server", "computer", "lockComputer", new String[] {});
+        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
+        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
         
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -93,8 +93,8 @@ public class NetworkMonitorTest implements ISystem {
 
 		for (int i = 0; i < 3; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {});
-        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        	monitor.update("computer", "computer", "login", new String[] {}, false);
+        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
         }
 		
 		try {
@@ -102,8 +102,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {});
-        monitor.update("server", "computer", "lockComputer", new String[] {});
+        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
+        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
         
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -123,8 +123,8 @@ public class NetworkMonitorTest implements ISystem {
 
 		for (int i = 0; i < 4; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {});
-        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        	monitor.update("computer", "computer", "login", new String[] {}, false);
+        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
         }
 		
 		try {
@@ -132,8 +132,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {});
-        monitor.update("server", "computer", "lockComputer", new String[] {});
+        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
+        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
         
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -152,8 +152,8 @@ public class NetworkMonitorTest implements ISystem {
 
 		for (int i = 0; i < 2; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {});
-        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        	monitor.update("computer", "computer", "login", new String[] {}, false);
+        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
         }
 		
 		try {
@@ -161,12 +161,43 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-		monitor.update("computer", "server", "checkEmail", new String[] {});
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"});
+		monitor.update("computer", "server", "checkEmail", new String[] {}, false);
+		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, false);
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
 		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
+	}
+
+	@Test
+	public void testNetworkAltTrueCaseSatisfied() {
+		System.out.println("True case satisfied ---------------------------------------------------------------------------");
+    	resetValues();
+		Specification specification = new Specification();
+		specification.listAutomatas();
+		IClock clock = new Clock();
+		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
+
+		for (int i = 0; i < 2; i++) {
+        	System.out.println("[Computer] Tries: " + (i + 1));
+        	monitor.update("computer", "computer", "login", new String[] {}, true);
+        	monitor.update("computer", "server", "attemptLogin", new String[] {}, true);
+        }
+		
+		try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+		monitor.update("computer", "server", "checkEmail", new String[] {}, true);
+		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
+		monitor.noMoreMessages();
+		System.out.println("True case satisfied --------------------------------------------------------------------------- END");
+		
+		Assertions.assertTrue(monitor.goodStateReached());
+		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
 		Assertions.assertFalse(errorDetected);
 	}
     
@@ -180,8 +211,8 @@ public class NetworkMonitorTest implements ISystem {
    		
    		for (int i = 0; i < 2; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {});
-        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        	monitor.update("computer", "computer", "login", new String[] {}, false);
+        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
         }
 		
 		try {
@@ -189,8 +220,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {});
-        monitor.update("server", "computer", "lockComputer", new String[] {});
+        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
+        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
    		
    		Assertions.assertFalse(monitor.goodStateReached());
    		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -208,9 +239,9 @@ public class NetworkMonitorTest implements ISystem {
  		
    		for (int i = 0; i < 2; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {});
-        	monitor.update("computer", "server", "logout", new String[] {});
-        	monitor.update("computer", "server", "attemptLogin", new String[] {});
+        	monitor.update("computer", "computer", "login", new String[] {}, false);
+        	monitor.update("computer", "server", "logout", new String[] {}, false);
+        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
         }
 		
 		try {
@@ -218,8 +249,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {});
-        monitor.update("server", "computer", "lockComputer", new String[] {});
+        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
+        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
    		
    		Assertions.assertFalse(monitor.goodStateReached());
    		Assertions.assertFalse(monitor.requirementSatisfied());

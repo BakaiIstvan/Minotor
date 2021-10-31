@@ -29,9 +29,9 @@ public class BankMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("ui", "atm", "login", new String[] {"success"});
-		monitor.update("ui", "atm", "wReq", new String[] {});
-		monitor.update("atm", "db", "uDB", new String[] {});
+		monitor.update("ui", "atm", "login", new String[] {"success"}, true);
+		monitor.update("ui", "atm", "wReq", new String[] {}, true);
+		monitor.update("atm", "db", "uDB", new String[] {}, true);
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -50,9 +50,51 @@ public class BankMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("ui", "atm", "login", new String[] {"success"});
-		monitor.update("ui", "atm", "loginUnsuccesful", new String[] {});
-		monitor.update("atm", "ui", "lockMachine", new String[] {});
+		monitor.update("ui", "atm", "login", new String[] {"success"}, true);
+		monitor.update("ui", "atm", "loginUnsuccessful", new String[] {}, true);
+		monitor.update("atm", "ui", "lockMachine", new String[] {}, true);
+		
+		Assertions.assertTrue(monitor.goodStateReached());
+		Assertions.assertFalse(monitor.requirementSatisfied());
+		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
+		System.out.println("==/==");
+	}
+
+	@Test
+	public void testBankMonitorFalseCasePassing() {
+		resetValues();
+		System.out.println("[BankMonitorTest] Starting false case passing test");
+		System.out.println("==/==");
+		Specification specification = new Specification();
+		specification.listAutomatas();
+		IClock clock = new Clock();
+		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
+		
+		monitor.update("ui", "atm", "login", new String[] {"success"}, false);
+		monitor.update("ui", "atm", "loginUnsuccessful", new String[] {}, false);
+		monitor.update("atm", "ui", "lockMachine", new String[] {}, false);
+		
+		Assertions.assertTrue(monitor.goodStateReached());
+		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
+		System.out.println("==/==");
+	}
+
+	@Test
+	public void testBankMonitorFalseCaseFailing() {
+		resetValues();
+		System.out.println("[BankMonitorTest] Starting requirement unsatisfied test");
+		System.out.println("==/==");
+		Specification specification = new Specification();
+		specification.listAutomatas();
+		IClock clock = new Clock();
+		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
+		
+		monitor.update("ui", "atm", "login", new String[] {"success"}, false);
+		monitor.update("ui", "atm", "wReq", new String[] {}, false);
+		monitor.update("atm", "db", "uDB", new String[] {}, false);
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());

@@ -4,17 +4,30 @@ import java.util.List;
 import java.util.Map;
 
 public class EpsilonTransition extends Transition {
-	private boolean canTrigger;
+	private AltExpressionInterface altExpression;
 
-	public EpsilonTransition(State sender, State receiver, String reset, boolean canTrigger) {
+	public EpsilonTransition(State sender
+						   , State receiver
+						   , String reset
+						   , AltExpressionInterface altExpression) {
+
 		super(sender, receiver, reset);
-		this.canTrigger = canTrigger;
+		this.altExpression = altExpression;
 	}
 
 	@Override
-	public boolean canTrigger(Map<String, Integer> clockValues, String receivedMessage, List<String> previousMessages) {
-		System.out.println("[EpsilonTransition]" + toString() + " canTrigger is " + canTrigger);
-		return canTrigger;
+	public boolean canTrigger(Map<String, Integer> clockValues
+							, String receivedMessage
+							, List<String> previousMessages
+							, boolean parameterValue) {
+
+		if (altExpression != null) {
+			System.out.println("[EpsilonTransition]" + toString() + " canTrigger is " + altExpression.altExpression(parameterValue));
+			return altExpression.altExpression(parameterValue);
+		}
+		
+		System.out.println("[EpsilonTransition]" + toString() + " canTrigger is true");
+		return true;
 	}
 	
 	@Override
