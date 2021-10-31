@@ -123,6 +123,28 @@ public class MobileMonitorTest implements ISystem {
 		System.out.println("---------------------");
 	}
 
+	@Test
+	public void testMobileMissingRequiredMessage() {
+		resetValues();
+		Specification specification = new Specification();
+		specification.listAutomatas();
+		IClock clock = new Clock();
+		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
+
+		monitor.update("user", "device", "openApp", new String[] {}, true);
+		monitor.update("device", "device", "accessWebcam", new String[] {}, true);
+		monitor.update("device", "user", "getPhoto", new String[] {}, true);
+		monitor.update("someone", "else", "message", new String[] {}, true);
+		monitor.update("device", "db", "retrieveGoods", new String[] {}, true);
+		monitor.update("device", "db", "retrieveMusic", new String[] {}, true);
+		monitor.update("db", "device", "generatePlaylist", new String[] {}, true);
+
+		Assertions.assertFalse(monitor.goodStateReached());
+		Assertions.assertFalse(monitor.requirementSatisfied());
+		Assertions.assertFalse(requirementSatisfied);
+		Assertions.assertTrue(errorDetected);
+	}
+
 	public void resetValues() {
 		requirementSatisfied = false;
 		errorDetected = false;

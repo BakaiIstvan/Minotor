@@ -1,21 +1,23 @@
 specification Email{
-	
+
 	object Computer computer;
 	object Server server;
-	
+
 	integer timeout = 10;
 	string receiver = "John";
 	string subject = "Next meeting";
-	
+
 	clock x;
-	
+
 	constraint constraints {
 		message logout() computer -> server;
 	}
-	
+
 	scenario sendEmail{
 		message checkEmail() computer -> computer reset x;
 		required message sendUnsentEmail() computer -> server;
+		fail message computerError() server -> computer;
+		fail message serverError() computer -> server;
 		pastConstraint {constraints} message newEmail(receiver, subject) computer -> server;
 		message downloadEmail(timeout) computer -> server clockConstraint {>(x,10)};
 	}
