@@ -209,8 +209,9 @@ public class Monitor implements IMonitor {
 
 	@Override
 	public void noMoreMessages() {
+		List<Transition> transitions = automaton.findSender(this.actualState);
+		System.out.println("[Monitor] No more messages");
 		if (actualState.getType().equals(StateType.FINAL)) {
-			List<Transition> transitions = automaton.findSender(this.actualState);
 			if (transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)
 			 && transitions.stream().anyMatch(t -> t.getReceiver().getType().equals(StateType.FINAL))) {
 				Transition transition = transitions.stream().filter(t -> t.getReceiver().getType().equals(StateType.FINAL)).findFirst().orElse(null);
@@ -223,7 +224,31 @@ public class Monitor implements IMonitor {
 						system.receiveMonitorStatus("Requirement satisfied");
 						system.receiveMonitorSuccess();
 					}
+					return;
 				}
+			}
+		}
+		
+		System.out.println("[Monitor] Searching for accept state");
+		
+		if ((transitions.stream().anyMatch(t -> t.getReceiver().getType().equals(StateType.ACCEPT) && t.toString().contains("!"))
+		|| transitions.stream().anyMatch(t -> t.getReceiver().getType().equals(StateType.ACCEPT_ALL) && t.toString().contains("!")))) {
+			System.out.println("[Monitor] Accept state found");
+			Transition transition = transitions.stream().filter(t -> (t.getReceiver().getType().equals(StateType.ACCEPT) 
+																   || t.getReceiver().getType().equals(StateType.ACCEPT_ALL)) 
+																   && t.toString().contains("!"))
+														.findFirst()
+														.orElse(null);
+			if (transition != null) {
+				this.actualState = transition.getReceiver();
+				System.out.println("transition triggered: " + transition.toString());
+				System.out.println(actualState.getId());
+				
+				this.errorDetected = true;
+				System.out.println("Failure: actual state is accept state -> error.");
+				errorDetected("noMessageSender", "noMessageReceiver", transition.toString(), new String[] {});
+				system.receiveMonitorStatus("error detected");
+				system.receiveMonitorError(transition.toString(), lastAcceptedMessage);
 			}
 		}
 	}

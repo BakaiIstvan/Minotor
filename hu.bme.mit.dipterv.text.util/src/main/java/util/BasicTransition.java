@@ -76,14 +76,29 @@ public class BasicTransition extends Transition {
 
 	@Override
 	public int compareTo(Transition t2) {
+		if (this.toString().contains("!") && t2.toString().contains("!")) {
+			if (!this.getSender().getId().equals(this.getReceiver().getId())
+			 && t2.getSender().getId().equals(t2.getReceiver().getId())
+			 && (this.getReceiver().getType().equals(StateType.NORMAL) || this.getReceiver().getType().equals(StateType.FINAL))) {
+				return -1;
+			} else if (this.getSender().getId().equals(this.getReceiver().getId())
+					&& !t2.getSender().getId().equals(t2.getReceiver().getId())
+					&& (t2.getReceiver().getType().equals(StateType.NORMAL) || t2.getReceiver().getType().equals(StateType.FINAL))) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+		
+		
 		if (!this.getSender().getId().equals(this.getReceiver().getId())
 		 && t2.getSender().getId().equals(t2.getReceiver().getId())) {
 			return -1;
 		} else if (this.getSender().getId().equals(this.getReceiver().getId())
 				&& !t2.getSender().getId().equals(t2.getReceiver().getId())) {
 			return 1;
-		} else {
-			return 0;
 		}
+		
+		return 0;
 	}
 }
