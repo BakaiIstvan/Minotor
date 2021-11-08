@@ -23,9 +23,9 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn clean install -U
     - name: Test example project
-      run: mvn -B package --file hu.bme.mit.dipterv.text.example/pom.xml
+      run: cd hu.bme.mit.dipterv.text.example; mvn clean install -U
     - name: Test mobileexample project
       run: --file hu.bme.mit.dipterv.text.mobileexample/pom.xml
     - name: Test altexample project
