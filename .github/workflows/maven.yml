@@ -27,10 +27,10 @@ jobs:
     - name: Test example project
       run: cd hu.bme.mit.dipterv.text.example; mvn clean install -U
     - name: Test mobileexample project
-      run: cd ../hu.bme.mit.dipterv.text.mobileexample; mvn clean install -U
+      run: cd hu.bme.mit.dipterv.text.mobileexample; mvn clean install -U
     - name: Test altexample project
-      run: cd ../hu.bme.mit.dipterv.text.altexample; mvn clean install -U
+      run: cd hu.bme.mit.dipterv.text.altexample; mvn clean install -U
     - name: Test parexample project
-      run: cd ../hu.bme.mit.dipterv.text.parexample; mvn clean install -U
+      run: cd hu.bme.mit.dipterv.text.parexample; mvn clean install -U
     - name: Test operatorexample project
-      run: cd ../hu.bme.mit.dipterv.text.operatorexample; mvn clean install -U
+      run: cd hu.bme.mit.dipterv.text.operatorexample; mvn clean install -U
