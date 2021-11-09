@@ -54,9 +54,6 @@ public class GammaMonitorTest implements ISystem {
 		timer.elapse(2000);
 		reflectiveMonitoredCrossroad.schedule(null);
 		
-		timer.elapse(2000);
-		reflectiveMonitoredCrossroad.schedule(null);
-		
 		Assertions.assertTrue(reflectiveMonitoredCrossroad.getWrappedComponent().getMonitor().goodStateReached());
 		Assertions.assertTrue(reflectiveMonitoredCrossroad.getWrappedComponent().getMonitor().requirementSatisfied());
 		Assertions.assertTrue(requirementSatisfied);

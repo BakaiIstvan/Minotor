@@ -5,7 +5,6 @@ specification Light{
 	
 	scenario sendEmail{
 		message displayRed() controller -> light;
-		message displayGreen() controller -> light;
-		message displayYellow() controller -> light;
+		fail message displayRed() controller -> light;
 	}
 }
