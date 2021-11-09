@@ -1,18 +1,26 @@
 package hu.bme.mit.gamma.tutorial.extra.monitor;
 
+import generated.Specification;
+import hu.bme.mit.dipterv.text.gammaexample.GammaMonitor;
 import hu.bme.mit.gamma.tutorial.extra.*;
+import util.Clock;
+import util.ISystem;
 
 public class ReflectiveMonitor implements ReflectiveComponentInterface {
 	
-	private Monitor wrappedComponent;
+	private GammaMonitor wrappedComponent;
 	// Wrapped contained components
 	
 	
 	public ReflectiveMonitor() {
-		wrappedComponent = new Monitor();
+		wrappedComponent = new GammaMonitor(new Specification().getAutomata().get(0), new Clock(), null);
 	}
 	
-	public ReflectiveMonitor(Monitor wrappedComponent) {
+	public ReflectiveMonitor(ISystem system) {
+		wrappedComponent = new GammaMonitor(new Specification().getAutomata().get(0), new Clock(), system);
+	}
+	
+	public ReflectiveMonitor(GammaMonitor wrappedComponent) {
 		this.wrappedComponent = wrappedComponent;
 	}
 	
@@ -20,7 +28,7 @@ public class ReflectiveMonitor implements ReflectiveComponentInterface {
 		wrappedComponent.reset();
 	}
 	
-	public Monitor getWrappedComponent() {
+	public GammaMonitor getWrappedComponent() {
 		return wrappedComponent;
 	}
 	
@@ -74,7 +82,8 @@ public class ReflectiveMonitor implements ReflectiveComponentInterface {
 	}
 	
 	public boolean isStateActive(String region, String state) {
-		return wrappedComponent.isStateActive(region, state);
+		return wrappedComponent.goodStateReached();
+		//return wrappedComponent.isStateActive(region, state);
 	}
 	
 	public String[] getRegions() {

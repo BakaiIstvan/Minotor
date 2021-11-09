@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 
 import generated.Specification;
+import hu.bme.mit.gamma.tutorial.extra.VirtualTimerService;
+import hu.bme.mit.gamma.tutorial.extra.monitoredcrossroad.ReflectiveMonitoredCrossroad;
 import util.IClock;
 import util.IMonitor;
 import util.ISystem;
@@ -16,175 +18,67 @@ import util.Clock;
 public class GammaMonitorTest implements ISystem {
 	private boolean requirementSatisfied = false;
 	private boolean errorDetected = false;
+	
+	private static ReflectiveMonitoredCrossroad reflectiveMonitoredCrossroad;
+	private static VirtualTimerService timer;
 
 	//TODO: use @BeforeEach, didn't work for some reason last time
 	public void resetValues() {
 		requirementSatisfied = false;
 		errorDetected = false;
+		timer = new VirtualTimerService();
+		reflectiveMonitoredCrossroad = new ReflectiveMonitoredCrossroad(timer, this);  // Virtual timer is automatically set
 		System.out.println("[GammaMonitorTest] Resetting values");
+	}
+	
+	public void tearDown() {
+		stop();
+	}
+	
+	// Only for override by potential subclasses
+	protected void stop() {
+		timer = null;
+		reflectiveMonitoredCrossroad = null;				
 	}
 
 	@Test
 	public void testNetworkRequirementSatisfied() {
 		resetValues();
-		Specification specification = new Specification();
-		specification.listAutomatas();
-		IClock clock = new Clock();
-		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("computer", "server", "updateEmail", new String[] {}, true);
-		monitor.update("server", "computer", "updateAccount", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
-		try {
-			TimeUnit.SECONDS.sleep(11);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
+		timer.reset(); // Timer before the system
+		reflectiveMonitoredCrossroad.reset();
 		
-		Assertions.assertTrue(monitor.goodStateReached());
-		Assertions.assertTrue(monitor.requirementSatisfied());
+		timer.elapse(2000);
+		reflectiveMonitoredCrossroad.schedule(null);
+		
+		timer.elapse(2000);
+		reflectiveMonitoredCrossroad.schedule(null);
+		
+		timer.elapse(2000);
+		reflectiveMonitoredCrossroad.schedule(null);
+		
+		Assertions.assertTrue(reflectiveMonitoredCrossroad.getWrappedComponent().getMonitor().goodStateReached());
+		Assertions.assertTrue(reflectiveMonitoredCrossroad.getWrappedComponent().getMonitor().requirementSatisfied());
 		Assertions.assertTrue(requirementSatisfied);
 		Assertions.assertFalse(errorDetected);
-	}
-	
-	@Test
-	public void testNetworkNoErrors() {
-		resetValues();
-		Specification specification = new Specification();
-		specification.listAutomatas();
-		IClock clock = new Clock();
-		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
-		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("computer", "server", "updateEmail", new String[] {}, true);
-		monitor.update("server", "computer", "updateAccount", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
-		
-		Assertions.assertTrue(monitor.goodStateReached());
-		Assertions.assertFalse(monitor.requirementSatisfied());
-		Assertions.assertFalse(requirementSatisfied);
-		Assertions.assertFalse(errorDetected);
-	}
-	
-	@Test
-	public void testNetworkWithErrors() {
-		resetValues();
-		Specification specification = new Specification();
-		specification.listAutomatas();
-		IClock clock = new Clock();
-		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
-		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("computer", "server", "updateEmail", new String[] {}, true);
-		monitor.update("server", "computer", "updateAccount", new String[] {}, true);
-		monitor.update("computer", "server", "logout", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
-		try {
-			TimeUnit.SECONDS.sleep(11);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
-		
-		Assertions.assertFalse(monitor.goodStateReached());
-		Assertions.assertFalse(monitor.requirementSatisfied());
-		Assertions.assertFalse(requirementSatisfied);
-		Assertions.assertTrue(errorDetected);
-	}
-	
-	@Test
-	public void testNetworkWithNoDelay() {
-		resetValues();
-		Specification specification = new Specification();
-		specification.listAutomatas();
-		IClock clock = new Clock();
-		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
-		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("computer", "server", "updateEmail", new String[] {}, true);
-		monitor.update("server", "computer", "updateAccount", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
-		
-		Assertions.assertFalse(monitor.goodStateReached());
-		Assertions.assertFalse(monitor.requirementSatisfied());
-		Assertions.assertFalse(requirementSatisfied);
-		Assertions.assertTrue(errorDetected);
-	}
-
-	@Test
-	public void testNetworkFirstFail() {
-		resetValues();
-		Specification specification = new Specification();
-		specification.listAutomatas();
-		IClock clock = new Clock();
-		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
-		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("server", "computer", "computerError", new String[] {}, true);
-		monitor.update("server", "computer", "updateAccount", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
-		try {
-			TimeUnit.SECONDS.sleep(11);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
-		
-		Assertions.assertFalse(monitor.goodStateReached());
-		Assertions.assertFalse(monitor.requirementSatisfied());
-		Assertions.assertFalse(requirementSatisfied);
-		Assertions.assertTrue(errorDetected);
-	}
-
-	@Test
-	public void testNetworkSecondFail() {
-		resetValues();
-		Specification specification = new Specification();
-		specification.listAutomatas();
-		IClock clock = new Clock();
-		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
-		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("computer", "server", "updateEmail", new String[] {}, true);
-		monitor.update("computer", "server", "serverError", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
-		try {
-			TimeUnit.SECONDS.sleep(11);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
-		
-		Assertions.assertFalse(monitor.goodStateReached());
-		Assertions.assertFalse(monitor.requirementSatisfied());
-		Assertions.assertFalse(requirementSatisfied);
-		Assertions.assertTrue(errorDetected);
+		tearDown();
 	}
 
 	@Override
 	public void receiveMonitorStatus(String message) {
-		System.out.println("[NetworkMonitorTest]Received status from monitor: " + message);
+		System.out.println("[GammaMonitorTest] Received status from monitor: " + message);
 	}
 
 	@Override
 	public void receiveMonitorError(String actualMessage, String lastAcceptedMessage) {
-		System.out.println("[NetworkMonitorTest] Received error report from Monitor for " + actualMessage + " message.");
+		System.out.println("[GammaMonitorTest] Received error report from Monitor for " + actualMessage + " message.");
 		System.out.println("Last accepted message was: " + lastAcceptedMessage);
 		errorDetected = true;
 	}
 
 	@Override
 	public void receiveMonitorSuccess() {
-		System.out.println("[NetworkMonitorTest] Monitor reported that the requirement was satisfied");
+		System.out.println("[GammaMonitorTest] Monitor reported that the requirement was satisfied");
 		requirementSatisfied = true;
 	}
 }

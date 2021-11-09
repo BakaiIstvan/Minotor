@@ -2,6 +2,7 @@ package hu.bme.mit.gamma.tutorial.extra.monitoredcrossroad;
 
 import hu.bme.mit.gamma.tutorial.extra.*;
 import hu.bme.mit.gamma.tutorial.extra.tutorial.*;
+import util.ISystem;
 import hu.bme.mit.gamma.tutorial.extra.monitor.*;
 
 public class ReflectiveMonitoredCrossroad implements ReflectiveComponentInterface {
@@ -14,6 +15,10 @@ public class ReflectiveMonitoredCrossroad implements ReflectiveComponentInterfac
 	public ReflectiveMonitoredCrossroad(UnifiedTimerInterface timer) {
 		this();
 		wrappedComponent.setTimer(timer);
+	}
+	
+	public ReflectiveMonitoredCrossroad(UnifiedTimerInterface timer, ISystem system) {
+		wrappedComponent = new MonitoredCrossroad(timer, system);
 	}
 	
 	public ReflectiveMonitoredCrossroad() {

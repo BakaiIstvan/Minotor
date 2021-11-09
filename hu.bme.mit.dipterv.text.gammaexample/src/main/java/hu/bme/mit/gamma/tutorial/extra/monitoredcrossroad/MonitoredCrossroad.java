@@ -1,26 +1,33 @@
 package hu.bme.mit.gamma.tutorial.extra.monitoredcrossroad;
 
 import java.util.List;
+
+import generated.Specification;
+
 import java.util.LinkedList;
 
+import hu.bme.mit.dipterv.text.gammaexample.GammaMonitor;
 import hu.bme.mit.gamma.tutorial.extra.*;
 import hu.bme.mit.gamma.tutorial.extra.interfaces.*;
 import hu.bme.mit.gamma.tutorial.extra.tutorial.*;
+import util.Clock;
+import util.ISystem;
 import hu.bme.mit.gamma.tutorial.extra.monitor.*;
 
 public class MonitoredCrossroad implements MonitoredCrossroadInterface {
 	// Component instances
 	private Crossroad crossroad;
-	private Monitor monitor;
+	private GammaMonitor monitor;
 	// Port instances
 	private Police police;
 	private PriorityOutput priorityOutput;
 	private SecondaryOutput secondaryOutput;
 	private MonitorOutput monitorOutput;
 	
-	public MonitoredCrossroad(UnifiedTimerInterface timer) {
+	public MonitoredCrossroad(UnifiedTimerInterface timer, ISystem system) {
 		crossroad = new Crossroad();
-		monitor = new Monitor();
+		Specification spec = new Specification();
+		monitor = new GammaMonitor(spec.getAutomata().get(0), new Clock(), system);
 		police = new Police();
 		priorityOutput = new PriorityOutput();
 		secondaryOutput = new SecondaryOutput();
@@ -31,7 +38,7 @@ public class MonitoredCrossroad implements MonitoredCrossroadInterface {
 	
 	public MonitoredCrossroad() {
 		crossroad = new Crossroad();
-		monitor = new Monitor();
+		monitor = new GammaMonitor(new Specification().getAutomata().get(0), new Clock(), null);
 		police = new Police();
 		priorityOutput = new PriorityOutput();
 		secondaryOutput = new SecondaryOutput();
@@ -376,7 +383,7 @@ public class MonitoredCrossroad implements MonitoredCrossroadInterface {
 	/** Notifies all registered listeners in each contained port. */
 	public void notifyAllListeners() {
 		crossroad.notifyAllListeners();
-		monitor.notifyAllListeners();
+		monitor.notifyListeners();
 		notifyListeners();
 	}
 	
@@ -441,7 +448,7 @@ public class MonitoredCrossroad implements MonitoredCrossroadInterface {
 		return crossroad;
 	}
 	
-	public Monitor getMonitor() {
+	public GammaMonitor getMonitor() {
 		return monitor;
 	}
 	
