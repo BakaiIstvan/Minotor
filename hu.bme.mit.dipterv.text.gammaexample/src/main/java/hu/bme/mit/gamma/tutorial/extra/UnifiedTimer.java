@@ -1,4 +1,4 @@
-package hu.bme.mit.gamma.tutorial.finish;
+package hu.bme.mit.gamma.tutorial.extra;
 
 public class UnifiedTimer implements UnifiedTimerInterface {
 	

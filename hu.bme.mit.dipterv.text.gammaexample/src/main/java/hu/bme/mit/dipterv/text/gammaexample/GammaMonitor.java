@@ -5,8 +5,8 @@ import util.IClock;
 import util.IMonitor;
 import util.ISystem;
 import util.Monitor;
-import hu.bme.mit.gamma.tutorial.finish.monitor.IMonitorStatemachine;
-import hu.bme.mit.gamma.tutorial.finish.monitor.IMonitorStatemachine.SCILightInputs;;
+import hu.bme.mit.gamma.tutorial.extra.monitor.IMonitorStatemachine;
+import hu.bme.mit.gamma.tutorial.extra.monitor.IMonitorStatemachine.SCILightInputs;;
 
 public class GammaMonitor extends Monitor implements IMonitor, IMonitorStatemachine, SCILightInputs {
 
@@ -39,7 +39,7 @@ public class GammaMonitor extends Monitor implements IMonitor, IMonitorStatemach
 	@Override
 	public void raiseDisplayNone() {
 		// TODO Auto-generated method stub
-		
+		update("controller", "light", "displayNone", new String[] {}, true);
 	}
 
 	@Override
@@ -76,6 +76,12 @@ public class GammaMonitor extends Monitor implements IMonitor, IMonitorStatemach
 	public void runCycle() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public SCIError getSCIError() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
