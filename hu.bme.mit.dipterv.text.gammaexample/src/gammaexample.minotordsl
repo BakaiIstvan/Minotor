@@ -1,0 +1,10 @@
+specification Light{
+	
+	object TrafficLight light;
+	object Controller controller;
+	
+	scenario sendEmail{
+		message displayRed() controller -> light;
+		fail message displayRed() controller -> light;
+	}
+}
