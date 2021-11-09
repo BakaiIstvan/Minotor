@@ -34,3 +34,5 @@ jobs:
       run: cd hu.bme.mit.dipterv.text.parexample; mvn clean install -U
     - name: Test operatorexample project
       run: cd hu.bme.mit.dipterv.text.operatorexample; mvn clean install -U
+    - name: Test gamma integration project
+      run: cd hu.bme.mit.dipterv.text.gammaexample; mvn clean install -U
