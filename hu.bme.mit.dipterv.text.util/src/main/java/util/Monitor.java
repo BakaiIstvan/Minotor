@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +19,8 @@ public class Monitor implements IMonitor {
 	private IClock clock;
 	private ISystem system;
 	private String lastAcceptedMessage;
+	
+	private Entry<String, Object> lastParameter;
 
 	public Monitor(Automaton automaton
 				 , IClock clock
@@ -34,6 +37,7 @@ public class Monitor implements IMonitor {
 		this.clock = clock;
 		this.system = system;
 		this.lastAcceptedMessage = "";
+		this.lastParameter = null;
 	}
 
 	@Override
@@ -45,8 +49,7 @@ public class Monitor implements IMonitor {
 	public void update(String sender
 					 , String receiver
 					 , String messageType
-					 , String[] parameters
-					 , boolean parameterValue) {
+					 , Map<String, Object> parameters) {
 		List<Transition> transitions = automaton.findSender(this.actualState);
 		String receivedMessage = getReceivedMessage(sender, receiver, messageType, parameters);
 		previousMessages.add(receivedMessage);
@@ -63,7 +66,7 @@ public class Monitor implements IMonitor {
 			System.out.println("=----------------------------------=");
 			Transition transition = iterator.next();
 			System.out.println("Transition: " + transition.toString());
-			if (transition instanceof EpsilonTransition && transition.canTrigger(null, receivedMessage, previousMessages, parameterValue)) {
+			if (transition instanceof EpsilonTransition && transition.canTrigger(null, receivedMessage, previousMessages, lastParameter)) {
 				List<Transition> newTransitions = new ArrayList<Transition>(automaton.findSender(transition.getReceiver()));
 
 				for (Transition t : newTransitions) {
@@ -75,7 +78,7 @@ public class Monitor implements IMonitor {
 
 				if (transitions.size() == 1) {
 					this.actualState = transition.getReceiver();
-					updateMonitorStatus(transition);
+					updateMonitorStatus(transition, parameters);
 				}
 
 				iterator.remove();
@@ -83,7 +86,7 @@ public class Monitor implements IMonitor {
 					transitions.sort((t1, t2) -> t1.compareTo(t2));
 					iterator = transitions.listIterator();
 				}
-			} else if (transition instanceof EpsilonTransition && !transition.canTrigger(null, receivedMessage, previousMessages, parameterValue)) {
+			} else if (transition instanceof EpsilonTransition && !transition.canTrigger(null, receivedMessage, previousMessages, lastParameter)) {
 				iterator.remove();
 				if (!transitions.stream().anyMatch(t -> t instanceof EpsilonTransition)) {
 					iterator = transitions.listIterator();
@@ -107,9 +110,9 @@ public class Monitor implements IMonitor {
 					}
 				}
 				
-				if (transition.canTrigger(clockValues, receivedMessage, previousMessages, parameterValue)) {
+				if (transition.canTrigger(clockValues, receivedMessage, previousMessages, lastParameter)) {
 					this.actualState = transition.getReceiver();
-					updateMonitorStatus(transition);
+					updateMonitorStatus(transition, parameters);
 					edgeTriggered = true;
 
 					if (this.actualState.getType().equals(StateType.ACCEPT) || this.actualState.getType().equals(StateType.ACCEPT_ALL)) {
@@ -137,9 +140,16 @@ public class Monitor implements IMonitor {
 		}
 	}
 	
-	private void updateMonitorStatus(Transition transition) {
+	private void updateMonitorStatus(Transition transition, Map<String, Object> parameters) {
 		System.out.println("transition triggered: " + transition.toString());
 		System.out.println(actualState.getId());
+		
+		if (parameters.values().stream().anyMatch(o -> o instanceof Boolean)) {
+			Entry<String, Object> entry = parameters.entrySet().stream().filter(t -> t.getValue() instanceof Boolean).findFirst().orElse(null);
+			if (entry != null) {
+				this.lastParameter = entry;
+			}
+		}
 
 		if (goodStateReached()) {
 			system.receiveMonitorStatus("System is in good state.");
@@ -183,11 +193,13 @@ public class Monitor implements IMonitor {
 		}
 	}
 
-	private String getReceivedMessage(String sender, String receiver, String messageType, String[] parameters) {
+	private String getReceivedMessage(String sender, String receiver, String messageType, Map<String, Object> parameters) {
 		String receivedMessage = sender + "." + messageType + "(";
-		for (String param : parameters) {
+		String[] stringParameters = new String[parameters.keySet().size()];
+		parameters.keySet().toArray(stringParameters);
+		for (String param : stringParameters) {
 			receivedMessage += param;
-			if (!(parameters[parameters.length - 1]).equals(param)) {
+			if (!(stringParameters[stringParameters.length - 1]).equals(param)) {
 				receivedMessage += ", ";
 			}
 		}
@@ -202,7 +214,7 @@ public class Monitor implements IMonitor {
 	}
 
 	@Override
-	public void errorDetected(String sender, String receiver, String messageType, String[] parameters) {
+	public void errorDetected(String sender, String receiver, String messageType, Map<String, Object> parameters) {
 		System.out.println("Error detected when receiving message: " + getReceivedMessage(sender, receiver, messageType, parameters));
 		//TODO: implement error tolerance here
 	}
@@ -246,7 +258,7 @@ public class Monitor implements IMonitor {
 				
 				this.errorDetected = true;
 				System.out.println("Failure: actual state is accept state -> error.");
-				errorDetected("noMessageSender", "noMessageReceiver", transition.toString(), new String[] {});
+				errorDetected("noMessageSender", "noMessageReceiver", transition.toString(), new HashMap<String, Object>());
 				system.receiveMonitorStatus("error detected");
 				system.receiveMonitorError(transition.toString(), lastAcceptedMessage);
 			}

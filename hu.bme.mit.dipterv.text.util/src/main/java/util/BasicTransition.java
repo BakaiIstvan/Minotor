@@ -2,6 +2,7 @@ package util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class BasicTransition extends Transition {
 	private String label;
@@ -56,7 +57,7 @@ public class BasicTransition extends Transition {
 	public boolean canTrigger(Map<String, Integer> clockValues
 							, String receivedMessage
 							, List<String> previousMessages
-							, boolean parameterValue) {
+							, Entry<String, Object> parameterValue) {
 		if (label != null ) {
 			return (!label.contains("!") ? receivedMessage.equals(label) : !receivedMessage.equals(label.substring(2, label.length() - 1)))
 					&& (constraint != null ? constraint.getSatisfied(clockValues, previousMessages) : true)

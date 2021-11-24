@@ -1,5 +1,5 @@
 package util;
 
 public interface AltExpressionInterface {
-	boolean altExpression(boolean value);
+	boolean altExpression(String parameter, boolean value);
 }

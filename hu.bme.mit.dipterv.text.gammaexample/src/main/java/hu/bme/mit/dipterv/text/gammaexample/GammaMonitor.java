@@ -9,6 +9,7 @@ import util.Monitor;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.HashMap;
 
 import hu.bme.mit.gamma.tutorial.extra.Event;
 import hu.bme.mit.gamma.tutorial.extra.interfaces.ErrorInterface;
@@ -78,16 +79,16 @@ public class GammaMonitor extends Monitor implements IMonitor, MonitorInterface 
 				Event event = eventQueue.remove();
 				switch (event.getEvent()) {
 					case "LightInputs.DisplayNone":
-						update("controller", "light", "displayNone", new String[] {}, true);
+						update("controller", "light", "displayNone", new HashMap<String, Object>());
 					break;
 					case "LightInputs.DisplayYellow":
-						update("controller", "light", "displayYellow", new String[] {}, true);
+						update("controller", "light", "displayYellow", new HashMap<String, Object>());
 					break;
 					case "LightInputs.DisplayRed":
-						update("controller", "light", "displayRed", new String[] {}, true);
+						update("controller", "light", "displayRed", new HashMap<String, Object>());
 					break;
 					case "LightInputs.DisplayGreen":
-						update("controller", "light", "displayGreen", new String[] {}, true);
+						update("controller", "light", "displayGreen", new HashMap<String, Object>());
 					break;
 					default:
 						throw new IllegalArgumentException("No such event!");

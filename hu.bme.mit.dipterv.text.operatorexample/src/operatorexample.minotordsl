@@ -20,7 +20,7 @@ specification Connection {
 
 	scenario authentication {
 		loop (1, 3) {
-			message login() computer -> computer reset x;
+			message login(success) computer -> computer reset x;
 			pastConstraint {logout} message attemptLogin() computer -> server reset y;
 		}
 

@@ -5,6 +5,9 @@ import util.IClock;
 import util.IMonitor;
 
 import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.HashMap;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -34,8 +37,8 @@ public class NetworkMonitorTest implements ISystem {
 		
 		for (int i = 0; i < 1; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {}, false);
-        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
+        	monitor.update("computer", "computer", "login", Map.of("success", false));
+        	monitor.update("computer", "server", "attemptLogin", new HashMap<String, Object>());
         }
 		
 		try {
@@ -43,8 +46,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
-        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
+        monitor.update("server", "computer", "logoutUser", new HashMap<String, Object>());
+        monitor.update("server", "computer", "lockComputer", new HashMap<String, Object>());
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -63,8 +66,8 @@ public class NetworkMonitorTest implements ISystem {
 
 		for (int i = 0; i < 2; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {}, false);
-        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
+        	monitor.update("computer", "computer", "login", Map.of("success", false));
+        	monitor.update("computer", "server", "attemptLogin", new HashMap<String, Object>());
         }
 		
 		try {
@@ -72,8 +75,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
-        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
+        monitor.update("server", "computer", "logoutUser", new HashMap<String, Object>());
+        monitor.update("server", "computer", "lockComputer", new HashMap<String, Object>());
         
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -93,8 +96,8 @@ public class NetworkMonitorTest implements ISystem {
 
 		for (int i = 0; i < 3; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {}, false);
-        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
+        	monitor.update("computer", "computer", "login", Map.of("success", false));
+        	monitor.update("computer", "server", "attemptLogin", new HashMap<String, Object>());
         }
 		
 		try {
@@ -102,8 +105,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
-        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
+        monitor.update("server", "computer", "logoutUser", new HashMap<String, Object>());
+        monitor.update("server", "computer", "lockComputer", new HashMap<String, Object>());
         
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -123,8 +126,8 @@ public class NetworkMonitorTest implements ISystem {
 
 		for (int i = 0; i < 4; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {}, false);
-        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
+        	monitor.update("computer", "computer", "login", Map.of("success", false));
+        	monitor.update("computer", "server", "attemptLogin", new HashMap<String, Object>());
         }
 		
 		try {
@@ -132,8 +135,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
-        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
+        monitor.update("server", "computer", "logoutUser", new HashMap<String, Object>());
+        monitor.update("server", "computer", "lockComputer", new HashMap<String, Object>());
         
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -152,8 +155,8 @@ public class NetworkMonitorTest implements ISystem {
 
 		for (int i = 0; i < 2; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {}, false);
-        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
+        	monitor.update("computer", "computer", "login", Map.of("success", false));
+        	monitor.update("computer", "server", "attemptLogin", new HashMap<String, Object>());
         }
 		
 		try {
@@ -161,8 +164,12 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-		monitor.update("computer", "server", "checkEmail", new String[] {}, false);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, false);
+		monitor.update("computer", "server", "checkEmail", new HashMap<String, Object>());
+		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
+
+		hm.put("receiver", "John");
+		hm.put("subject", "Next Meeting");
+		monitor.update("computer", "server", "newEmail", hm);
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -181,8 +188,8 @@ public class NetworkMonitorTest implements ISystem {
 
 		for (int i = 0; i < 2; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {}, true);
-        	monitor.update("computer", "server", "attemptLogin", new String[] {}, true);
+        	monitor.update("computer", "computer", "login", Map.of("success", true));
+        	monitor.update("computer", "server", "attemptLogin", new HashMap<String, Object>());
         }
 		
 		try {
@@ -190,8 +197,12 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-		monitor.update("computer", "server", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
+		monitor.update("computer", "server", "checkEmail", new HashMap<String, Object>());
+		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
+
+		hm.put("receiver", "John");
+		hm.put("subject", "Next Meeting");
+		monitor.update("computer", "server", "newEmail", hm);
 		monitor.noMoreMessages();
 		System.out.println("True case satisfied --------------------------------------------------------------------------- END");
 		
@@ -211,8 +222,8 @@ public class NetworkMonitorTest implements ISystem {
    		
    		for (int i = 0; i < 2; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {}, false);
-        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
+        	monitor.update("computer", "computer", "login", Map.of("success", false));
+        	monitor.update("computer", "server", "attemptLogin", new HashMap<String, Object>());
         }
 		
 		try {
@@ -220,8 +231,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
-        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
+        monitor.update("server", "computer", "logoutUser", new HashMap<String, Object>());
+        monitor.update("server", "computer", "lockComputer", new HashMap<String, Object>());
    		
    		Assertions.assertFalse(monitor.goodStateReached());
    		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -239,9 +250,9 @@ public class NetworkMonitorTest implements ISystem {
  		
    		for (int i = 0; i < 2; i++) {
         	System.out.println("[Computer] Tries: " + (i + 1));
-        	monitor.update("computer", "computer", "login", new String[] {}, false);
-        	monitor.update("computer", "server", "logout", new String[] {}, false);
-        	monitor.update("computer", "server", "attemptLogin", new String[] {}, false);
+        	monitor.update("computer", "computer", "login", Map.of("success", false));
+        	monitor.update("computer", "server", "logout", new HashMap<String, Object>());
+        	monitor.update("computer", "server", "attemptLogin", new HashMap<String, Object>());
         }
 		
 		try {
@@ -249,8 +260,8 @@ public class NetworkMonitorTest implements ISystem {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        monitor.update("server", "computer", "logoutUser", new String[] {}, false);
-        monitor.update("server", "computer", "lockComputer", new String[] {}, false);
+        monitor.update("server", "computer", "logoutUser", new HashMap<String, Object>());
+        monitor.update("server", "computer", "lockComputer", new HashMap<String, Object>());
    		
    		Assertions.assertFalse(monitor.goodStateReached());
    		Assertions.assertFalse(monitor.requirementSatisfied());
