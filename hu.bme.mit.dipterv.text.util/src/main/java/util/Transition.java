@@ -2,6 +2,7 @@ package util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public abstract class Transition implements Comparable<Transition> {
     protected State sender;
@@ -49,5 +50,5 @@ public abstract class Transition implements Comparable<Transition> {
     public abstract boolean canTrigger(Map<String, Integer> clockValues
     								 , String receivedMessage
     								 , List<String> previousMessages
-    								 , boolean parameterValue);
+    								 , Entry<String, Object> parameter);
 }

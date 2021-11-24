@@ -3,6 +3,9 @@ package hu.bme.mit.dipterv.text.example;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.HashMap;
 
 import org.junit.jupiter.api.Assertions;
 
@@ -32,17 +35,21 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("computer", "server", "updateEmail", new String[] {}, true);
-		monitor.update("server", "computer", "updateAccount", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
+		monitor.update("computer", "computer", "checkEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "sendUnsentEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "updateEmail", new HashMap<String, Object>());
+		monitor.update("server", "computer", "updateAccount", new HashMap<String, Object>());
+		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
+
+		hm.put("receiver", "John");
+		hm.put("subject", "Next meeting");
+		monitor.update("computer", "server", "newEmail", hm);
 		try {
 			TimeUnit.SECONDS.sleep(11);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
+		monitor.update("computer", "server", "downloadEmail", Map.of("timeout", 10));
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -58,11 +65,15 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("computer", "server", "updateEmail", new String[] {}, true);
-		monitor.update("server", "computer", "updateAccount", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
+		monitor.update("computer", "computer", "checkEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "sendUnsentEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "updateEmail", new HashMap<String, Object>());
+		monitor.update("server", "computer", "updateAccount", new HashMap<String, Object>());
+		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
+
+		hm.put("receiver", "John");
+		hm.put("subject", "Next meeting");
+		monitor.update("computer", "server", "newEmail", hm);
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -78,18 +89,22 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("computer", "server", "updateEmail", new String[] {}, true);
-		monitor.update("server", "computer", "updateAccount", new String[] {}, true);
-		monitor.update("computer", "server", "logout", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
+		monitor.update("computer", "computer", "checkEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "sendUnsentEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "updateEmail", new HashMap<String, Object>());
+		monitor.update("server", "computer", "updateAccount", new HashMap<String, Object>());
+		monitor.update("computer", "server", "logout", new HashMap<String, Object>());
+		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
+
+		hm.put("receiver", "John");
+		hm.put("subject", "Next meeting");
+		monitor.update("computer", "server", "newEmail", hm);
 		try {
 			TimeUnit.SECONDS.sleep(11);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
+		monitor.update("computer", "server", "downloadEmail", Map.of("timeout", 10));
 		
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -105,12 +120,16 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("computer", "server", "updateEmail", new String[] {}, true);
-		monitor.update("server", "computer", "updateAccount", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
+		monitor.update("computer", "computer", "checkEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "sendUnsentEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "updateEmail", new HashMap<String, Object>());
+		monitor.update("server", "computer", "updateAccount", new HashMap<String, Object>());
+		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
+
+		hm.put("receiver", "John");
+		hm.put("subject", "Next meeting");
+		monitor.update("computer", "server", "newEmail", hm);
+		monitor.update("computer", "server", "downloadEmail", Map.of("timeout", 10));
 		
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -126,17 +145,21 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("server", "computer", "computerError", new String[] {}, true);
-		monitor.update("server", "computer", "updateAccount", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
+		monitor.update("computer", "computer", "checkEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "sendUnsentEmail", new HashMap<String, Object>());
+		monitor.update("server", "computer", "computerError", new HashMap<String, Object>());
+		monitor.update("server", "computer", "updateAccount", new HashMap<String, Object>());
+		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
+
+		hm.put("receiver", "John");
+		hm.put("subject", "Next meeting");
+		monitor.update("computer", "server", "newEmail", hm);
 		try {
 			TimeUnit.SECONDS.sleep(11);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
+		monitor.update("computer", "server", "downloadEmail", Map.of("timeout", 10));
 		
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -152,17 +175,21 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "sendUnsentEmail", new String[] {}, true);
-		monitor.update("computer", "server", "updateEmail", new String[] {}, true);
-		monitor.update("computer", "server", "serverError", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {"receiver", "subject"}, true);
+		monitor.update("computer", "computer", "checkEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "sendUnsentEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "updateEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "serverError", new HashMap<String, Object>());
+		LinkedHashMap<String, Object> hm = new LinkedHashMap<String, Object>();
+
+		hm.put("receiver", "John");
+		hm.put("subject", "Next meeting");
+		monitor.update("computer", "server", "newEmail", hm);
 		try {
 			TimeUnit.SECONDS.sleep(11);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		monitor.update("computer", "server", "downloadEmail", new String[] {"timeout"}, true);
+		monitor.update("computer", "server", "downloadEmail", Map.of("timeout", 10));
 		
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());

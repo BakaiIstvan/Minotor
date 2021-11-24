@@ -2,6 +2,7 @@ package util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class EpsilonTransition extends Transition {
 	private AltExpressionInterface altExpression;
@@ -19,11 +20,11 @@ public class EpsilonTransition extends Transition {
 	public boolean canTrigger(Map<String, Integer> clockValues
 							, String receivedMessage
 							, List<String> previousMessages
-							, boolean parameterValue) {
+							, Entry<String, Object> parameterValue) {
 
-		if (altExpression != null) {
-			System.out.println("[EpsilonTransition]" + toString() + " canTrigger is " + altExpression.altExpression(parameterValue));
-			return altExpression.altExpression(parameterValue);
+		if (altExpression != null && parameterValue != null) {
+			System.out.println("[EpsilonTransition]" + toString() + " canTrigger is " + altExpression.altExpression(parameterValue.getKey(), (boolean)parameterValue.getValue()));
+			return altExpression.altExpression(parameterValue.getKey(), (boolean)parameterValue.getValue());
 		}
 		
 		System.out.println("[EpsilonTransition]" + toString() + " canTrigger is true");

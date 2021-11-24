@@ -264,16 +264,16 @@ class MinotorDslGenerator extends AbstractGenerator {
 	'''(«expression.lhs») || («expression.rhs»)'''
 	
 	def dispatch generateLogicalExpression(EqualsExpression expression) 
-	'''«expression.lhs.name» -> «expression.lhs.name» == «expression.rhs»'''
+	'''(«expression.lhs.name», value) -> «expression.lhs.name» == "«expression.lhs.name»" && value == «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(EqualsBooleanExpression expression) 
-	'''«expression.lhs.name» -> «expression.lhs.name» == «expression.rhs»'''
+	'''(«expression.lhs.name», value) -> «expression.lhs.name» == "«expression.lhs.name»" && value == «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(GreaterThanExpression expression)
-	'''«expression.lhs.name» -> «expression.lhs.name» > «expression.rhs»'''
+	'''(«expression.lhs.name», value) -> «expression.lhs.name» == "«expression.lhs.name»" && value > «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(LesserThanExpression expression)
-	'''«expression.lhs.name» -> «expression.lhs.name» < «expression.rhs»'''
+	'''(«expression.lhs.name», value) -> «expression.lhs.name» == "«expression.lhs.name»" && value < «expression.rhs»'''
 	
 	def dispatch generateLogicalExpression(NotLogicalExpression expression)
 	'''!(«expression.operand»)'''

@@ -3,6 +3,7 @@ package hu.bme.mit.dipterv.text.mobileexample;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
 
 import org.junit.jupiter.api.Assertions;
 
@@ -25,13 +26,13 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("user", "device", "openApp", new String[] {}, true);
-		monitor.update("device", "device", "accessWebcam", new String[] {}, true);
-		monitor.update("device", "user", "getPhoto", new String[] {}, true);
-		monitor.update("someone", "else", "message", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMood", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMusic", new String[] {}, true);
-		monitor.update("db", "device", "generatePlaylist", new String[] {}, true);
+		monitor.update("user", "device", "openApp", new HashMap<String, Object>());
+		monitor.update("device", "device", "accessWebcam", new HashMap<String, Object>());
+		monitor.update("device", "user", "getPhoto", new HashMap<String, Object>());
+		monitor.update("someone", "else", "message", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMood", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMusic", new HashMap<String, Object>());
+		monitor.update("db", "device", "generatePlaylist", new HashMap<String, Object>());
 
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -47,14 +48,14 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("user", "device", "openApp", new String[] {}, true);
-		monitor.update("device", "device", "accessWebcam", new String[] {}, true);
-		monitor.update("device", "user", "getPhoto", new String[] {}, true);
-		monitor.update("user", "device", "closeApp", new String[] {}, true);
-		monitor.update("someone", "else", "message", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMood", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMusic", new String[] {}, true);
-		monitor.update("db", "device", "generatePlaylist", new String[] {}, true);
+		monitor.update("user", "device", "openApp", new HashMap<String, Object>());
+		monitor.update("device", "device", "accessWebcam", new HashMap<String, Object>());
+		monitor.update("device", "user", "getPhoto", new HashMap<String, Object>());
+		monitor.update("user", "device", "closeApp", new HashMap<String, Object>());
+		monitor.update("someone", "else", "message", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMood", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMusic", new HashMap<String, Object>());
+		monitor.update("db", "device", "generatePlaylist", new HashMap<String, Object>());
 
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -70,14 +71,14 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("user", "device", "closeApp", new String[] {}, true);
-		monitor.update("user", "device", "openApp", new String[] {}, true);
-		monitor.update("device", "device", "accessWebcam", new String[] {}, true);
-		monitor.update("device", "user", "getPhoto", new String[] {}, true);
-		monitor.update("someone", "else", "message", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMood", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMusic", new String[] {}, true);
-		monitor.update("db", "device", "generatePlaylist", new String[] {}, true);
+		monitor.update("user", "device", "closeApp", new HashMap<String, Object>());
+		monitor.update("user", "device", "openApp", new HashMap<String, Object>());
+		monitor.update("device", "device", "accessWebcam", new HashMap<String, Object>());
+		monitor.update("device", "user", "getPhoto", new HashMap<String, Object>());
+		monitor.update("someone", "else", "message", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMood", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMusic", new HashMap<String, Object>());
+		monitor.update("db", "device", "generatePlaylist", new HashMap<String, Object>());
 
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -93,13 +94,13 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("user", "device", "openApp", new String[] {}, true);
-		monitor.update("device", "device", "accessWebcam", new String[] {}, true);
-		monitor.update("device", "user", "getPhoto", new String[] {}, true);
-		monitor.update("user", "device", "cameraOffline", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMood", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMusic", new String[] {}, true);
-		monitor.update("db", "device", "generatePlaylist", new String[] {}, true);
+		monitor.update("user", "device", "openApp", new HashMap<String, Object>());
+		monitor.update("device", "device", "accessWebcam", new HashMap<String, Object>());
+		monitor.update("device", "user", "getPhoto", new HashMap<String, Object>());
+		monitor.update("user", "device", "cameraOffline", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMood", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMusic", new HashMap<String, Object>());
+		monitor.update("db", "device", "generatePlaylist", new HashMap<String, Object>());
 
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -117,19 +118,19 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 	
-		monitor.update("user", "device", "openApp", new String[] {}, true);
+		monitor.update("user", "device", "openApp", new HashMap<String, Object>());
 		try {
 			TimeUnit.SECONDS.sleep(5);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		monitor.update("device", "device", "accessWebcam", new String[] {}, true);
-		monitor.update("device", "user", "getPhoto", new String[] {}, true);
-		monitor.update("someone", "else", "message", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMood", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMusic", new String[] {}, true);
-		monitor.update("db", "device", "generatePlaylist", new String[] {}, true);
+		monitor.update("device", "device", "accessWebcam", new HashMap<String, Object>());
+		monitor.update("device", "user", "getPhoto", new HashMap<String, Object>());
+		monitor.update("someone", "else", "message", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMood", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMusic", new HashMap<String, Object>());
+		monitor.update("db", "device", "generatePlaylist", new HashMap<String, Object>());
 
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -148,19 +149,19 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("user", "device", "openApp", new String[] {}, true);
+		monitor.update("user", "device", "openApp", new HashMap<String, Object>());
 		try {
 			TimeUnit.SECONDS.sleep(6);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		monitor.update("device", "device", "accessWebcam", new String[] {}, true);
-		monitor.update("device", "user", "getPhoto", new String[] {}, true);
-		monitor.update("someone", "else", "message", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMood", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMusic", new String[] {}, true);
-		monitor.update("db", "device", "generatePlaylist", new String[] {}, true);
+		monitor.update("device", "device", "accessWebcam", new HashMap<String, Object>());
+		monitor.update("device", "user", "getPhoto", new HashMap<String, Object>());
+		monitor.update("someone", "else", "message", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMood", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMusic", new HashMap<String, Object>());
+		monitor.update("db", "device", "generatePlaylist", new HashMap<String, Object>());
 
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -177,13 +178,13 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 
-		monitor.update("user", "device", "openApp", new String[] {}, true);
-		monitor.update("device", "device", "accessWebcam", new String[] {}, true);
-		monitor.update("device", "user", "getPhoto", new String[] {}, true);
-		monitor.update("someone", "else", "message", new String[] {}, true);
-		monitor.update("device", "db", "retrieveGoods", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMusic", new String[] {}, true);
-		monitor.update("db", "device", "generatePlaylist", new String[] {}, true);
+		monitor.update("user", "device", "openApp", new HashMap<String, Object>());
+		monitor.update("device", "device", "accessWebcam", new HashMap<String, Object>());
+		monitor.update("device", "user", "getPhoto", new HashMap<String, Object>());
+		monitor.update("someone", "else", "message", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveGoods", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMusic", new HashMap<String, Object>());
+		monitor.update("db", "device", "generatePlaylist", new HashMap<String, Object>());
 
 		Assertions.assertFalse(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -199,15 +200,15 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("user", "device", "openApp", new String[] {}, true);
-		monitor.update("device", "device", "accessWebcam", new String[] {}, true);
-		monitor.update("device", "user", "getPhoto", new String[] {}, true);
-		monitor.update("someone", "else", "message", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMood", new String[] {}, true);
-		monitor.update("somebody", "receiver", "getThisMessage", new String[] {}, true);
-		monitor.update("you", "me", "didyougetthemessage", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMusic", new String[] {}, true);
-		monitor.update("db", "device", "generatePlaylist", new String[] {}, true);
+		monitor.update("user", "device", "openApp", new HashMap<String, Object>());
+		monitor.update("device", "device", "accessWebcam", new HashMap<String, Object>());
+		monitor.update("device", "user", "getPhoto", new HashMap<String, Object>());
+		monitor.update("someone", "else", "message", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMood", new HashMap<String, Object>());
+		monitor.update("somebody", "receiver", "getThisMessage", new HashMap<String, Object>());
+		monitor.update("you", "me", "didyougetthemessage", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMusic", new HashMap<String, Object>());
+		monitor.update("db", "device", "generatePlaylist", new HashMap<String, Object>());
 
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -223,13 +224,13 @@ public class MobileMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("user", "device", "openApp", new String[] {}, true);
-		monitor.update("device", "device", "accessWebcam", new String[] {}, true);
-		monitor.update("device", "user", "getPhoto", new String[] {}, true);
-		monitor.update("someone", "else", "message", new String[] {}, true);
-		monitor.update("device", "db", "retrieveMood", new String[] {}, true);
-		monitor.update("somebody", "receiver", "getThisMessage", new String[] {}, true);
-		monitor.update("you", "me", "didyougetthemessage", new String[] {}, true);
+		monitor.update("user", "device", "openApp", new HashMap<String, Object>());
+		monitor.update("device", "device", "accessWebcam", new HashMap<String, Object>());
+		monitor.update("device", "user", "getPhoto", new HashMap<String, Object>());
+		monitor.update("someone", "else", "message", new HashMap<String, Object>());
+		monitor.update("device", "db", "retrieveMood", new HashMap<String, Object>());
+		monitor.update("somebody", "receiver", "getThisMessage", new HashMap<String, Object>());
+		monitor.update("you", "me", "didyougetthemessage", new HashMap<String, Object>());
 		monitor.noMoreMessages();
 
 		Assertions.assertFalse(monitor.goodStateReached());

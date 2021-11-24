@@ -3,6 +3,8 @@ package hu.bme.mit.dipterv.text.parexample;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+
 import generated.Specification;
 import util.Clock;
 import util.IClock;
@@ -29,8 +31,8 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
-		monitor.update("computer", "server", "newEmail", new String[] {}, true);
+		monitor.update("computer", "computer", "checkEmail", new HashMap<String, Object>());
+		monitor.update("computer", "server", "newEmail", new HashMap<String, Object>());
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -46,8 +48,8 @@ public class NetworkMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("computer", "server", "newEmail", new String[] {}, true);
-		monitor.update("computer", "computer", "checkEmail", new String[] {}, true);
+		monitor.update("computer", "server", "newEmail", new HashMap<String, Object>());
+		monitor.update("computer", "computer", "checkEmail", new HashMap<String, Object>());
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());

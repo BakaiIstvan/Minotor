@@ -3,6 +3,9 @@ package hu.bme.mit.dipterv.text.altexample;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import generated.Specification;
 import util.Clock;
 import util.IClock;
@@ -29,9 +32,9 @@ public class BankMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("ui", "atm", "login", new String[] {"success"}, true);
-		monitor.update("ui", "atm", "wReq", new String[] {}, true);
-		monitor.update("atm", "db", "uDB", new String[] {}, true);
+		monitor.update("ui", "atm", "login", Map.of("success", true));
+		monitor.update("ui", "atm", "wReq", new HashMap<String, Object>());
+		monitor.update("atm", "db", "uDB", new HashMap<String, Object>());
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -50,9 +53,9 @@ public class BankMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("ui", "atm", "login", new String[] {"success"}, true);
-		monitor.update("ui", "atm", "loginUnsuccessful", new String[] {}, true);
-		monitor.update("atm", "ui", "lockMachine", new String[] {}, true);
+		monitor.update("ui", "atm", "login", Map.of("success", true));
+		monitor.update("ui", "atm", "loginUnsuccessful", new HashMap<String, Object>());
+		monitor.update("atm", "ui", "lockMachine", new HashMap<String, Object>());
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
@@ -71,9 +74,9 @@ public class BankMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("ui", "atm", "login", new String[] {"success"}, false);
-		monitor.update("ui", "atm", "loginUnsuccessful", new String[] {}, false);
-		monitor.update("atm", "ui", "lockMachine", new String[] {}, false);
+		monitor.update("ui", "atm", "login", Map.of("success", false));
+		monitor.update("ui", "atm", "loginUnsuccessful", new HashMap<String, Object>());
+		monitor.update("atm", "ui", "lockMachine", new HashMap<String, Object>());
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertTrue(monitor.requirementSatisfied());
@@ -92,9 +95,9 @@ public class BankMonitorTest implements ISystem {
 		IClock clock = new Clock();
 		IMonitor monitor = new Monitor(specification.getAutomata().get(0), clock, this);
 		
-		monitor.update("ui", "atm", "login", new String[] {"success"}, false);
-		monitor.update("ui", "atm", "wReq", new String[] {}, false);
-		monitor.update("atm", "db", "uDB", new String[] {}, false);
+		monitor.update("ui", "atm", "login", Map.of("success", false));
+		monitor.update("ui", "atm", "wReq", new HashMap<String, Object>());
+		monitor.update("atm", "db", "uDB", new HashMap<String, Object>());
 		
 		Assertions.assertTrue(monitor.goodStateReached());
 		Assertions.assertFalse(monitor.requirementSatisfied());
