@@ -1,0 +1,14 @@
+specification Light{
+	
+	object TrafficLight light;
+	object Controller controller;
+	object Police police;
+	
+	scenario trafficLight {
+		message displayRed() controller -> light;
+		message displayGreen() controller -> light;
+		message displayYellow() controller -> light;
+		message displayRed() controller -> light;
+		
+	}
+}
