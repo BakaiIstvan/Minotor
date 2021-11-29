@@ -34,7 +34,26 @@ public class GammaMonitorTest implements ISystem {
 	}
 
 	@Test
-	public void testNetworkRequirementSatisfied() {
+	public void testCrossroadRequirementSatisfied() {
+		resetValues();
+		
+		reflectiveMonitoredCrossroad.getWrappedComponent().getMonitor().setupMonitor();
+		
+		timer.reset(); // Timer before the system
+		reflectiveMonitoredCrossroad.reset();
+		
+		timer.elapse(2000);
+		reflectiveMonitoredCrossroad.getWrappedComponent().runFullCycle();
+		
+		Assertions.assertTrue(reflectiveMonitoredCrossroad.getWrappedComponent().getMonitor().goodStateReached());
+		Assertions.assertTrue(reflectiveMonitoredCrossroad.getWrappedComponent().getMonitor().requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
+		tearDown();
+	}
+	
+	@Test
+	public void testPoliceCaseRequirementSatisfied() {
 		resetValues();
 		
 		timer.reset(); // Timer before the system
@@ -42,6 +61,9 @@ public class GammaMonitorTest implements ISystem {
 		
 		timer.elapse(2000);
 		reflectiveMonitoredCrossroad.schedule(null);
+		
+		timer.elapse(2000);
+		reflectiveMonitoredCrossroad.raiseEvent("police", "police", new String[] {});
 		
 		timer.elapse(2000);
 		reflectiveMonitoredCrossroad.schedule(null);

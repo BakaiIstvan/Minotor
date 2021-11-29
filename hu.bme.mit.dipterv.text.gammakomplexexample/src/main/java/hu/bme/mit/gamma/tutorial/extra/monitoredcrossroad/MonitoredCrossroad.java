@@ -1,6 +1,7 @@
 package hu.bme.mit.gamma.tutorial.extra.monitoredcrossroad;
 
 import java.util.List;
+import java.util.Map;
 
 import generated.Specification;
 
@@ -75,6 +76,7 @@ public class MonitoredCrossroad implements MonitoredCrossroadInterface {
 		
 		@Override
 		public void raisePolice() {
+			monitor.update("police", "controller", "policeInterruptRaised", Map.of("success", true));
 			crossroad.getPolice().raisePolice();
 		}
 		

@@ -36,3 +36,5 @@ jobs:
       run: cd hu.bme.mit.dipterv.text.operatorexample; mvn clean install -U
     - name: Test gamma integration project
       run: cd hu.bme.mit.dipterv.text.gammaexample; mvn clean install -U
+    - name: Test gamma complex integration project
+      run: cd hu.bme.mit.dipterv.text.gammakomplexexample; mvn clean install -U
