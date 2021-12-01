@@ -2,6 +2,7 @@ package hu.bme.mit.gamma.tutorial.extra.monitoredcrossroad;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import generated.Specification;
 
@@ -64,7 +65,13 @@ public class MonitoredCrossroad implements MonitoredCrossroadInterface {
 		monitor.getLightInputs().registerListener(crossroad.getPriorityOutput());
 		// Registration of broadcast channels
 	}
-	
+
+	public void checkForPoliceRaise() {
+		if (!crossroad.getController().getPriorityPolice().isRaisedPolice()) {
+			monitor.update("police", "controller", "policeInterruptRaised", Map.of("success", false));
+		}
+	}
+
 	// Inner classes representing Ports
 	public class Police implements PoliceInterruptInterface.Required {
 		private List<PoliceInterruptInterface.Listener.Required> listeners = new LinkedList<PoliceInterruptInterface.Listener.Required>();
@@ -148,21 +155,25 @@ public class MonitoredCrossroad implements MonitoredCrossroadInterface {
 			@Override
 			public void raiseDisplayNone() {
 				isRaisedDisplayNone = true;
+				monitor.update("controller", "light", "displayNone", new HashMap<String, Object>());
 			}
 			
 			@Override
 			public void raiseDisplayYellow() {
 				isRaisedDisplayYellow = true;
+				monitor.update("controller", "light", "displayYellow", new HashMap<String, Object>());
 			}
 			
 			@Override
 			public void raiseDisplayRed() {
 				isRaisedDisplayRed = true;
+				monitor.update("controller", "light", "displayRed", new HashMap<String, Object>());
 			}
 			
 			@Override
 			public void raiseDisplayGreen() {
 				isRaisedDisplayGreen = true;
+				monitor.update("controller", "light", "displayGreen", new HashMap<String, Object>());
 			}
 		}
 		

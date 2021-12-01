@@ -61,7 +61,7 @@ public class GammaMonitor extends Monitor implements IMonitor, MonitorInterface 
 	}
 	
 	public void setupMonitor() {
-		update("police", "controller", "policeInterruptRaised", Map.of("success", false));
+		// update("police", "controller", "policeInterruptRaised", Map.of("success", false));
 	}
 	
 	/** Returns the event queue from which events should be inspected in the particular cycle. */
@@ -84,16 +84,16 @@ public class GammaMonitor extends Monitor implements IMonitor, MonitorInterface 
 				Event event = eventQueue.remove();
 				switch (event.getEvent()) {
 					case "LightInputs.DisplayNone":
-						//update("controller", "light", "displayNone", new HashMap<String, Object>());
+						// update("controller", "light", "displayNone", new HashMap<String, Object>());
 					break;
 					case "LightInputs.DisplayYellow":
-						//update("controller", "light", "displayYellow", new HashMap<String, Object>());
+						// update("controller", "light", "displayYellow", new HashMap<String, Object>());
 					break;
 					case "LightInputs.DisplayRed":
-						//update("controller", "light", "displayRed", new HashMap<String, Object>());
+						// update("controller", "light", "displayRed", new HashMap<String, Object>());
 					break;
 					case "LightInputs.DisplayGreen":
-						//update("controller", "light", "displayGreen", new HashMap<String, Object>());
+						// update("controller", "light", "displayGreen", new HashMap<String, Object>());
 					break;
 					default:
 						throw new IllegalArgumentException("No such event!");
@@ -163,25 +163,25 @@ public class GammaMonitor extends Monitor implements IMonitor, MonitorInterface 
 			@Override
 			public void raiseDisplayNone() {
 				getInsertQueue().add(new Event("LightInputs.DisplayNone"));
-				update("controller", "light", "displayNone", new HashMap<String, Object>());
+				// update("controller", "light", "displayNone", new HashMap<String, Object>());
 			}
 			
 			@Override
 			public void raiseDisplayYellow() {
 				getInsertQueue().add(new Event("LightInputs.DisplayYellow"));
-				update("controller", "light", "displayYellow", new HashMap<String, Object>());
+				// update("controller", "light", "displayYellow", new HashMap<String, Object>());
 			}
 			
 			@Override
 			public void raiseDisplayRed() {
 				getInsertQueue().add(new Event("LightInputs.DisplayRed"));
-				update("controller", "light", "displayRed", new HashMap<String, Object>());
+				// update("controller", "light", "displayRed", new HashMap<String, Object>());
 			}
 			
 			@Override
 			public void raiseDisplayGreen() {
 				getInsertQueue().add(new Event("LightInputs.DisplayGreen"));
-				update("controller", "light", "displayGreen", new HashMap<String, Object>());
+				// update("controller", "light", "displayGreen", new HashMap<String, Object>());
 			}
 
 			@Override

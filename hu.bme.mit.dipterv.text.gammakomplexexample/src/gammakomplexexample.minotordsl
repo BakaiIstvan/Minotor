@@ -15,6 +15,9 @@ specification Light{
 			message displayYellow() controller -> light;
 		} (equals(success, true)) {
 			message displayYellow() controller -> light;
+			message displayNone() controller -> light;
+			message displayYellow() controller -> light;
+			message displayNone() controller -> light;
 		}
 		
 	}
