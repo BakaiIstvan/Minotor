@@ -1,0 +1,24 @@
+specification Light{
+	
+	object TrafficLight light;
+	object Controller controller;
+	object Police police;
+	
+	bool success = false;
+	
+	scenario trafficLight {
+		message policeInterruptRaised(success) police -> controller;
+		
+		alt(equals(success, false)) {
+			message displayRed() controller -> light;
+			message displayGreen() controller -> light;
+			message displayYellow() controller -> light;
+		} (equals(success, true)) {
+			message displayYellow() controller -> light;
+			message displayNone() controller -> light;
+			message displayYellow() controller -> light;
+			message displayNone() controller -> light;
+		}
+		
+	}
+}
