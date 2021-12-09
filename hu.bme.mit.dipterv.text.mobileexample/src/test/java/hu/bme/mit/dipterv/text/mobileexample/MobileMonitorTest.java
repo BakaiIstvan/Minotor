@@ -80,10 +80,10 @@ public class MobileMonitorTest implements ISystem {
 		monitor.update("device", "db", "retrieveMusic", new HashMap<String, Object>());
 		monitor.update("db", "device", "generatePlaylist", new HashMap<String, Object>());
 
-		Assertions.assertFalse(monitor.goodStateReached());
-		Assertions.assertFalse(monitor.requirementSatisfied());
-		Assertions.assertFalse(requirementSatisfied);
-		Assertions.assertTrue(errorDetected);
+		Assertions.assertTrue(monitor.goodStateReached());
+		Assertions.assertTrue(monitor.requirementSatisfied());
+		Assertions.assertTrue(requirementSatisfied);
+		Assertions.assertFalse(errorDetected);
 	}
 	
 	@Test
