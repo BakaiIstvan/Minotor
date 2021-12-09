@@ -77,6 +77,9 @@ public class Monitor implements IMonitor {
 				System.out.println("PrevTransition: " + prevTransition.toString());
 
 				if (transitions.size() == 1) {
+					if (this.actualState != transition.getReceiver()) {
+						previousMessages.clear();
+					}
 					this.actualState = transition.getReceiver();
 					updateMonitorStatus(transition, parameters);
 				}
@@ -111,6 +114,9 @@ public class Monitor implements IMonitor {
 				}
 				
 				if (transition.canTrigger(clockValues, receivedMessage, previousMessages, lastParameter)) {
+					if (this.actualState != transition.getReceiver()) {
+						previousMessages.clear();
+					}
 					this.actualState = transition.getReceiver();
 					updateMonitorStatus(transition, parameters);
 					edgeTriggered = true;
