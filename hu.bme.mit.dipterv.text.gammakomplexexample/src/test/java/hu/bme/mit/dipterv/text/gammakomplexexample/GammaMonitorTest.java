@@ -1,5 +1,6 @@
 package hu.bme.mit.dipterv.text.gammakomplexexample;
 
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -60,24 +61,49 @@ public class GammaMonitorTest implements ISystem {
 		reflectiveMonitoredCrossroad.reset();
 
 		reflectiveMonitoredCrossroad.raiseEvent("police", "police", new String[] {});
+		try {
+			TimeUnit.SECONDS.sleep(2);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		reflectiveMonitoredCrossroad.schedule(null);
 
 		timer.elapse(2000);
+		try {
+			TimeUnit.SECONDS.sleep(2);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		reflectiveMonitoredCrossroad.schedule(null);
 
 		Assertions.assertTrue(reflectiveMonitoredCrossroad.isRaisedEvent("priorityOutput", "displayYellow", new Object[] {}));
 		Assertions.assertTrue(reflectiveMonitoredCrossroad.isRaisedEvent("secondaryOutput", "displayYellow", new Object[] {}));
 
 		timer.elapse(1000);
+		try {
+			TimeUnit.SECONDS.sleep(1);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		reflectiveMonitoredCrossroad.schedule(null);
 
 		Assertions.assertTrue(reflectiveMonitoredCrossroad.isRaisedEvent("secondaryOutput", "displayNone", new Object[] {}));
 		Assertions.assertTrue(reflectiveMonitoredCrossroad.isRaisedEvent("priorityOutput", "displayNone", new Object[] {}));
 
 		timer.elapse(1000);
+		try {
+			TimeUnit.SECONDS.sleep(1);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		reflectiveMonitoredCrossroad.schedule(null);
 
 		timer.elapse(1000);
+		try {
+			TimeUnit.SECONDS.sleep(1);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		reflectiveMonitoredCrossroad.schedule(null);
 
 		Assertions.assertTrue(reflectiveMonitoredCrossroad.getWrappedComponent().getMonitor().goodStateReached());
@@ -86,35 +112,6 @@ public class GammaMonitorTest implements ISystem {
 		Assertions.assertFalse(errorDetected);
 		tearDown();
 	}
-
-	// @Test
-	// public void testPoliceCaseRequirementSatisfied() {
-	// 	resetValues();
-		
-	// 	timer.reset(); // Timer before the system
-	// 	reflectiveMonitoredCrossroad.getComponent("crossroad").reset();
-
-	// 	reflectiveMonitoredCrossroad.getComponent("crossroad").raiseEvent("police", "police", new String[] {});
-	// 	reflectiveMonitoredCrossroad.getComponent("crossroad").schedule(null);
-
-	// 	timer.elapse(2000);
-	// 	reflectiveMonitoredCrossroad.getComponent("crossroad").schedule(null);
-
-	// 	Assertions.assertTrue(reflectiveMonitoredCrossroad.getComponent("crossroad").isRaisedEvent("priorityOutput", "displayYellow", new Object[] {}));
-	// 	Assertions.assertTrue(reflectiveMonitoredCrossroad.getComponent("crossroad").isRaisedEvent("secondaryOutput", "displayYellow", new Object[] {}));
-
-	// 	timer.elapse(1000);
-	// 	reflectiveMonitoredCrossroad.getComponent("crossroad").schedule(null);
-	// 	// Checking out events
-	// 	Assertions.assertTrue(reflectiveMonitoredCrossroad.getComponent("crossroad").isRaisedEvent("secondaryOutput", "displayNone", new Object[] {}));
-	// 	Assertions.assertTrue(reflectiveMonitoredCrossroad.getComponent("crossroad").isRaisedEvent("priorityOutput", "displayNone", new Object[] {}));
-
-	// 	Assertions.assertTrue(reflectiveMonitoredCrossroad.getWrappedComponent().getMonitor().goodStateReached());
-	// 	Assertions.assertTrue(reflectiveMonitoredCrossroad.getWrappedComponent().getMonitor().requirementSatisfied());
-	// 	Assertions.assertTrue(requirementSatisfied);
-	// 	Assertions.assertFalse(errorDetected);
-	// 	tearDown();
-	// }
 
 	@Override
 	public void receiveMonitorStatus(String message) {
